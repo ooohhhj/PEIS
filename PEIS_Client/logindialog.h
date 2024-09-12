@@ -15,6 +15,8 @@ public:
     explicit LoginDialog(QWidget *parent = nullptr);
     ~LoginDialog();
 
+private slots:
+    void onRegisterLabelClicked(const QString &link);//处理注册标签点击事件
 private:
     Ui::LoginDialog *ui;
 };
