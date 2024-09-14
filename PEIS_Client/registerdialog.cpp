@@ -9,14 +9,23 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //设置提示语
     ui->nameLineEdit->setPlaceholderText("请输入用户名(3-10位，仅汉字、字母、数字)");
     ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
-    ui->showCaptchaLabel->setScaledContents(true);
+
+    //设置随机验证码
     ui->showCaptchaLabel->setPixmap(captchaGenerator::refreshCaptcha());
 
+    //设置出生日期可选择范围
     setBirthDate();
 
-
+    //
+    connect(ui->nameLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onUsernameChanged);
+    connect(ui->passwordLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onPasswordChanged);
+    connect(ui->confirmPasswordLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onConfirmPasswordChanged);
+    connect(ui->captchaLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onCaptchaChanged);
+    connect(ui->idCardLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validateIdNumber);
+    connect(ui->iphoneLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validatePhoneNumber);
 
 }
 
@@ -122,5 +131,164 @@ void RegisterDialog::on_refreshCaptchButton_clicked()
     ui->showCaptchaLabel->setPixmap(captchaGenerator::refreshCaptcha());
     QString captcha =captchaGenerator::getCaptchaText();
     qDebug()<<captcha;
+}
+
+void RegisterDialog::on_okButton_clicked()
+{
+    //确定按钮被点击
+
+    //获取输入框的内容
+    QString username= ui->nameLineEdit->text();
+
+    QString password = ui->passwordLineEdit->text();
+    QString confirmPassword = ui->confirmPasswordLineEdit->text();
+    QString enteredCaptcha = ui->captchaLineEdit->text();
+    QString generatedCaptch = captchaGenerator::getCaptchaText();
+
+
+}
+
+void RegisterDialog::onUsernameChanged(const QString &text)
+{
+    QString errorMessage;
+
+
+    if(text.isEmpty())
+    {
+        errorMessage="用户名不能为空";
+    }
+
+    else if(text.length()<3 || text.length()>10)
+    {
+        errorMessage="用户名长度为3-10位字符";
+    }
+    else if(!text.contains(QRegExp("^[\\u4e00-\\u9fa5\\w]{3,20}$")))
+    {
+        errorMessage="用户名包含非法字符";
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->usernameErrorLabel->setText("");//清除错误消息
+    }
+    else
+    {
+        ui->usernameErrorLabel->setStyleSheet("color:red;");
+        ui->usernameErrorLabel->setText(errorMessage);//显示错误信息
+    }
+}
+
+void RegisterDialog::validateIdNumber(const QString &text)
+{
+    QString errorMessage;
+
+    QRegExp regExp("^\\d{17}[\\dX]$");
+    bool ret =regExp.exactMatch(text);
+    if(!ret)
+    {
+        errorMessage ="身份证号码无效";
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->idNumberErrorLabel->setText("");
+    }
+    else
+    {
+        ui->idNumberErrorLabel->setStyleSheet("color:red;");
+        ui->idNumberErrorLabel->setText(errorMessage);
+    }
+}
+
+void RegisterDialog::validatePhoneNumber(const QString &text)
+{
+    QString errorMessage;
+
+    QRegExp regExp("^1[3-9]\\d{9}$");
+    bool ret =regExp.exactMatch(text);
+
+    if(!ret)
+    {
+        errorMessage ="手机号码无效";
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->iphoneErrorLabel->setText("");
+    }
+    else
+    {
+        ui->iphoneErrorLabel->setStyleSheet("color:red;");
+        ui->iphoneErrorLabel->setText(errorMessage);
+    }
+}
+
+void RegisterDialog::onPasswordChanged(const QString &text)
+{
+    QString errorMessage;
+
+    QRegExp regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)[A-Za-z\\d]{8,16}$");
+    bool ret =regex.exactMatch(text);
+
+    if(!ret)
+    {
+        errorMessage="密码必须是8到16个字符，包含大小写字母和数字";
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->passwordErrorLabel->setText("");
+    }
+    else
+    {
+        ui->passwordErrorLabel->setStyleSheet("color:red;");
+        ui->passwordErrorLabel->setText(errorMessage);
+    }
+}
+
+void RegisterDialog::onConfirmPasswordChanged(const QString &text)
+{
+    QString errorMessage;
+
+    QString password =ui->passwordLineEdit->text();
+
+    if(text != password)
+    {
+        errorMessage="两次密码不匹配";
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->confirmPasswordErrorLabel->setText("");
+    }
+    else
+    {
+        ui->confirmPasswordErrorLabel->setStyleSheet("color:red;");
+        ui->confirmPasswordErrorLabel->setText(errorMessage);
+    }
+
+}
+
+void RegisterDialog::onCaptchaChanged(const QString &text)
+{
+    QString errorMessage;
+
+    QString captcha =captchaGenerator::getCaptchaText();
+
+    if(text!=captcha)
+    {
+        errorMessage ="验证码输入有误";
+
+    }
+
+    if(errorMessage.isEmpty())
+    {
+        ui->captchaErrorLabel->setText("");
+    }
+    else
+    {
+        ui->captchaErrorLabel->setStyleSheet("color:red;");
+        ui->captchaErrorLabel->setText(errorMessage);
+    }
 }
 

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>LoginORegister-Background.webp</file>
+        <file>refresh.png</file>
     </qresource>
 </RCC>

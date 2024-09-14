@@ -43,7 +43,7 @@ QPixmap captchaGenerator::refreshCaptcha()
     }
 
     //添加干扰线条
-    for(int i=0;i<10;i++)
+    for(int i=0;i<7;i++)
     {
         //设置随机颜色
         QColor lineColor(QRandomGenerator::global()->bounded(256),

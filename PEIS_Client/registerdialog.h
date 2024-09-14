@@ -28,6 +28,15 @@ private slots:
     void updateDaysComboBox(QComboBox * yearComboBox,QComboBox * monthComboBox);
     void on_refreshCaptchButton_clicked();
 
+    void on_okButton_clicked();
+
+    void onUsernameChanged(const QString &text);
+    void validateIdNumber(const QString &text);
+    void validatePhoneNumber(const QString &text);
+    void onPasswordChanged(const QString &text);
+    void onConfirmPasswordChanged(const QString &text);
+    void onCaptchaChanged(const QString &text);
+
 private:
     Ui::RegisterDialog *ui;
 };
