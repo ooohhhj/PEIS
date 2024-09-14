@@ -14,7 +14,7 @@
    <string>LoginPEIS</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image:url(:/loginBackground.jpg);
+   <string notr="true">background-image:url(:/LoginORegister-Background.webp);
 background-repeat:no-repeat;
 background-position:center;</string>
   </property>

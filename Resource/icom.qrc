@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>loginBackground.jpg</file>
-        <file>registerBackground.webp</file>
+        <file>LoginORegister-Background.webp</file>
     </qresource>
 </RCC>
