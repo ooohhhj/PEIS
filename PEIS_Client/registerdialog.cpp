@@ -9,7 +9,14 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->nameLineEdit->setPlaceholderText("请输入用户名(3-10位，仅汉字、字母、数字)");
+    ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
+    ui->showCaptchaLabel->setScaledContents(true);
+    ui->showCaptchaLabel->setPixmap(captchaGenerator::refreshCaptcha());
+
     setBirthDate();
+
+
 
 }
 
@@ -59,7 +66,10 @@ void RegisterDialog::setBirthDate()
 
 void RegisterDialog::onYearChanged(int)
 {
+    //获取选择年份
     int selectedYear= ui->yearComboBox->currentText().toInt();
+
+    //获取当前的年份与月数
     int currentYear = QDate::currentDate().year();
     int currentMonth = QDate::currentDate().month();
 
@@ -83,6 +93,7 @@ void RegisterDialog::onYearChanged(int)
 
 void RegisterDialog::onMonthChanged(int)
 {
+    //传递年月组件  更新日数
     QComboBox * yearComboBox = findChild<QComboBox*>("yearComboBox");
     QComboBox * monthComboBox  =findChild<QComboBox*>("monthComboBox");
     updateDaysComboBox(yearComboBox,monthComboBox);
@@ -105,4 +116,11 @@ void RegisterDialog::updateDaysComboBox(QComboBox *yearComboBox, QComboBox *mont
     }
 }
 
+
+void RegisterDialog::on_refreshCaptchButton_clicked()
+{
+    ui->showCaptchaLabel->setPixmap(captchaGenerator::refreshCaptcha());
+    QString captcha =captchaGenerator::getCaptchaText();
+    qDebug()<<captcha;
+}
 

@@ -5,6 +5,9 @@
 #include <QDate>
 #include <QCalendarWidget>
 #include <QComboBox>
+#include "captchagenerator.h"
+#include <QDebug>
+
 
 namespace Ui {
 class RegisterDialog;
@@ -23,6 +26,8 @@ private slots:
     void onYearChanged(int);
     void onMonthChanged(int);
     void updateDaysComboBox(QComboBox * yearComboBox,QComboBox * monthComboBox);
+    void on_refreshCaptchButton_clicked();
+
 private:
     Ui::RegisterDialog *ui;
 };
