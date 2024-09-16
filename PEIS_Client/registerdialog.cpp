@@ -10,7 +10,7 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
     ui->setupUi(this);
 
     //设置提示语
-    ui->nameLineEdit->setPlaceholderText("请输入用户名(3-10位，仅汉字、字母、数字)");
+    ui->nameLineEdit->setPlaceholderText("请输入用户名(2-10位，仅汉字、字母、数字)");
     ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
 
     //设置随机验证码
@@ -26,7 +26,7 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
     connect(ui->captchaLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onCaptchaChanged);
     connect(ui->idCardLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validateIdNumber);
     connect(ui->iphoneLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validatePhoneNumber);
-
+    connect(ui->addressLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onAddressChanged);
 }
 
 RegisterDialog::~RegisterDialog()
@@ -70,7 +70,7 @@ void RegisterDialog::setBirthDate()
      //监听年份或月份的变化 并动态更新月份选项或日期选项
      connect(ui->yearComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onYearChanged(int)));
      connect(ui->monthComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onMonthChanged(int)));
-
+     connect(ClientSocket::instance(),&ClientSocket::usernameIsExist,this,&RegisterDialog::registerUsernameExist);
 }
 
 void RegisterDialog::onYearChanged(int)
@@ -135,18 +135,61 @@ void RegisterDialog::on_refreshCaptchButton_clicked()
 
 void RegisterDialog::on_okButton_clicked()
 {
-    //确定按钮被点击
+
+    //判断输入数据是否有空
+    if(std::find(inputDateFlag.begin(),inputDateFlag.end(),false)!=inputDateFlag.end())
+    {
+        // 创建QMessageBox
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("警告");
+            msgBox.setText("注册信息不完整!!!");
+            msgBox.setIcon(QMessageBox::Warning); // 设置警告图标
+
+            // 使用QTimer设置2秒后关闭消息框
+            QTimer::singleShot(2000, &msgBox, &QMessageBox::close); // 2000 毫秒 = 2 秒
+
+            // 显示消息框
+            msgBox.exec();
+            return;
+    }
 
     //获取输入框的内容
-    QString username= ui->nameLineEdit->text();
+    QString username= ui->nameLineEdit->text();//用户名
+    QString sex = ui->sexComboBox->currentText();//性别
 
-    QString password = ui->passwordLineEdit->text();
-    QString confirmPassword = ui->confirmPasswordLineEdit->text();
-    QString enteredCaptcha = ui->captchaLineEdit->text();
-    QString generatedCaptch = captchaGenerator::getCaptchaText();
+    QString birthDate;//出生日期
+    QString year = ui->yearComboBox->currentText();//年
+    QString month = ui->monthComboBox->currentText();//月
+    QString day = ui->dayComboBox->currentText();//日
+    birthDate =year+"-"+month+"-"+day;
+
+    QString idNumber = ui->idCardLineEdit->text();//身份证号码
+    QString address = ui->addressLineEdit->text();//地址
+    QString iphoneNumber = ui->iphoneLineEdit->text();//手机号
+    QString password = ui->passwordLineEdit->text();//密码
 
 
+    //构造JSON对象
+    QJsonObject registerInfo;
+    registerInfo["username"] =username;
+    registerInfo["sex"] = sex;
+    registerInfo["birthDate"]=birthDate;
+    registerInfo["idNumber"] =idNumber;
+    registerInfo["address"]=address;
+    registerInfo["iphoneNumber"]=iphoneNumber;
+    registerInfo["password"]=password;
+
+    //封包
+    Packet registerPacket =Protocol::createPacket(RegisterRequest,registerInfo);
+
+    //序列化
+    QByteArray dataToSend =Protocol::serializePacket(registerPacket);
+
+    //发送数据到服务端
+    ClientSocket::instance()->senData(dataToSend);
 }
+
+
 
 void RegisterDialog::onUsernameChanged(const QString &text)
 {
@@ -158,18 +201,37 @@ void RegisterDialog::onUsernameChanged(const QString &text)
         errorMessage="用户名不能为空";
     }
 
-    else if(text.length()<3 || text.length()>10)
+    else if(text.length()<2 || text.length()>10)
     {
-        errorMessage="用户名长度为3-10位字符";
+        errorMessage="用户名长度为2-10位字符";
     }
-    else if(!text.contains(QRegExp("^[\\u4e00-\\u9fa5\\w]{3,20}$")))
+    else if(!text.contains(QRegExp("^[\\u4e00-\\u9fa5\\w]{2,20}$")))
     {
         errorMessage="用户名包含非法字符";
     }
+    else
+    {
+        //判断用户名是否唯一
 
-    if(errorMessage.isEmpty())
+        //构建JSOn对象
+        QJsonObject usernameInfo;
+        usernameInfo["username"] = text;
+
+        //封包
+        Packet usernamePacket = Protocol::createPacket(UsernameIsExistRequest,usernameInfo);
+
+        //序列化
+        QByteArray dataToSend = Protocol::serializePacket(usernamePacket);
+
+        //发送到服务端
+        ClientSocket::instance()->senData(dataToSend);
+    }
+
+
+    if(!errorMessage.isEmpty())
     {
         ui->usernameErrorLabel->setText("");//清除错误消息
+        inputDateFlag.push_back(true);
     }
     else
     {
@@ -192,6 +254,7 @@ void RegisterDialog::validateIdNumber(const QString &text)
     if(errorMessage.isEmpty())
     {
         ui->idNumberErrorLabel->setText("");
+        inputDateFlag.push_back(true);
     }
     else
     {
@@ -215,6 +278,7 @@ void RegisterDialog::validatePhoneNumber(const QString &text)
     if(errorMessage.isEmpty())
     {
         ui->iphoneErrorLabel->setText("");
+        inputDateFlag.push_back(true);
     }
     else
     {
@@ -238,6 +302,7 @@ void RegisterDialog::onPasswordChanged(const QString &text)
     if(errorMessage.isEmpty())
     {
         ui->passwordErrorLabel->setText("");
+        inputDateFlag.push_back(true);
     }
     else
     {
@@ -260,6 +325,7 @@ void RegisterDialog::onConfirmPasswordChanged(const QString &text)
     if(errorMessage.isEmpty())
     {
         ui->confirmPasswordErrorLabel->setText("");
+        inputDateFlag.push_back(true);
     }
     else
     {
@@ -273,9 +339,11 @@ void RegisterDialog::onCaptchaChanged(const QString &text)
 {
     QString errorMessage;
 
-    QString captcha =captchaGenerator::getCaptchaText();
+    //获取生成的验证码  并转换为小写  达到不区分大小写效果
+    QString captcha =captchaGenerator::getCaptchaText().toLower();
 
-    if(text!=captcha)
+    //用户输入的验证码也转换为小写比较
+    if(text.toLower()!=captcha)
     {
         errorMessage ="验证码输入有误";
 
@@ -284,11 +352,40 @@ void RegisterDialog::onCaptchaChanged(const QString &text)
     if(errorMessage.isEmpty())
     {
         ui->captchaErrorLabel->setText("");
+        inputDateFlag.push_back(true);
     }
     else
     {
         ui->captchaErrorLabel->setStyleSheet("color:red;");
         ui->captchaErrorLabel->setText(errorMessage);
     }
+}
+
+void RegisterDialog::onAddressChanged(const QString &text)
+{
+    QString errorMessage;
+
+    if(text.isEmpty())
+    {
+        errorMessage="地址不能为空";
+    }
+    if(errorMessage.isEmpty())
+    {
+        ui->addressErrorLabel->setText("");
+        inputDateFlag.push_back(true);
+    }
+    else
+    {
+        ui->addressErrorLabel->setStyleSheet("color:red");
+        ui->addressErrorLabel->setText(errorMessage);
+    }
+
+}
+
+void RegisterDialog::registerUsernameExist(const QString &text)
+{
+    qDebug()<<text;
+    ui->usernameErrorLabel->setText(text);
+    inputDateFlag.push_back(false);
 }
 

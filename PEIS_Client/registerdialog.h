@@ -5,8 +5,15 @@
 #include <QDate>
 #include <QCalendarWidget>
 #include <QComboBox>
-#include "captchagenerator.h"
 #include <QDebug>
+#include <algorithm>
+#include <QMessageBox>
+#include <QTimer>
+
+
+#include "captchagenerator.h"
+#include "protocol.h"
+#include "clientsocket.h"
 
 
 namespace Ui {
@@ -36,9 +43,13 @@ private slots:
     void onPasswordChanged(const QString &text);
     void onConfirmPasswordChanged(const QString &text);
     void onCaptchaChanged(const QString &text);
+    void onAddressChanged(const QString &text);
+
+    void registerUsernameExist(const QString & text);
 
 private:
     Ui::RegisterDialog *ui;
+    QVector<bool> inputDateFlag;
 };
 
 #endif // REGISTERDIALOG_H

@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,15 +10,19 @@ CONFIG += c++11
 
 SOURCES += \
     captchagenerator.cpp \
+    clientsocket.cpp \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    protocol.cpp \
     registerdialog.cpp
 
 HEADERS += \
     captchagenerator.h \
+    clientsocket.h \
     logindialog.h \
     mainwindow.h \
+    protocol.h \
     registerdialog.h
 
 FORMS += \

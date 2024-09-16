@@ -18,13 +18,13 @@
 background-repeat:no-repeat;
 background-position:center;</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>100</x>
      <y>60</y>
      <width>701</width>
-     <height>711</height>
+     <height>728</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -387,6 +387,13 @@ background-position:center;</string>
      </layout>
     </item>
     <item>
+     <widget class="QLabel" name="addressErrorLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="iphonehLayout">
       <item>
        <widget class="QLabel" name="iphoneLabel">
@@ -533,7 +540,8 @@ background-position:center;</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset theme=":/refresh.png"/>
+           <iconset resource="../Resource/icom.qrc">
+            <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
           </property>
          </widget>
         </item>
@@ -819,6 +827,8 @@ background-position:center;</string>
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resource/icom.qrc"/>
+ </resources>
  <connections/>
 </ui>

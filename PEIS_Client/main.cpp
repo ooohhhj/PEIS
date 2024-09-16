@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     LoginDialog loginDialog;
     if(loginDialog.exec() == QDialog::Accepted)
     {
-        //登录成功 创建并显示主窗口
+        //登录成功 创建并显示主窗口        
         MainWindow w;
         w.show();
         return a.exec();
