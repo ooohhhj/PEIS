@@ -86,8 +86,9 @@ void ClientSocket::processResponse(Packet &packet)
 
         //创建一个定时器 2秒后关闭消息框
         QTimer::singleShot(2000,msgBox,&QMessageBox::accept);
-
         msgBox->show();
+
+        emit RegisterSuccessfuly();
         break;
     }
     case InternalServerError:

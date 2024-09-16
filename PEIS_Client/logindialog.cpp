@@ -1,8 +1,6 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
-#include "registerdialog.h"
-#include "clientsocket.h"
-#include<QDebug>
+
 
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
@@ -35,6 +33,22 @@ LoginDialog::LoginDialog(QWidget *parent) :
     connect(ui->signUpLabel,&QLabel::linkActivated,this,&LoginDialog::onRegisterLabelClicked);
 
 
+    //设置找回密码标签的文本为超链接
+    ui->forgotPasswordLabel->setText("<a href ='forgetPassword'>找回密码</a>");
+
+    //设置文本格式为富文本格式 支持HTML
+    ui->forgotPasswordLabel->setTextFormat(Qt::RichText);
+
+    //设置交互标志 允许点击
+    ui->forgotPasswordLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+
+    //启用链接打开 不允许外部链接 内部处理
+    ui->forgotPasswordLabel->setOpenExternalLinks(false);
+
+    //连接找回密码标签的点击事件
+    connect(ui->forgotPasswordLabel,&QLabel::linkActivated,this,&LoginDialog::onForgetPasswordLabelClicked);
+
+
 }
 
 LoginDialog::~LoginDialog()
@@ -47,8 +61,21 @@ void LoginDialog::onRegisterLabelClicked(const QString &link)
     qDebug()<<"注册";
     if(link == "register")
     {
-        RegisterDialog registerDialog(this);
-        registerDialog.exec();
+       RegisterDialog registerDialog(this);
+       registerDialog.exec() ;
     }
 
 }
+
+void LoginDialog::onForgetPasswordLabelClicked(const QString &link)
+{
+    qDebug()<<"找回密码";
+
+    if(link == "forgetPassword")
+    {
+        PasswordRecoveryDialog passwordRecoveryDialog(this);
+        passwordRecoveryDialog.exec();
+    }
+}
+
+

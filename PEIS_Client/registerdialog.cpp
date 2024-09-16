@@ -9,6 +9,7 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
     //设置提示语
     ui->nameLineEdit->setPlaceholderText("请输入用户名(2-10位，仅汉字、字母、数字)");
     ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
@@ -27,6 +28,8 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
     connect(ui->idCardLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validateIdNumber);
     connect(ui->iphoneLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::validatePhoneNumber);
     connect(ui->addressLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onAddressChanged);
+
+    connect(ClientSocket::instance(),&ClientSocket::usernameIsExist,this,&RegisterDialog::registerUsernameExist);
 }
 
 RegisterDialog::~RegisterDialog()
@@ -38,39 +41,39 @@ void RegisterDialog::setBirthDate()
 {
 
     //获取当前的年月日
-     int currentYear=QDate::currentDate().year();
-     int currentMonth =QDate::currentDate().month();
-     int currentDay = QDate::currentDate().day();
+    int currentYear=QDate::currentDate().year();
+    int currentMonth =QDate::currentDate().month();
+    int currentDay = QDate::currentDate().day();
 
-     //初始化年月日范围为当前年月份范围
-      //设置年份范围
-     for(int i=1900;i<=currentYear;++i)
-     {
-         ui->yearComboBox->addItem(QString::number(i));
-     }
+    //初始化年月日范围为当前年月份范围
+    //设置年份范围
+    for(int i=1900;i<=currentYear;++i)
+    {
+        ui->yearComboBox->addItem(QString::number(i));
+    }
 
-     //设置月份
-     for(int i=1;i<=currentMonth;i++)
-     {
-         ui->monthComboBox->addItem(QString::number(i));
-     }
+    //设置月份
+    for(int i=1;i<=currentMonth;i++)
+    {
+        ui->monthComboBox->addItem(QString::number(i));
+    }
 
-     //设置天数
-     for(int i=1;i<=currentDay;i++)
-     {
-         ui->dayComboBox->addItem(QString::number(i));
-     }
+    //设置天数
+    for(int i=1;i<=currentDay;i++)
+    {
+        ui->dayComboBox->addItem(QString::number(i));
+    }
 
-     //设置当前默认日期为今天
-     ui->yearComboBox->setCurrentText(QString::number(currentYear));
-     ui->monthComboBox->setCurrentText(QString::number(currentMonth));
-     ui->dayComboBox->setCurrentText(QString::number(currentDay));
+    //设置当前默认日期为今天
+    ui->yearComboBox->setCurrentText(QString::number(currentYear));
+    ui->monthComboBox->setCurrentText(QString::number(currentMonth));
+    ui->dayComboBox->setCurrentText(QString::number(currentDay));
 
 
-     //监听年份或月份的变化 并动态更新月份选项或日期选项
-     connect(ui->yearComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onYearChanged(int)));
-     connect(ui->monthComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onMonthChanged(int)));
-     connect(ClientSocket::instance(),&ClientSocket::usernameIsExist,this,&RegisterDialog::registerUsernameExist);
+    //监听年份或月份的变化 并动态更新月份选项或日期选项
+    connect(ui->yearComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onYearChanged(int)));
+    connect(ui->monthComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onMonthChanged(int)));
+
 }
 
 void RegisterDialog::onYearChanged(int)
@@ -140,17 +143,17 @@ void RegisterDialog::on_okButton_clicked()
     if(std::find(inputDateFlag.begin(),inputDateFlag.end(),false)!=inputDateFlag.end())
     {
         // 创建QMessageBox
-            QMessageBox msgBox;
-            msgBox.setWindowTitle("警告");
-            msgBox.setText("注册信息不完整!!!");
-            msgBox.setIcon(QMessageBox::Warning); // 设置警告图标
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("警告");
+        msgBox.setText("注册信息不完整!!!");
+        msgBox.setIcon(QMessageBox::Warning); // 设置警告图标
 
-            // 使用QTimer设置2秒后关闭消息框
-            QTimer::singleShot(2000, &msgBox, &QMessageBox::close); // 2000 毫秒 = 2 秒
+        // 使用QTimer设置2秒后关闭消息框
+        QTimer::singleShot(2000, &msgBox, &QMessageBox::close); // 2000 毫秒 = 2 秒
 
-            // 显示消息框
-            msgBox.exec();
-            return;
+        // 显示消息框
+        msgBox.exec();
+        return;
     }
 
     //获取输入框的内容
@@ -188,8 +191,6 @@ void RegisterDialog::on_okButton_clicked()
     //发送数据到服务端
     ClientSocket::instance()->senData(dataToSend);
 }
-
-
 
 void RegisterDialog::onUsernameChanged(const QString &text)
 {
@@ -387,5 +388,18 @@ void RegisterDialog::registerUsernameExist(const QString &text)
     qDebug()<<text;
     ui->usernameErrorLabel->setText(text);
     inputDateFlag.push_back(false);
+}
+
+void RegisterDialog::on_cancelButton_clicked()
+{
+    // 关闭对话框并返回拒绝状态
+    this->hide();
+
+}
+
+void RegisterDialog::OnRegisterSuccessfuly()
+{
+    // 关闭对话框并返回拒绝状态
+    this->hide();
 }
 

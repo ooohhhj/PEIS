@@ -33,6 +33,7 @@ private slots:
     void readData();
 signals:
     void usernameIsExist(const QString&message);
+    void RegisterSuccessfuly();
 private:
     QTcpSocket * tcpSocket;
 

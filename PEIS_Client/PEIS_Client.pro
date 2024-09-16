@@ -2,7 +2,7 @@ QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++11 c++14
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -14,6 +14,7 @@ SOURCES += \
     logindialog.cpp \
     main.cpp \
     mainwindow.cpp \
+    passwordrecoverydialog.cpp \
     protocol.cpp \
     registerdialog.cpp
 
@@ -22,12 +23,14 @@ HEADERS += \
     clientsocket.h \
     logindialog.h \
     mainwindow.h \
+    passwordrecoverydialog.h \
     protocol.h \
     registerdialog.h
 
 FORMS += \
     logindialog.ui \
     mainwindow.ui \
+    passwordrecoverydialog.ui \
     registerdialog.ui
 
 # Default rules for deployment.

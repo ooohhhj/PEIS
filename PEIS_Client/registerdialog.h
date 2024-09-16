@@ -25,7 +25,7 @@ class RegisterDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit RegisterDialog(QWidget *parent = nullptr);
+    explicit RegisterDialog(QWidget *parent);
     ~RegisterDialog();
 
     void setBirthDate();
@@ -46,6 +46,11 @@ private slots:
     void onAddressChanged(const QString &text);
 
     void registerUsernameExist(const QString & text);
+
+    void on_cancelButton_clicked();
+
+    void OnRegisterSuccessfuly();
+
 
 private:
     Ui::RegisterDialog *ui;
