@@ -49,8 +49,6 @@ private slots:
 
     void on_cancelButton_clicked();
 
-    void OnRegisterSuccessfuly();
-
 
 private:
     Ui::RegisterDialog *ui;

@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QTimer>
+#include <QIcon>
 
 #include "protocol.h"
 
@@ -29,11 +30,15 @@ public:
 
     void processResponse(Packet &packet);
 
+    void showMessageBox(const QString &iconPath, const QString &windowsTitle,const QString &message);
+
 private slots:
     void readData();
 signals:
     void usernameIsExist(const QString&message);
-    void RegisterSuccessfuly();
+    void RegisterSuccessfully();
+    void ForgetPasswordSuccessfully();
+    void PhoneNumberNotExist(const QString & message);
 private:
     QTcpSocket * tcpSocket;
 

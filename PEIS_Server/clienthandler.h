@@ -11,6 +11,7 @@
 #include <QJsonArray>
 
 
+#include "databasemanager.h"
 #include "protocol.h"
 #include "databasemanager.h"
 
@@ -31,6 +32,10 @@ private:
     QByteArray handleRegisterRequest(const QJsonObject& registerDate);
 
     QByteArray handleUsernameIsRequest(const QJsonObject& usernameDate);
+
+    QByteArray handlePhoneNumberIsExistRequesr(const QJsonObject& phoneNumberDate);
+
+    QByteArray handleForgetPasswordRequest(const QJsonObject & forgetPasswordDate);
 
 
 private:

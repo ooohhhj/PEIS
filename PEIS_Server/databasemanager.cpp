@@ -76,6 +76,43 @@ bool DatabaseManager::insertUser(const QString &username, const QString &gender,
     }
 }
 
+bool DatabaseManager::updateUserPassword(const QString &phoneNumber, const QString &password)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        //生成盐值
+        QString salt =generateSalt(16);
+
+        //对密码进行加盐哈希加密
+        QString hashedPassword =hashPassword(password,salt);
+        qDebug()<<"hashedPassword="<<hashedPassword;
+
+        QSqlQuery query(db);
+        QString sql ="update users set password =:password,salt =:salt where phone_number=:phone_number";
+
+        query.prepare(sql);
+        query.bindValue(":password",hashedPassword);
+        query.bindValue(":salt",salt);
+        query.bindValue(":phone_number",phoneNumber);
+
+        if(!query.exec())
+        {
+            qDebug()<<"Error inserting user:"<<query.lastError();
+            return false;
+        }
+        else
+        {
+            qDebug()<<"forgetPassword successfully";
+            return true;
+        }
+
+    }
+}
+
 QSqlQuery DatabaseManager::findUserByName(const QString &username)
 {
     if(!isConnected())
@@ -94,6 +131,40 @@ QSqlQuery DatabaseManager::findUserByName(const QString &username)
             qDebug()<<"Failed to find user:"<<query.lastError().text();
         }
         return query;
+    }
+}
+
+bool DatabaseManager::findUserByPhoneNumber(const QString &phoneNumber)
+{
+    qDebug()<<"phoneNumber="<<phoneNumber;
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("SELECT * FROM users WHERE phone_number = :phone_number");
+        query.bindValue(":phone_number",phoneNumber);
+
+        if(!query.exec())
+        {
+            qDebug()<<"Failed to find user:"<<query.lastError().text();
+            return false;// 查询失败时返回 false
+        }
+        else
+        {
+            if (query.next()) // 检查是否有结果返回
+            {
+                qDebug() << "User found!";
+                return true; // 找到了用户，返回 true
+            }
+            else
+            {
+                qDebug() << "No user found with this phone number.";
+                return false; // 没有找到用户，返回 false
+            }
+        }
     }
 }
 

@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>LoginORegister-Background.webp</file>
         <file>refresh.png</file>
+        <file>failed.png</file>
+        <file>successfully.png</file>
+        <file>warning.png</file>
     </qresource>
 </RCC>

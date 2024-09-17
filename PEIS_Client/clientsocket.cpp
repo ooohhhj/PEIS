@@ -54,22 +54,22 @@ void ClientSocket::senData(const QByteArray &data)
 void ClientSocket::processResponse(Packet &packet)
 {
     //检查解包后的消息长度是否与包的长度匹配
-    QJsonObject registerMessage = Protocol::parsePacket(packet);
+    QJsonObject MessageObject = Protocol::parsePacket(packet);
 
     // 如果要检查长度，可以对 JSON 对象序列化后进行字节长度检查
-    QByteArray jsonData = QJsonDocument(registerMessage).toJson(QJsonDocument::Compact);
+    QByteArray jsonData = QJsonDocument(MessageObject).toJson(QJsonDocument::Compact);
 
     if(packet.length!=jsonData.size())
     {
         qDebug() << "数据包长度与实际消息内容不匹配: packet.length = "
-                 << packet.length << ", message.size() = " << registerMessage.size();
+                 << packet.length << ", message.size() = " << MessageObject.size();
     }
 
     switch (packet.requestType)
     {
     case UsernameIsExistResponce:
     {
-        QString message =registerMessage["message"].toString();
+        QString message =MessageObject["message"].toString();
         emit usernameIsExist(message);
         break;
     }
@@ -78,33 +78,76 @@ void ClientSocket::processResponse(Packet &packet)
         //用户名不存在 不做处理
         break;
     }
-    case RegisterResponce:
+    case RegisterSuccessfullyResponce:
     {
-        QString message =registerMessage["message"].toString();
-        QMessageBox* msgBox = new QMessageBox(QMessageBox::Information,"注册账号",message);
-        msgBox->setStandardButtons(QMessageBox::NoButton);//不显示按钮
-
-        //创建一个定时器 2秒后关闭消息框
-        QTimer::singleShot(2000,msgBox,&QMessageBox::accept);
-        msgBox->show();
-
-        emit RegisterSuccessfuly();
+        QString message =MessageObject["message"].toString();
+        showMessageBox(":/successfully.png","注册账号",message);
+        emit RegisterSuccessfully();
+        break;
+    }
+    case RegisterFailedResponce:
+    {
+        QString message =MessageObject["message"].toString();
+        showMessageBox(":/failed.png","注册账号",message);
+        break;
+    }
+    case PhoneNumberIsExistResponce:
+    {
+        //手机号存在  不做任何处理
+        break;
+    }
+    case PhoneNumberNotExistResponce:
+    {
+        QString message =MessageObject["message"].toString();
+        emit PhoneNumberNotExist(message);
+        break;
+    }
+    case ForgetPasswordSusseccfullyResponce:
+    {
+        QString message =MessageObject["message"].toString();
+        showMessageBox(":/successfully.png","找回密码",message);
+        emit ForgetPasswordSuccessfully();
+        break;
+    }
+    case ForgetPasswordFailedResponce:
+    {
+        QString message =MessageObject["message"].toString();
+        showMessageBox(":/failed.png","找回密码",message);
         break;
     }
     case InternalServerError:
     {
-        QString message =registerMessage["message"].toString();
-        QMessageBox* msgBox = new QMessageBox(QMessageBox::Warning,"警告",message);
-        msgBox->setStandardButtons(QMessageBox::NoButton);//不显示按钮
-        //创建一个定时器 2秒后关闭消息框
-        QTimer::singleShot(2000,msgBox,&QMessageBox::accept);
-
-        msgBox->show();
+        QString message =MessageObject["message"].toString();
+        showMessageBox(":/warning.png","警告",message);
         break;
     }
     default:
         qDebug()<<"未知的请求类型:"<<packet.requestType;
     }
+}
+
+void ClientSocket::showMessageBox(const QString &iconPath, const QString &windowsTitle, const QString &message)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(windowsTitle);
+    msgBox.setText(message);
+
+    //使用图标路径加载QPixmap 并设置图标
+    QPixmap pixmap(iconPath);
+    if(!pixmap.isNull())
+    {
+        msgBox.setIconPixmap(pixmap);
+    }
+    else
+    {
+        qDebug()<<"图标加载失败"<<endl;
+    }
+
+    msgBox.setStandardButtons(QMessageBox::NoButton);//不显示按钮
+    //创建一个定时器 5秒后关闭消息框
+    QTimer::singleShot(5000,&msgBox,&QMessageBox::accept);
+
+    msgBox.exec();
 }
 
 void ClientSocket::readData()

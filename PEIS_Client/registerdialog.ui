@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>register</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../Resource/icom.qrc">
+    <normaloff>:/LoginORegister-Background.webp</normaloff>:/LoginORegister-Background.webp</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-image:url(:/LoginORegister-Background.webp);
 background-repeat:no-repeat;
@@ -94,6 +98,12 @@ background-position:center;</string>
     </item>
     <item>
      <widget class="QLabel" name="usernameErrorLabel">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
       <property name="text">
        <string/>
       </property>

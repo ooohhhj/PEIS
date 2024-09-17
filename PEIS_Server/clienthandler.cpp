@@ -14,7 +14,7 @@ void ClientHandler::run()
     QByteArray data =clientSocket->readAll();
     qDebug() << "Received data from client:" << data;
 
-    //解包
+    //反序列化
     Packet packet =Protocol::deserializePacket(data);
 
     //根据请求类型处理数据
@@ -42,6 +42,12 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case RegisterRequest:
         return handleRegisterRequest(message);
+        break;
+    case PhoneNumberIsExistRequest:
+        return handlePhoneNumberIsExistRequesr(message);
+        break;
+    case ForGetPasswordRequest:
+        return handleForgetPasswordRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -84,6 +90,7 @@ QByteArray ClientHandler::handleRegisterRequest(const QJsonObject& registerDate)
     QSqlQuery query = DatabaseManager::instance().findUserByName(username);
 
     QString responseMsg;
+    int msgType ;
     if(query.next())
     {
         //存在 不能注册 发送消息给客户端
@@ -94,13 +101,16 @@ QByteArray ClientHandler::handleRegisterRequest(const QJsonObject& registerDate)
         //不存在  将用户注册消息存储到数据库
         bool success =DatabaseManager::instance().insertUser(username,sex,birthdate,idCard,address,phone,password,3);
 
+
         if(success)
         {
-            responseMsg = StatusMessage::RegisterationSuccessful;
+            responseMsg = StatusMessage::RegisterationSuccessfully;
+            msgType = RegisterSuccessfullyResponce;
         }
         else
         {
             responseMsg = StatusMessage::RegisterationFailed;
+            msgType = RegisterFailedResponce;
         }
     }
 
@@ -109,7 +119,7 @@ QByteArray ClientHandler::handleRegisterRequest(const QJsonObject& registerDate)
     responseJson["message"] =responseMsg;
 
     //将响应信息封装成数据包
-    Packet packet =Protocol::createPacket(RegisterResponce,responseJson);
+    Packet packet =Protocol::createPacket(msgType,responseJson);
 
     //序列化数据包
     QByteArray serializedResponse =Protocol::serializePacket(packet);
@@ -159,6 +169,74 @@ QByteArray ClientHandler::handleUsernameIsRequest(const QJsonObject &usernameDat
         return serializedResponse;
     }
 
+}
+
+QByteArray ClientHandler::handlePhoneNumberIsExistRequesr(const QJsonObject &phoneNumberDate)
+{
+    //获取手机号
+    QString phoneNumber =phoneNumberDate["phoneNumber"].toString();
+
+    bool success =DatabaseManager::instance().findUserByPhoneNumber(phoneNumber);
+    int msgType;
+    QString responceMsg;
+
+    if(success)
+    {
+        responceMsg =StatusMessage::PhoneNumberExist;
+        msgType = PhoneNumberIsExistResponce;
+    }
+    else
+    {
+        responceMsg = StatusMessage::PhoneNumberNotExist;
+        msgType = PhoneNumberNotExistResponce;
+    }
+
+    QJsonObject responceJson;
+    responceJson["message"] =responceMsg;
+
+    Packet packet=Protocol::createPacket(msgType,responceJson);
+
+    QByteArray serializedResponce =Protocol::serializePacket(packet);
+
+    return serializedResponce;
+
+}
+
+QByteArray ClientHandler::handleForgetPasswordRequest(const QJsonObject &forgetPasswordDate)
+{
+        //获取数据
+       QString phoneNumber =forgetPasswordDate["phoneNumber"].toString();
+       QString password = forgetPasswordDate["password"].toString();
+
+       //更新用户
+       bool success =DatabaseManager::instance().updateUserPassword(phoneNumber,password);
+
+       QString responceMsg ;
+       int msgType;
+       if(success)
+       {
+           responceMsg =StatusMessage::ForgetPasswordSuccessfully;
+           msgType =ForgetPasswordSusseccfullyResponce;
+       }
+       else
+       {
+           responceMsg = StatusMessage::ForgetPasswordFailed;
+           msgType = ForgetPasswordFailedResponce;
+       }
+
+       //将响应信息封装成JSOn格式
+
+       QJsonObject responceJson;
+       responceJson["message"] = responceMsg;
+
+
+       //封包
+       Packet packet =Protocol::createPacket(msgType,responceJson);
+
+       //序列化
+       QByteArray serializedResponse =Protocol::serializePacket(packet);
+
+       return serializedResponse;
 }
 
 

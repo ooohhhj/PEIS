@@ -30,6 +30,8 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
     connect(ui->addressLineEdit,&QLineEdit::textChanged,this,&RegisterDialog::onAddressChanged);
 
     connect(ClientSocket::instance(),&ClientSocket::usernameIsExist,this,&RegisterDialog::registerUsernameExist);
+
+    connect(ClientSocket::instance(),&ClientSocket::RegisterSuccessfully,this,&RegisterDialog::on_cancelButton_clicked);
 }
 
 RegisterDialog::~RegisterDialog()
@@ -394,12 +396,7 @@ void RegisterDialog::on_cancelButton_clicked()
 {
     // 关闭对话框并返回拒绝状态
     this->hide();
-
 }
 
-void RegisterDialog::OnRegisterSuccessfuly()
-{
-    // 关闭对话框并返回拒绝状态
-    this->hide();
-}
+
 
