@@ -8,6 +8,10 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //移除窗口标志
+    // 在构造函数中添加以下代码
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::WindowCloseButtonHint);
+
 
     //连接服务端
     ClientSocket::instance()->connectToServer("127.0.0.1",9600);

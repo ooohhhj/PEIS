@@ -7,6 +7,11 @@ PasswordRecoveryDialog::PasswordRecoveryDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+    //移除窗口标志
+    // 在构造函数中添加以下代码
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::WindowCloseButtonHint);
+
     //设置提示语
     ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
 

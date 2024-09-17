@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>register</string>
+   <string>注册</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../Resource/icom.qrc">
-    <normaloff>:/LoginORegister-Background.webp</normaloff>:/LoginORegister-Background.webp</iconset>
+    <normaloff>:/register.png</normaloff>:/register.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-image:url(:/LoginORegister-Background.webp);

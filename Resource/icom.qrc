@@ -5,5 +5,8 @@
         <file>failed.png</file>
         <file>successfully.png</file>
         <file>warning.png</file>
+        <file>forgetPassword.png</file>
+        <file>login.png</file>
+        <file>register.png</file>
     </qresource>
 </RCC>

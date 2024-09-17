@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LoginPEIS</string>
+   <string>登录</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resource/icom.qrc">
+    <normaloff>:/login.png</normaloff>:/login.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">background-image:url(:/LoginORegister-Background.webp);
@@ -327,6 +331,8 @@ background-position:center;</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resource/icom.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -9,6 +9,10 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //移除窗口标志
+    // 在构造函数中添加以下代码
+    this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::WindowCloseButtonHint);
+
 
     //设置提示语
     ui->nameLineEdit->setPlaceholderText("请输入用户名(2-10位，仅汉字、字母、数字)");
