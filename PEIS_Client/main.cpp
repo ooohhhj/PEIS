@@ -1,22 +1,51 @@
-#include "mainwindow.h"
+#include "usermainwindow.h"
 #include "logindialog.h"
 #include <QApplication>
+#include <QString>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
     LoginDialog loginDialog;
+
     if(loginDialog.exec() == QDialog::Accepted)
     {
-        //登录成功 创建并显示主窗口        
-        MainWindow w;
-        w.show();
+        int userRole =loginDialog.getUserRole();
+
+        switch (userRole)
+        {
+        case 1:
+        {
+            //            AdminMainWindow adminWindow;
+            //            adminWindow.show();
+        }
+            break;
+        case 2:
+        {
+            //            StaffMainWindow staffWindow;
+            //            staffWindow.show();
+        }
+            break;
+        case 3:
+        {
+
+            qDebug() << "User role: 3";
+            UserMainWindow *userWindow = new UserMainWindow();
+            userWindow->show();
+            break;
+        }
+        default:
+            QMessageBox::warning(nullptr, "Error", "Unknown user role.");
+            return 0;
+            break;
+        }
+
+
         return a.exec();
     }
     else
     {
-
         //登录失败 或用户关闭登录对话框，退出应用
         return 0;
     }

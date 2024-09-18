@@ -33,9 +33,15 @@ private:
 
     QByteArray handleUsernameIsRequest(const QJsonObject& usernameDate);
 
-    QByteArray handlePhoneNumberIsExistRequesr(const QJsonObject& phoneNumberDate);
+    QByteArray handlePhoneNumberIsExistRequest(const QJsonObject& phoneNumberDate);
 
     QByteArray handleForgetPasswordRequest(const QJsonObject & forgetPasswordDate);
+
+    QByteArray handlePhoneAndPasswordIsExistRequest(const QJsonObject& phoneAndPasswordDate);
+
+    QByteArray handleUsernameAndPasswordIsExistRequest(const QJsonObject& usernameAndPasswordDate);
+
+
 
 
 private:

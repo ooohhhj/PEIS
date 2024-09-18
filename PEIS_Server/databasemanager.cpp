@@ -136,7 +136,6 @@ QSqlQuery DatabaseManager::findUserByName(const QString &username)
 
 bool DatabaseManager::findUserByPhoneNumber(const QString &phoneNumber)
 {
-    qDebug()<<"phoneNumber="<<phoneNumber;
     if(!isConnected())
     {
         qDebug()<<"Failed to connect to database:"<<db.lastError().text();
@@ -167,6 +166,230 @@ bool DatabaseManager::findUserByPhoneNumber(const QString &phoneNumber)
         }
     }
 }
+
+bool DatabaseManager::findUserByPhoneAndPassword(const QString &phoneNumber, const QString &password)
+{
+    //获取盐值
+    QString salt = getSaltByPhoneNumber(phoneNumber);
+
+    if(salt.isEmpty())
+    {
+        return false;
+    }
+    QString hashedPassword =hashPassword(password,salt);
+
+    if(!isConnected()|| !db.isOpen() || !db.isValid())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return  false;
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("select * from users where phone_number =:phone_number and password =:password");
+        query.bindValue(":phone_number",phoneNumber);
+        query.bindValue(":password",hashedPassword);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                //手机号码与密码匹配
+                return true;
+            }
+            else
+            {
+                //查无此人
+                return false;
+            }
+        }
+        else
+        {
+            qDebug() << "Query failed:" << query.lastError().text();
+            return false;  // 查询失败时返回空字符串
+        }
+    }
+}
+
+bool DatabaseManager::findUserByUsernameAndPassword(const QString &username, const QString &password)
+{
+
+    //获取盐值
+    QString salt = getSaltByUsername(username);
+
+    if(salt.isEmpty())
+    {
+        return false;
+    }
+    QString hashedPassword =hashPassword(password,salt);
+
+    if(!isConnected()|| !db.isOpen() || !db.isValid())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return  false;
+    }
+    else
+    {
+        QSqlQuery query(db);
+
+        query.prepare("select * from users where username =:username and password =:password");
+        query.bindValue(":username",username);
+        query.bindValue(":password",hashedPassword);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                //用户名与密码匹配
+                return true;
+            }
+            else
+            {
+                //查无此人
+                return false;
+            }
+        }
+        else
+        {
+            qDebug()<<"ijd";
+            qDebug() << "Query failed:" << query.lastError().text();
+            return false;  // 查询失败时返回空字符串
+        }
+    }
+}
+
+QString DatabaseManager::getSaltByUsername(const QString &username)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("select salt from users where username =:username");
+        query.bindValue(":username",username);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                return query.value(0).toString();//返回盐值
+            }
+            else
+            {
+                qDebug()<< "No matching user found.";
+                return QString();  // 没有找到匹配用户时返回空字符串
+            }
+        }
+        else
+        {
+            qDebug() << "Query failed:" << query.lastError().text();
+            return QString();  // 查询失败时返回空字符串
+        }
+    }
+}
+
+QString DatabaseManager::getSaltByPhoneNumber(const QString &phoneNumber)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("select salt from users where phone_number =:phone_number");
+        query.bindValue(":phone_number",phoneNumber);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                return query.value(0).toString();
+            }
+            else
+            {
+                qDebug()<< "No matching user found.";
+                return QString();  // 没有找到匹配用户时返回空字符串
+            }
+        }
+        else
+        {
+
+            qDebug() << "Query failed:" << query.lastError().text();
+            return QString();  // 查询失败时返回空字符串
+        }
+    }
+}
+
+int DatabaseManager::getRoleIdByPhoneNumber(const QString &phoneNumber)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("select role_id from users where phone_number = :phone_number");
+        query.bindValue(":phone_number",phoneNumber);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                return query.value(0).toInt();
+            }
+            else
+            {
+                qDebug()<< "No matching user found.";
+                return -1;  // 没有找到匹配用户时返回空字符串
+            }
+        }
+        else
+        {
+
+            qDebug() << "Query failed:" << query.lastError().text();
+            return -1;  // 查询失败时返回空字符串
+        }
+    }
+}
+
+int DatabaseManager::getRoleIdByUsername(const QString &username)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+    }
+    else
+    {
+        QSqlQuery query(db);
+        query.prepare("select role_id from users where username =:username");
+        query.bindValue(":username",username);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                return query.value(0).toInt();
+            }
+            else
+            {
+                qDebug()<< "No matching user found.";
+                return -1;  // 没有找到匹配用户时返回空字符串
+            }
+        }
+        else
+        {
+            qDebug()<<"查询失败";
+            qDebug() << "Query failed:" << query.lastError().text();
+            return -1;  // 查询失败时返回空字符串
+        }
+    }
+}
+
+
 
 bool DatabaseManager::isConnected() const
 {

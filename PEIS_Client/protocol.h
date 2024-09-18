@@ -25,6 +25,8 @@ enum RequestType
     RegisterRequest ,                           //注册请求
     PhoneNumberIsExistRequest,                  //手机号是否存在请求
     ForGetPasswordRequest,                      //找回密码请求
+    PhoneAndPasswordIsExistRequest,             //手机号码与密码是否匹配
+    UsernameAndPasswordIsExistRequest,          //用户名与密码是否匹配
 
 };
 
@@ -42,26 +44,39 @@ enum ResponseType
     ForgetPasswordSusseccfullyResponce,         //找回密码成功
     ForgetPasswordFailedResponce,               //找回密码失败
 
+    PhoneAndPasswordSuccessfullyResponce,       //手机号码与密码匹配成功
+    PhoneAndPasswordFailedResponce,             //手机号码与密码不匹配
+
+    UsernameAndPasswordSuccessfullyResponce,    //用户名与密码匹配成功
+    USernameAndPasswordFailedResponce,          //用户名与密码不匹配
+
     InternalServerError,                        //未知请求
 
 };
 
-
 namespace StatusMessage
 {
-    const QString userAlreadyExists = "用户名已存在";
-    const QString userNotExists = "用户名不存在";
 
-    const QString RegisterationFailed ="注册失败";
-    const QString RegisterationSuccessfully ="注册成功";
+  const QString userAlreadyExists = "用户名已存在";
+  const QString userNotExists = "用户名不存在";
 
-    const QString PhoneNumberExist ="手机号存在";
-    const QString PhoneNumberNotExist ="手机号不存在";
+  const QString RegisterationFailed ="注册失败";
+  const QString RegisterationSuccessfully ="注册成功";
 
-    const QString ForgetPasswordSuccessfully ="找回密码成功";
-    const QString ForgetPasswordFailed ="找回密码失败";
+  const QString PhoneNumberExist ="手机号存在";
+  const QString PhoneNumberNotExist ="手机号不存在";
+
+  const QString ForgetPasswordSuccessfully ="找回密码成功";
+  const QString ForgetPasswordFailed ="找回密码失败";
+
+  const QString PhoneAndPasswordSuccessfully ="手机号码与密码匹配";
+  const QString PhoneAndPasswordFailed ="手机号码或密码输入有误";
+
+  const QString UsernameAndPasswordSuccessfully ="用户名与密码匹配";
+  const QString UsernameAndPasswordFailed ="用户名或密码输入有误";
+
+  const QString InternalServerError = "内部错误";
 };
-
 
 class Protocol:public QObject
 {

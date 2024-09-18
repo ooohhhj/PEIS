@@ -15,7 +15,7 @@ RegisterDialog::RegisterDialog(QWidget *parent) :
 
 
     //设置提示语
-    ui->nameLineEdit->setPlaceholderText("请输入用户名(2-10位，仅汉字、字母、数字)");
+    ui->nameLineEdit->setPlaceholderText("请输入用户名(2-10位，仅汉字、字母)");
     ui->passwordLineEdit->setPlaceholderText("密码(8-16个字符，仅大小写字母、数字)");
 
     //设置随机验证码
@@ -212,9 +212,9 @@ void RegisterDialog::onUsernameChanged(const QString &text)
     {
         errorMessage="用户名长度为2-10位字符";
     }
-    else if(!text.contains(QRegExp("^[\\u4e00-\\u9fa5\\w]{2,20}$")))
+    else if(!text.contains(QRegExp("^[\u4e00-\u9fa5a-zA-Z]{2,10}$")))
     {
-        errorMessage="用户名包含非法字符";
+        errorMessage = "用户名仅允许汉字、字母";
     }
     else
     {
@@ -234,8 +234,7 @@ void RegisterDialog::onUsernameChanged(const QString &text)
         ClientSocket::instance()->senData(dataToSend);
     }
 
-
-    if(!errorMessage.isEmpty())
+    if(errorMessage.isEmpty())
     {
         ui->usernameErrorLabel->setText("");//清除错误消息
         inputDateFlag.push_back(true);

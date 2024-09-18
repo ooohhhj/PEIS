@@ -25,6 +25,7 @@ void ClientHandler::run()
 
 QByteArray ClientHandler::processRequest(Packet &packet)
 {
+
     //检查解包后的消息长度是否与包的长度匹配
     QJsonObject message = Protocol::parsePacket(packet);
     // 如果要检查长度，可以对 JSON 对象序列化后进行字节长度检查
@@ -35,6 +36,7 @@ QByteArray ClientHandler::processRequest(Packet &packet)
                  << packet.length << ", message.size() = " << message.size();
         return QByteArray();  // 返回空的 QByteArray 代表错误或无效结果
     }
+     qDebug()<<"we";
     switch (packet.requestType)
     {
     case UsernameIsExistRequest:
@@ -44,14 +46,19 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         return handleRegisterRequest(message);
         break;
     case PhoneNumberIsExistRequest:
-        return handlePhoneNumberIsExistRequesr(message);
+        return handlePhoneNumberIsExistRequest(message);
         break;
     case ForGetPasswordRequest:
         return handleForgetPasswordRequest(message);
         break;
+    case PhoneAndPasswordIsExistRequest:
+        return handlePhoneAndPasswordIsExistRequest(message);
+        break;
+    case UsernameAndPasswordIsExistRequest:
+        return handleUsernameAndPasswordIsExistRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
-
         QJsonObject responseJson;
         responseJson["message"] = message;
 
@@ -171,7 +178,7 @@ QByteArray ClientHandler::handleUsernameIsRequest(const QJsonObject &usernameDat
 
 }
 
-QByteArray ClientHandler::handlePhoneNumberIsExistRequesr(const QJsonObject &phoneNumberDate)
+QByteArray ClientHandler::handlePhoneNumberIsExistRequest(const QJsonObject &phoneNumberDate)
 {
     //获取手机号
     QString phoneNumber =phoneNumberDate["phoneNumber"].toString();
@@ -204,39 +211,141 @@ QByteArray ClientHandler::handlePhoneNumberIsExistRequesr(const QJsonObject &pho
 
 QByteArray ClientHandler::handleForgetPasswordRequest(const QJsonObject &forgetPasswordDate)
 {
-        //获取数据
-       QString phoneNumber =forgetPasswordDate["phoneNumber"].toString();
-       QString password = forgetPasswordDate["password"].toString();
+    //获取数据
+    QString phoneNumber =forgetPasswordDate["phoneNumber"].toString();
+    QString password = forgetPasswordDate["password"].toString();
 
-       //更新用户
-       bool success =DatabaseManager::instance().updateUserPassword(phoneNumber,password);
+    //更新用户
+    bool success =DatabaseManager::instance().updateUserPassword(phoneNumber,password);
 
-       QString responceMsg ;
-       int msgType;
-       if(success)
-       {
-           responceMsg =StatusMessage::ForgetPasswordSuccessfully;
-           msgType =ForgetPasswordSusseccfullyResponce;
-       }
-       else
-       {
-           responceMsg = StatusMessage::ForgetPasswordFailed;
-           msgType = ForgetPasswordFailedResponce;
-       }
+    QString responceMsg ;
+    int msgType;
+    if(success)
+    {
+        responceMsg =StatusMessage::ForgetPasswordSuccessfully;
+        msgType =ForgetPasswordSusseccfullyResponce;
+    }
+    else
+    {
+        responceMsg = StatusMessage::ForgetPasswordFailed;
+        msgType = ForgetPasswordFailedResponce;
+    }
 
-       //将响应信息封装成JSOn格式
+    //将响应信息封装成JSOn格式
 
-       QJsonObject responceJson;
-       responceJson["message"] = responceMsg;
+    QJsonObject responceJson;
+    responceJson["message"] = responceMsg;
 
 
-       //封包
-       Packet packet =Protocol::createPacket(msgType,responceJson);
+    //封包
+    Packet packet =Protocol::createPacket(msgType,responceJson);
 
-       //序列化
-       QByteArray serializedResponse =Protocol::serializePacket(packet);
+    //序列化
+    QByteArray serializedResponse =Protocol::serializePacket(packet);
 
-       return serializedResponse;
+    return serializedResponse;
+}
+
+QByteArray ClientHandler::handlePhoneAndPasswordIsExistRequest(const QJsonObject &phoneAndPasswordDate)
+{
+    //获取数据
+    QString phoneNumber =phoneAndPasswordDate["phoneNumber"].toString();
+    QString password =phoneAndPasswordDate["password"].toString();
+
+    qDebug()<<"phoneNumber"<<phoneNumber;
+    qDebug()<<"password"<<password;
+    bool success =DatabaseManager::instance().findUserByPhoneAndPassword(phoneNumber,password);
+
+    QString responceMsg;
+    QJsonObject responceJson;
+    int msgType;
+    if(success)
+    {
+        //手机号码与密码匹配
+        //获取角色
+        int roleId = DatabaseManager::instance().getRoleIdByPhoneNumber(phoneNumber);
+        if(roleId!=-1)
+        {
+            msgType =PhoneAndPasswordSuccessfullyResponce;
+            responceJson["roleId"] = roleId;
+            qDebug()<<"roleId="<<roleId;
+            responceMsg =StatusMessage::PhoneAndPasswordSuccessfully;
+        }
+        else
+        {
+            //查询失败
+            msgType =InternalServerError;
+            responceMsg =StatusMessage::InternalServerError;
+        }
+    }
+    else
+    {
+        //不匹配
+        msgType =USernameAndPasswordFailedResponce;
+        responceMsg =StatusMessage::PhoneAndPasswordFailed;
+    }
+
+
+    responceJson["message"] =responceMsg;
+    //封包
+    Packet packet =Protocol::createPacket(msgType,responceJson);
+
+    //序列化
+    QByteArray serializedResponse =Protocol::serializePacket(packet);
+
+    return serializedResponse;
+
+}
+
+QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObject &usernameAndPasswordDate)
+{
+    //获取数据
+    QString username =usernameAndPasswordDate["username"].toString();
+    QString password =usernameAndPasswordDate["password"].toString();
+
+    qDebug()<<"username"<<username;
+    qDebug()<<"password"<<password;
+    bool success =DatabaseManager::instance().findUserByUsernameAndPassword(username,password);
+
+    QString responceMsg;
+    QJsonObject responceJson;
+    int msgType;
+    if(success)
+    {
+        //手机号码与密码匹配
+        //获取角色
+        int roleId = DatabaseManager::instance().getRoleIdByUsername(username);
+        if(roleId!=-1)
+        {
+            msgType =UsernameAndPasswordSuccessfullyResponce;
+            responceJson["roleId"] = roleId;
+            qDebug()<<"roleId="<<roleId;
+            responceMsg =StatusMessage::UsernameAndPasswordSuccessfully;
+        }
+        else
+        {
+            //查询失败
+            msgType =InternalServerError;
+            responceMsg =StatusMessage::InternalServerError;
+        }
+    }
+    else
+    {
+        //不匹配
+        msgType =USernameAndPasswordFailedResponce;
+        responceMsg =StatusMessage::UsernameAndPasswordFailed;
+    }
+
+
+    responceJson["message"] =responceMsg;
+    //封包
+    Packet packet =Protocol::createPacket(msgType,responceJson);
+
+    //序列化
+    QByteArray serializedResponse =Protocol::serializePacket(packet);
+
+    return serializedResponse;
+
 }
 
 

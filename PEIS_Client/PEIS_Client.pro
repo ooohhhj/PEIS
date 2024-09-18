@@ -13,25 +13,25 @@ SOURCES += \
     clientsocket.cpp \
     logindialog.cpp \
     main.cpp \
-    mainwindow.cpp \
     passwordrecoverydialog.cpp \
     protocol.cpp \
-    registerdialog.cpp
+    registerdialog.cpp \
+    usermainwindow.cpp
 
 HEADERS += \
     captchagenerator.h \
     clientsocket.h \
     logindialog.h \
-    mainwindow.h \
     passwordrecoverydialog.h \
     protocol.h \
-    registerdialog.h
+    registerdialog.h \
+    usermainwindow.h
 
 FORMS += \
     logindialog.ui \
-    mainwindow.ui \
     passwordrecoverydialog.ui \
-    registerdialog.ui
+    registerdialog.ui \
+    usermainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

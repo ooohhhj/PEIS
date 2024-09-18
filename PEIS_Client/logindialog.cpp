@@ -8,6 +8,9 @@ LoginDialog::LoginDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //初始化roleID
+    this->m_userRole = -1;
+
     //移除窗口标志
     // 在构造函数中添加以下代码
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::WindowCloseButtonHint);
@@ -20,7 +23,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     this->setFixedSize(500,400);
 
     //设置用户名与密码字段的提示文本
-    ui->phoneNumberLineEdit->setPlaceholderText("手机号/用户名");
+    ui->phoneNumberOrUsernameLineEdit->setPlaceholderText("手机号码/用户名");
     ui->passWordLineEdit->setPlaceholderText("请输入密码");
 
     //设置注册标签的文本为超链接格式
@@ -53,6 +56,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
     connect(ui->forgotPasswordLabel,&QLabel::linkActivated,this,&LoginDialog::onForgetPasswordLabelClicked);
 
 
+    connect(ClientSocket::instance(),&ClientSocket::Logined,this,&LoginDialog::onLogined);
+
 }
 
 LoginDialog::~LoginDialog()
@@ -60,13 +65,18 @@ LoginDialog::~LoginDialog()
     delete ui;
 }
 
+int LoginDialog::getUserRole() const
+{
+    return this->m_userRole;
+}
+
 void LoginDialog::onRegisterLabelClicked(const QString &link)
 {
     qDebug()<<"注册";
     if(link == "register")
     {
-       RegisterDialog registerDialog(this);
-       registerDialog.exec() ;
+        RegisterDialog registerDialog(this);
+        registerDialog.exec() ;
     }
 
 }
@@ -82,4 +92,59 @@ void LoginDialog::onForgetPasswordLabelClicked(const QString &link)
     }
 }
 
+
+
+void LoginDialog::on_loginButton_clicked()
+{
+    //获取输入框内容
+    QString phoneOrUsername =ui->phoneNumberOrUsernameLineEdit->text();
+    QString password =ui->passWordLineEdit->text();
+
+    if(phoneOrUsername.isEmpty() || password.isEmpty())
+    {
+        ClientSocket::instance()->showMessageBox(":/warning.png","登录","手机号码/用户名 或 密码 为空");
+        return;
+    }
+    else
+    {
+        int msgType;
+        QJsonObject requestJson;
+
+        //判断输入的是手机号还是用户
+        QRegExp phoneRegex("^\\d{11}$");
+        if(phoneRegex.exactMatch(phoneOrUsername))
+        {
+            qDebug() << "输入的是手机号";
+            msgType =PhoneAndPasswordIsExistRequest;
+            requestJson["phoneNumber"] =phoneOrUsername;
+        }
+        else if(phoneOrUsername.contains(QRegExp("^[\u4e00-\u9fa5a-zA-Z]{2,10}$")))
+        {
+            qDebug() << "输入的是用户名";
+            msgType=UsernameAndPasswordIsExistRequest;
+            requestJson["username"] =phoneOrUsername;
+        }
+        else
+        {
+            ClientSocket::instance()->showMessageBox(":/warning.png", "登录", "无效的手机号码/用户名格式");
+            return; // 输入格式无效，提前返回
+        }
+        requestJson["password"]=password;
+
+        //封包
+        Packet packet = Protocol::createPacket(msgType,requestJson);
+
+        //序列化
+        QByteArray dateToSend =Protocol::serializePacket(packet);
+
+        ClientSocket::instance()->senData(dateToSend);
+
+    }
+}
+
+void LoginDialog::onLogined(int &roleId)
+{
+    this->m_userRole =roleId;
+    this->accept();
+}
 

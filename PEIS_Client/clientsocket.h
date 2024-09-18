@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QIcon>
+#include <QGridLayout>
+#include <QLabel>
 
 #include "protocol.h"
 
@@ -32,6 +34,8 @@ public:
 
     void showMessageBox(const QString &iconPath, const QString &windowsTitle,const QString &message);
 
+
+
 private slots:
     void readData();
 signals:
@@ -39,6 +43,8 @@ signals:
     void RegisterSuccessfully();
     void ForgetPasswordSuccessfully();
     void PhoneNumberNotExist(const QString & message);
+
+    void Logined(int &roleId);
 private:
     QTcpSocket * tcpSocket;
 

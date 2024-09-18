@@ -36,6 +36,18 @@ public:
     //判断手机号是否存在
     bool findUserByPhoneNumber(const QString &phoneNumber);
 
+    bool findUserByPhoneAndPassword(const QString &phoneNumber,const QString &password);
+
+    bool findUserByUsernameAndPassword(const QString &username,const QString &password);
+
+    QString getSaltByUsername(const QString &username);
+
+    QString getSaltByPhoneNumber(const QString &phoneNumber);
+
+    int getRoleIdByPhoneNumber(const QString &phoneNumber);
+
+    int getRoleIdByUsername(const QString &username);
+
     //检查数据库连接状态
     bool isConnected() const;
 

@@ -65,11 +65,12 @@ void ClientSocket::processResponse(Packet &packet)
                  << packet.length << ", message.size() = " << MessageObject.size();
     }
 
+    QString message =MessageObject["message"].toString();
+
     switch (packet.requestType)
     {
     case UsernameIsExistResponce:
     {
-        QString message =MessageObject["message"].toString();
         emit usernameIsExist(message);
         break;
     }
@@ -80,14 +81,12 @@ void ClientSocket::processResponse(Packet &packet)
     }
     case RegisterSuccessfullyResponce:
     {
-        QString message =MessageObject["message"].toString();
         showMessageBox(":/successfully.png","注册账号",message);
         emit RegisterSuccessfully();
         break;
     }
     case RegisterFailedResponce:
     {
-        QString message =MessageObject["message"].toString();
         showMessageBox(":/failed.png","注册账号",message);
         break;
     }
@@ -98,54 +97,87 @@ void ClientSocket::processResponse(Packet &packet)
     }
     case PhoneNumberNotExistResponce:
     {
-        QString message =MessageObject["message"].toString();
         emit PhoneNumberNotExist(message);
         break;
     }
     case ForgetPasswordSusseccfullyResponce:
     {
-        QString message =MessageObject["message"].toString();
         showMessageBox(":/successfully.png","找回密码",message);
         emit ForgetPasswordSuccessfully();
         break;
     }
     case ForgetPasswordFailedResponce:
     {
-        QString message =MessageObject["message"].toString();
         showMessageBox(":/failed.png","找回密码",message);
+        break;
+    }
+    case PhoneAndPasswordSuccessfullyResponce:
+    {
+        int roleId =MessageObject["roleId"].toInt();
+        emit Logined(roleId);
+        break;
+    }
+    case PhoneAndPasswordFailedResponce:
+    {
+        showMessageBox(":/failed.png","登录",message);
+        break;
+    }
+    case UsernameAndPasswordSuccessfullyResponce:
+    {
+        int roleId =MessageObject["roleId"].toInt();
+        emit Logined(roleId);
+        break;
+    }
+    case USernameAndPasswordFailedResponce:
+    {
+        showMessageBox(":/failed.png","登录",message);
         break;
     }
     case InternalServerError:
     {
-        QString message =MessageObject["message"].toString();
         showMessageBox(":/warning.png","警告",message);
         break;
     }
     default:
-        qDebug()<<"未知的请求类型:"<<packet.requestType;
+        showMessageBox(":/warning.png","警告","未知的请求类型");
+        break;
     }
 }
 
 void ClientSocket::showMessageBox(const QString &iconPath, const QString &windowsTitle, const QString &message)
 {
+
     QMessageBox msgBox;
     msgBox.setWindowTitle(windowsTitle);
     msgBox.setText(message);
+
+    // 设置字体
+    QFont font;
+    font.setPointSize(14);  // 设置字体大小，例如 14pt
+    font.setFamily("Microsoft YaHei");  // 设置支持中文的字体类型
+    msgBox.setFont(font);
+
 
     //使用图标路径加载QPixmap 并设置图标
     QPixmap pixmap(iconPath);
     if(!pixmap.isNull())
     {
-        msgBox.setIconPixmap(pixmap);
+        // 将图标缩放到 50x50
+        QPixmap scaledPixmap = pixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        msgBox.setIconPixmap(scaledPixmap);
     }
     else
     {
         qDebug()<<"图标加载失败"<<endl;
     }
 
-    msgBox.setStandardButtons(QMessageBox::NoButton);//不显示按钮
+    // // 设置文本颜色为黑色
+    msgBox.setStyleSheet("QLabel { color: black;  }"  );
     //创建一个定时器 5秒后关闭消息框
-    QTimer::singleShot(5000,&msgBox,&QMessageBox::accept);
+    QTimer::singleShot(2000,&msgBox,&QMessageBox::accept);
+
+    msgBox.setStandardButtons(QMessageBox::NoButton);
+
 
     msgBox.exec();
 }
