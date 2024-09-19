@@ -48,6 +48,9 @@ public:
 
     int getRoleIdByUsername(const QString &username);
 
+    QString getUsernameByPhoneNumber(const QString &phoneNumber);
+
+
     //检查数据库连接状态
     bool isConnected() const;
 

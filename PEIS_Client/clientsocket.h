@@ -44,7 +44,7 @@ signals:
     void ForgetPasswordSuccessfully();
     void PhoneNumberNotExist(const QString & message);
 
-    void Logined(int &roleId);
+    void Logined(const int &roleId,const QString &username);
 private:
     QTcpSocket * tcpSocket;
 

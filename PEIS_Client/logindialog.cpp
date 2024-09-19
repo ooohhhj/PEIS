@@ -11,6 +11,8 @@ LoginDialog::LoginDialog(QWidget *parent) :
     //初始化roleID
     this->m_userRole = -1;
 
+    this->m_username ="";
+
     //移除窗口标志
     // 在构造函数中添加以下代码
     this->setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint | Qt::WindowCloseButtonHint);
@@ -68,6 +70,11 @@ LoginDialog::~LoginDialog()
 int LoginDialog::getUserRole() const
 {
     return this->m_userRole;
+}
+
+QString LoginDialog::getUsername() const
+{
+    return this->m_username;
 }
 
 void LoginDialog::onRegisterLabelClicked(const QString &link)
@@ -142,9 +149,14 @@ void LoginDialog::on_loginButton_clicked()
     }
 }
 
-void LoginDialog::onLogined(int &roleId)
+void LoginDialog::onLogined(const int &roleId, const QString &username)
 {
     this->m_userRole =roleId;
+    this->m_username = username;
+    qDebug()<<"roleId="<<roleId;
+    qDebug()<<"username="<<username;
     this->accept();
 }
+
+
 

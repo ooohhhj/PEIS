@@ -114,7 +114,8 @@ void ClientSocket::processResponse(Packet &packet)
     case PhoneAndPasswordSuccessfullyResponce:
     {
         int roleId =MessageObject["roleId"].toInt();
-        emit Logined(roleId);
+        QString username =MessageObject["username"].toString();
+        emit Logined(roleId,username);
         break;
     }
     case PhoneAndPasswordFailedResponce:
@@ -125,7 +126,8 @@ void ClientSocket::processResponse(Packet &packet)
     case UsernameAndPasswordSuccessfullyResponce:
     {
         int roleId =MessageObject["roleId"].toInt();
-        emit Logined(roleId);
+        QString username =MessageObject["username"].toString();
+        emit Logined(roleId,username);
         break;
     }
     case USernameAndPasswordFailedResponce:

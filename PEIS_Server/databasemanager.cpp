@@ -382,9 +382,43 @@ int DatabaseManager::getRoleIdByUsername(const QString &username)
         }
         else
         {
-            qDebug()<<"查询失败";
             qDebug() << "Query failed:" << query.lastError().text();
             return -1;  // 查询失败时返回空字符串
+        }
+    }
+}
+
+QString DatabaseManager::getUsernameByPhoneNumber(const QString &phoneNumber)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return QString();
+    }
+    else
+    {
+        QSqlQuery query(db);
+
+        query.prepare("select username from users where phone_number =:phone_number");
+        query.bindValue(":phone_number",phoneNumber);
+
+        if(query.exec())
+        {
+            if(query.next())
+            {
+                return query.value(0).toString();
+            }
+            else
+            {
+                qDebug()<< "No matching user found.";
+                return QString();  //
+            }
+        }
+        else
+        {
+            qDebug()<<"查询失败";
+            qDebug() << "Query failed:" << query.lastError().text();
+            return QString();   // 查询失败时返回空字符串
         }
     }
 }

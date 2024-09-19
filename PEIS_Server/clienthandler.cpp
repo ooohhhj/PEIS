@@ -264,11 +264,14 @@ QByteArray ClientHandler::handlePhoneAndPasswordIsExistRequest(const QJsonObject
         //手机号码与密码匹配
         //获取角色
         int roleId = DatabaseManager::instance().getRoleIdByPhoneNumber(phoneNumber);
-        if(roleId!=-1)
+        QString username =DatabaseManager::instance().getUsernameByPhoneNumber(phoneNumber);
+        if(roleId!=-1 && username!=nullptr)
         {
             msgType =PhoneAndPasswordSuccessfullyResponce;
             responceJson["roleId"] = roleId;
+            responceJson["username"]=username;
             qDebug()<<"roleId="<<roleId;
+            qDebug()<<"username="<<username;
             responceMsg =StatusMessage::PhoneAndPasswordSuccessfully;
         }
         else
@@ -319,7 +322,9 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
         {
             msgType =UsernameAndPasswordSuccessfullyResponce;
             responceJson["roleId"] = roleId;
+            responceJson["username"]=username;
             qDebug()<<"roleId="<<roleId;
+            qDebug()<<"username="<<username;
             responceMsg =StatusMessage::UsernameAndPasswordSuccessfully;
         }
         else

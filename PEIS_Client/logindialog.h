@@ -21,17 +21,19 @@ public:
     ~LoginDialog();
 
     int getUserRole()const;
+    QString getUsername()const;
 
 private slots:
     void onRegisterLabelClicked(const QString &link);               //处理注册标签点击事件
     void onForgetPasswordLabelClicked(const QString & link);        //处理找回密码标签点击事件
     void on_loginButton_clicked();
 
-    void onLogined(int &roleId);
+    void onLogined(const int &roleId,const QString & username);
 
 private:
     Ui::LoginDialog *ui;
     int m_userRole;
+    QString m_username;
 
 };
 

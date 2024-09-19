@@ -8,5 +8,13 @@
         <file>forgetPassword.png</file>
         <file>login.png</file>
         <file>register.png</file>
+        <file>defaultAvatar.png</file>
+        <file>notice-No.png</file>
+        <file>notice-Yes.png</file>
+        <file>exit.png</file>
+        <file>checkupReport.png</file>
+        <file>healthCheckRecord.png</file>
+        <file>personalInfo.png</file>
+        <file>scheduleCheckup.png</file>
     </qresource>
 </RCC>

@@ -12,6 +12,8 @@ int main(int argc, char *argv[])
     if(loginDialog.exec() == QDialog::Accepted)
     {
         int userRole =loginDialog.getUserRole();
+        QString username =loginDialog.getUsername();
+        qDebug()<<"username="<<username;
 
         switch (userRole)
         {
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
         {
 
             qDebug() << "User role: 3";
-            UserMainWindow *userWindow = new UserMainWindow();
+            UserMainWindow *userWindow = new UserMainWindow(nullptr,username);
             userWindow->show();
             break;
         }
