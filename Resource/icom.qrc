@@ -16,5 +16,8 @@
         <file>healthCheckRecord.png</file>
         <file>personalInfo.png</file>
         <file>scheduleCheckup.png</file>
+        <file>nextPage.png</file>
+        <file>prePage.png</file>
+        <file>search.png</file>
     </qresource>
 </RCC>

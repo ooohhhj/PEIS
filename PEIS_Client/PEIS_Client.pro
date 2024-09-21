@@ -16,6 +16,7 @@ SOURCES += \
     passwordrecoverydialog.cpp \
     protocol.cpp \
     registerdialog.cpp \
+    schedulecheckup.cpp \
     usermainwindow.cpp
 
 HEADERS += \
@@ -25,12 +26,14 @@ HEADERS += \
     passwordrecoverydialog.h \
     protocol.h \
     registerdialog.h \
+    schedulecheckup.h \
     usermainwindow.h
 
 FORMS += \
     logindialog.ui \
     passwordrecoverydialog.ui \
     registerdialog.ui \
+    schedulecheckup.ui \
     usermainwindow.ui
 
 # Default rules for deployment.

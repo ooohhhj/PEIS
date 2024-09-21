@@ -3,7 +3,9 @@
 
 #include <QMainWindow>
 #include <QDebug>
-#include <QTabBar>
+#include <memory>
+
+#include "schedulecheckup.h"
 
 namespace Ui {
 class UserMainWindow;
@@ -18,9 +20,15 @@ public:
     ~UserMainWindow();
 
     void setUsername(const QString& username );
+private slots:
+    void on_scheduleCheckupButton_clicked();
+
 private:
     Ui::UserMainWindow *ui;
     QString m_username;
+    std::unique_ptr<ScheduleCheckup> scheduleCheckUp ;
+
+
 };
 
 #endif // USERMAINWINDOW_H

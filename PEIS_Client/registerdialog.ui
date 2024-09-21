@@ -14,7 +14,7 @@
    <string>注册</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../Resource/icom.qrc">
+   <iconset>
     <normaloff>:/register.png</normaloff>:/register.png</iconset>
   </property>
   <property name="styleSheet">
@@ -556,7 +556,7 @@ background-position:center;</string>
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../Resource/icom.qrc">
+           <iconset>
             <normaloff>:/refresh.png</normaloff>:/refresh.png</iconset>
           </property>
          </widget>
@@ -843,8 +843,6 @@ background-position:center;</string>
    </layout>
   </widget>
  </widget>
- <resources>
-  <include location="../Resource/icom.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
