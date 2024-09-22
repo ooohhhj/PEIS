@@ -5,7 +5,9 @@
 #include <QDebug>
 #include <memory>
 
+#include "clientsocket.h"
 #include "schedulecheckup.h"
+#include "protocol.h"
 
 namespace Ui {
 class UserMainWindow;

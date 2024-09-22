@@ -423,6 +423,63 @@ QString DatabaseManager::getUsernameByPhoneNumber(const QString &phoneNumber)
     }
 }
 
+QSqlQuery DatabaseManager::getReserveCheckup(const int& itemsPerPage,const int& offset)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QString sql = QString("SELECT package_name, target_population, provider, price "
+                          "FROM healthpackages "
+                          "LIMIT %1 OFFSET %2").arg(itemsPerPage).arg(offset);
+
+
+    QSqlQuery query(db);
+    if(!query.exec(sql))
+    {
+        qDebug() << "Query execution failed:" << query.lastError().text();
+        return QSqlQuery();
+    }
+
+    // 返回查询结果
+    return query;
+}
+
+int DatabaseManager::calculateTotalPages(int itemsPerPage)
+{
+    qDebug()<<"heq";
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return -1;
+    }
+
+    int totalItems;
+
+    QString sql ="select count(*) from healthpackages";
+    QSqlQuery query(db);
+    if(!query.exec(sql))
+    {
+        qDebug() << "Query execution failed:" << query.lastError().text();
+        return -1;
+    }
+    else
+    {
+        if(query.next())
+        {
+            totalItems = query.value(0).toInt();
+        }
+
+    }
+
+
+    qDebug()<<"totalItems="<<totalItems;
+    //计算总页数
+    return (totalItems+itemsPerPage -1)/itemsPerPage;// 向上取整
+}
+
 
 
 bool DatabaseManager::isConnected() const

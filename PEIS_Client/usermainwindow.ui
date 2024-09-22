@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>946</width>
-    <height>643</height>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <string notr="true">background-color: #F0F8FF;
 border: 2px solid #B0C4DE;
 border-radius: 13px;
-box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.1);</string>
+</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -212,14 +212,17 @@ border: none;</string>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true"> QPushButton:hover {
-    background-color: #87CEEB;
-    border-color: #1E90FF;
+              <string notr="true">QPushButton:hover {
+ background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
+ stop: 0 #A4D0E1, stop: 1 #B0E0E6);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
     }
- QPushButton:pressed {
-    background-color: #4682B4;
-    border-color: #1C86EE;
-    }</string>
+    QPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
+ stop: 0 #A4D0E1, stop: 1 #B0E0E6);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
+    }
+</string>
              </property>
              <property name="text">
               <string>预约体检</string>

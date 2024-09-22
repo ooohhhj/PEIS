@@ -9,6 +9,7 @@
 #include <QIcon>
 #include <QGridLayout>
 #include <QLabel>
+#include <QJsonArray>
 
 #include "protocol.h"
 
@@ -36,6 +37,7 @@ public:
 
 
 
+
 private slots:
     void readData();
 signals:
@@ -45,6 +47,8 @@ signals:
     void PhoneNumberNotExist(const QString & message);
 
     void Logined(const int &roleId,const QString &username);
+
+    void ReserveCheckup(const QJsonArray & jsonArray,const int& totalPage);
 private:
     QTcpSocket * tcpSocket;
 

@@ -41,6 +41,10 @@ private:
 
     QByteArray handleUsernameAndPasswordIsExistRequest(const QJsonObject& usernameAndPasswordDate);
 
+    QByteArray handleReserveCheckupRequest(const QJsonObject & reserveCheckupDate);
+
+
+
 
 
 

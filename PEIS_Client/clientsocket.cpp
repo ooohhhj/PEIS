@@ -65,7 +65,12 @@ void ClientSocket::processResponse(Packet &packet)
                  << packet.length << ", message.size() = " << MessageObject.size();
     }
 
-    QString message =MessageObject["message"].toString();
+     QString message;
+    if (MessageObject.contains("message")) {
+        QString message = MessageObject["message"].toString();
+        // 处理 message
+    }
+
 
     switch (packet.requestType)
     {
@@ -135,11 +140,22 @@ void ClientSocket::processResponse(Packet &packet)
         showMessageBox(":/failed.png","登录",message);
         break;
     }
+    case ReserveCheckupResponce:
+    {
+        //获取套餐消息
+        QJsonArray packagesArray = MessageObject["packages"].toArray();
+        int totalPages = MessageObject["totalPages"].toInt();
+
+        emit ReserveCheckup(packagesArray,totalPages);
+
+        break;
+    }
     case InternalServerError:
     {
         showMessageBox(":/warning.png","警告",message);
         break;
     }
+
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

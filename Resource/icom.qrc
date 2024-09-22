@@ -19,5 +19,6 @@
         <file>nextPage.png</file>
         <file>prePage.png</file>
         <file>search.png</file>
+        <file>price.png</file>
     </qresource>
 </RCC>

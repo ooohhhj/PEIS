@@ -27,6 +27,9 @@ enum RequestType
     ForGetPasswordRequest,                      //找回密码请求
     PhoneAndPasswordIsExistRequest,             //手机号码与密码是否匹配
     UsernameAndPasswordIsExistRequest,          //用户名与密码是否匹配
+    ReserveCheckupRequest,                        // 预约体检信息请求
+
+    UpdateCheckupPackageRequest                  // 更新体检套餐请求
 
 };
 
@@ -49,6 +52,8 @@ enum ResponseType
 
     UsernameAndPasswordSuccessfullyResponce,    //用户名与密码匹配成功
     USernameAndPasswordFailedResponce,          //用户名与密码不匹配
+
+     ReserveCheckupResponce,                     //体检套餐回复
 
     InternalServerError,                        //未知请求
 

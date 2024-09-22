@@ -50,6 +50,9 @@ public:
 
     QString getUsernameByPhoneNumber(const QString &phoneNumber);
 
+    QSqlQuery getReserveCheckup(const int& itemsPerPage,const int& offset);
+
+    int calculateTotalPages(int itemsPerPage);
 
     //检查数据库连接状态
     bool isConnected() const;

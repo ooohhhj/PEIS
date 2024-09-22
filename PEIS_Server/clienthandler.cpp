@@ -36,7 +36,7 @@ QByteArray ClientHandler::processRequest(Packet &packet)
                  << packet.length << ", message.size() = " << message.size();
         return QByteArray();  // 返回空的 QByteArray 代表错误或无效结果
     }
-     qDebug()<<"we";
+    qDebug()<<"we";
     switch (packet.requestType)
     {
     case UsernameIsExistRequest:
@@ -56,6 +56,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case UsernameAndPasswordIsExistRequest:
         return handleUsernameAndPasswordIsExistRequest(message);
+        break;
+    case ReserveCheckupRequest:
+        return handleReserveCheckupRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -352,5 +355,44 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
     return serializedResponse;
 
 }
+
+QByteArray ClientHandler::handleReserveCheckupRequest(const QJsonObject &reserveCheckupDate)
+{
+    //获取页数
+    int page =reserveCheckupDate["currentPage"].toInt();
+    int itemsPerPage = reserveCheckupDate["itemsPerPage"].toInt();
+
+    //计算机offset Limit
+    int offset =(page-1)*itemsPerPage;
+
+    //查询数据库  获取体检信息
+    QSqlQuery query=DatabaseManager::instance().getReserveCheckup(itemsPerPage,offset);
+
+
+    QJsonArray packagesArray;
+    while(query.next())
+    {
+        QJsonObject packageObj;
+        packageObj["package_name"] = query.value("package_name").toString();        // 套餐名称
+        packageObj["target_population"] = query.value("target_population").toString(); // 使用人群
+        packageObj["provider"] = query.value("provider").toString();                // 体检机构
+        packageObj["price"] = query.value("price").toDouble();                      // 价格
+
+        packagesArray.append(packageObj);
+    }
+
+    //将分页数据打包并发送给客户端
+    QJsonObject responseObject;
+    responseObject["packages"] =packagesArray;
+    responseObject["totalPages"] =DatabaseManager::instance().calculateTotalPages(itemsPerPage);
+
+    Packet responsePacket =Protocol::createPacket(ReserveCheckupResponce,responseObject);
+    QByteArray serializedResponse =Protocol::serializePacket(responsePacket);
+    return serializedResponse;
+
+
+}
+
+
 
 
