@@ -60,6 +60,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case ReserveCheckupRequest:
         return handleReserveCheckupRequest(message);
         break;
+    case UpdateCheckupPackageRequest:
+        return handleReserveCheckupRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -389,7 +392,6 @@ QByteArray ClientHandler::handleReserveCheckupRequest(const QJsonObject &reserve
     Packet responsePacket =Protocol::createPacket(ReserveCheckupResponce,responseObject);
     QByteArray serializedResponse =Protocol::serializePacket(responsePacket);
     return serializedResponse;
-
 
 }
 

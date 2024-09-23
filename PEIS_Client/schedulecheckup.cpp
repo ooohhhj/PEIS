@@ -25,7 +25,7 @@ ScheduleCheckup::~ScheduleCheckup()
 void ScheduleCheckup::requestPackagesForPage(int page)
 {
     QJsonObject info;
-    info["page"] =page;// 当前页码
+    info["currentPage"] =page;// 当前页码
     info["itemsPerPage"] = itemsPerPage;// 每页显示数量
 
     //封包分页查询请求
@@ -49,7 +49,6 @@ int ScheduleCheckup::getItemsPerPage()
 
 void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int &totalPage)
 {
-
     //设置图标和文本
     // 更新卡片1内容
     if (packagesArray.size() > 0) {
@@ -59,7 +58,11 @@ void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int
         ui->HCELabel->setText(package1["provider"].toString());
         ui->PriceLabel->setText(QString::number(package1["price"].toDouble()));
         ui->PriceLabel->setScaledContents(true);
+        ui->cardwidget->setVisible(true);
 
+    }
+    else{
+        ui->cardwidget->setVisible(false);
     }
 
     // 更新卡片2内容
@@ -70,7 +73,11 @@ void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int
         ui->HCELabel_2->setText(package2["provider"].toString());
         ui->PriceLabel_2->setText(QString::number(package2["price"].toDouble()));
         ui->PriceLabel_2->setScaledContents(true);
-
+        ui->cardwidget_2->setVisible(true);
+    }
+    else
+    {
+        ui->cardwidget_2->setVisible(false);
     }
 
     // 更新卡片3内容
@@ -81,23 +88,20 @@ void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int
         ui->HCELabel_3->setText(package3["provider"].toString());
         ui->PriceLabel_3->setText(QString::number(package3["price"].toDouble()));
         ui->PriceLabel_3->setScaledContents(true);
+        ui->cardwidget_3->setVisible(true);
+    }
+    else
+    {
+        ui->cardwidget_3->setVisible(false);
     }
 
     ui->totalPageLabel->setText(QString::number(totalPage));
     ui->curPageLabel ->setText(QString::number(this->currentPage));
 
-    if(this->currentPage==1 )
-    {
-        ui->prevBtn->setVisible(false);
-    }
 
-    if(this->currentPage == totalPage)
-    {
-        ui->nextBtn->setVisible(false);
-    }
-
-
-
+    //控制分页按钮的显示和隐藏
+    ui->prevBtn->setVisible(this->currentPage>1);
+    ui->nextBtn->setVisible(this->currentPage<totalPage);
 
 }
 
