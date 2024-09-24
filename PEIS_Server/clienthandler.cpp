@@ -63,6 +63,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case UpdateCheckupPackageRequest:
         return handleReserveCheckupRequest(message);
         break;
+    case PackageInformationRequest:
+        return handlePackageInformationRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -393,6 +396,37 @@ QByteArray ClientHandler::handleReserveCheckupRequest(const QJsonObject &reserve
     QByteArray serializedResponse =Protocol::serializePacket(responsePacket);
     return serializedResponse;
 
+}
+
+QByteArray ClientHandler::handlePackageInformationRequest(const QJsonObject &packageNameDate)
+{
+    QString packageName =packageNameDate["packageName"].toString();
+
+    //查询数据库  获取套餐信息
+    QSqlQuery query =DatabaseManager::instance().getPackageNameInfo(packageName);
+
+    QJsonArray packageNameInfoArray;
+    QString packageDescription; // 用于存储套餐描述
+
+    if (query.next()) {
+        packageDescription = query.value("package_description").toString(); // 获取套餐描述
+
+        // 继续处理项目
+        do {
+            QJsonObject packageObj;
+            packageObj["item_name"] = query.value("item_name").toString();
+            packageObj["item_description"] = query.value("item_description").toString();
+            packageNameInfoArray.append(packageObj);
+        } while (query.next());
+    }
+
+    QJsonObject responseObject;
+    responseObject["package_description"] = packageDescription; // 使用获取的描述
+    responseObject["packageInfo"] = packageNameInfoArray;
+
+    Packet responsePacket = Protocol::createPacket(PackageInformationResponce, responseObject);
+    QByteArray serializedResponse = Protocol::serializePacket(responsePacket);
+    return serializedResponse;
 }
 
 

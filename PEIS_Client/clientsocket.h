@@ -49,6 +49,7 @@ signals:
     void Logined(const int &roleId,const QString &username);
 
     void ReserveCheckup(const QJsonArray & jsonArray,const int& totalPage);
+    void PackageNameInfo(const QJsonArray & jsonArray,const QString &packageDescription);
 private:
     QTcpSocket * tcpSocket;
 

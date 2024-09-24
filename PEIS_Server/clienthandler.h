@@ -43,7 +43,7 @@ private:
 
     QByteArray handleReserveCheckupRequest(const QJsonObject & reserveCheckupDate);
 
-
+    QByteArray handlePackageInformationRequest(const QJsonObject & packageNameDate);
 
 
 

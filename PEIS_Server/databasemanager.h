@@ -52,6 +52,8 @@ public:
 
     QSqlQuery getReserveCheckup(const int& itemsPerPage,const int& offset);
 
+    QSqlQuery getPackageNameInfo(const QString &packageName);
+
     int calculateTotalPages(int itemsPerPage);
 
     //检查数据库连接状态

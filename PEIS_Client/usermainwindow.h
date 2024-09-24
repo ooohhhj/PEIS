@@ -8,6 +8,7 @@
 #include "clientsocket.h"
 #include "schedulecheckup.h"
 #include "protocol.h"
+#include "hepdetails.h"
 
 namespace Ui {
 class UserMainWindow;
@@ -24,11 +25,13 @@ public:
     void setUsername(const QString& username );
 private slots:
     void on_scheduleCheckupButton_clicked();
+    void OnCardClicked(const QString & cardName);
 
 private:
     Ui::UserMainWindow *ui;
     QString m_username;
     std::unique_ptr<ScheduleCheckup> scheduleCheckUp ;
+    std::unique_ptr<HEPDetails> hepDetails;
 
 
 };

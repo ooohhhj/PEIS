@@ -11,6 +11,7 @@ CONFIG += c++11 c++14
 SOURCES += \
     captchagenerator.cpp \
     clientsocket.cpp \
+    hepdetails.cpp \
     logindialog.cpp \
     main.cpp \
     passwordrecoverydialog.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
 HEADERS += \
     captchagenerator.h \
     clientsocket.h \
+    hepdetails.h \
     logindialog.h \
     passwordrecoverydialog.h \
     protocol.h \
@@ -30,6 +32,7 @@ HEADERS += \
     usermainwindow.h
 
 FORMS += \
+    hepdetails.ui \
     logindialog.ui \
     passwordrecoverydialog.ui \
     registerdialog.ui \

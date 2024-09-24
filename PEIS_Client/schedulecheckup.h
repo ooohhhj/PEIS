@@ -31,6 +31,10 @@ private slots:
 
     void on_prevBtn_clicked();
 
+    void on_cardNameButton_clicked();
+signals:
+    void cardClicked(const QString & cardName);
+
 private:
     Ui::ScheduleCheckup *ui;
     int currentPage ;

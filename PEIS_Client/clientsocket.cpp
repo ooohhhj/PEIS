@@ -145,9 +145,16 @@ void ClientSocket::processResponse(Packet &packet)
         //获取套餐消息
         QJsonArray packagesArray = MessageObject["packages"].toArray();
         int totalPages = MessageObject["totalPages"].toInt();
-
         emit ReserveCheckup(packagesArray,totalPages);
 
+        break;
+    }
+    case PackageInformationResponce:
+    {
+        QJsonArray packageInfoArray = MessageObject["packageInfo"].toArray();
+        QString packageDescription =MessageObject["package_description"].toString();
+        qDebug()<<"---packageDescription="<<packageDescription;
+        emit PackageNameInfo(packageInfoArray,packageDescription);
         break;
     }
     case InternalServerError:

@@ -121,3 +121,12 @@ void ScheduleCheckup::on_prevBtn_clicked()
     }
 }
 
+
+void ScheduleCheckup::on_cardNameButton_clicked()
+{
+    //获取套餐名称
+    QString cardName= ui->cardNameButton->text();
+    //发送套餐名称
+    emit cardClicked(cardName);
+}
+

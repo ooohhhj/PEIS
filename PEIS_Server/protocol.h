@@ -28,6 +28,7 @@ enum RequestType
     UsernameAndPasswordIsExistRequest,          //用户名与密码是否匹配
     ReserveCheckupRequest,                      // 预约体检信息请求
     UpdateCheckupPackageRequest,                // 更新体检套餐请求
+    PackageInformationRequest,                   //套餐信息请求
 
 
 };
@@ -53,6 +54,7 @@ enum ResponseType
     USernameAndPasswordFailedResponce,          //用户名与密码不匹配
 
     ReserveCheckupResponce,                     //体检套餐回复
+    PackageInformationResponce,                 //套餐信息回复
 
     InternalServerError,                        //未知请求
 

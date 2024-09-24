@@ -447,6 +447,29 @@ QSqlQuery DatabaseManager::getReserveCheckup(const int& itemsPerPage,const int& 
     return query;
 }
 
+QSqlQuery DatabaseManager::getPackageNameInfo(const QString &packageName)
+{
+    if(!isConnected())
+    {
+        qDebug()<<"Failed to connect to database:"<<db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT hi.item_name, hi.item_description, hp.description AS package_description "
+                  "FROM healthpackages hp "
+                  "JOIN packageitemmapping pim ON hp.id = pim.package_id "
+                  "JOIN healthitems hi ON pim.item_id = hi.id "
+                  "WHERE hp.package_name = :packageName");
+    query.bindValue(":packageName",packageName);
+    if(!query.exec())
+    {
+        qDebug() << "Query failed: " << query.lastError();
+        return QSqlQuery();
+    }
+    return query;
+}
+
 int DatabaseManager::calculateTotalPages(int itemsPerPage)
 {
     qDebug()<<"heq";
