@@ -7,6 +7,8 @@
 #include <QDate>
 #include <QHBoxLayout>
 #include <QDebug>
+#include <QFile>
+#include <QTextEdit>
 
 #include "clientsocket.h"
 
@@ -27,6 +29,10 @@ public:
     void setCardName(const QString& cardName);
 
     void setPackageInfo(const QJsonArray & packageInfo,const QString &packageDescription);
+
+    void setExamination();
+
+    void setInstructions(const QString & filePath);
 
 private:
     Ui::HEPDetails *ui;

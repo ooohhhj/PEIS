@@ -11,7 +11,9 @@ HEPDetails::HEPDetails(QWidget *parent) :
 
     setupSchedule();
 
-    //
+    setExamination();
+
+    setInstructions("H:/PEIS/PEIS/examination_notice.json");
 
 
 }
@@ -174,4 +176,93 @@ void HEPDetails::setPackageInfo(const QJsonArray &packageInfo, const QString &pa
 
     // 更新显示
     ui->packageWidget->update();
+}
+
+void HEPDetails::setExamination()
+{
+    QJsonObject jsonObj;
+
+    jsonObj["体检须知"] = QJsonObject{
+    {"体检前注意事项", QJsonArray{
+            "1. 体检中心抽血时间为周一到周六上午 7:30-11:00 (11:00 后不抽血)。",
+            "2. 如需开单位发票，请先提前电话咨询体检中心，开票成功不可撤换。",
+            "3. 体检前三天，请您清淡饮食，勿饮酒，勿疲劳，体检当日禁食早餐，避免剧烈运动。",
+            "4. 体检时请您携带体检通知单及身份证件，男士在做膀胱、前列腺彩超前，请憋尿，女士在月经期请勿做妇科及尿液检查。孕妇不可做 X 光类检查。",
+            "5. 如有携带贵重物品和现金的，请妥善保管。",
+            "6. 行动不便及年满 75 岁以上的体检者，请家属陪同体检。",
+            "7. 教师资格证、护士等带有特殊要求的人员需按要求携带相关证件及照片。"
+}},
+    {"体检中注意事项", QJsonArray{
+            "1. 检查项目中腹部彩超、静脉采血、肝胆彩超等项目须空腹完成。",
+            "2. 请女士注意检查项目的时间安排，避免与孕期检查冲突。",
+            "3. 放射检查前请摘除金属饰品和隐形眼镜。"
+}},
+    {"体检后注意事项", QJsonArray{
+            "1. 体检报告一般发放时间为每天 15:00-17:30。",
+            "2. 根据医生建议，可复查或随诊。",
+            "3. 可以通过体检中心微信号查询报告。"
+}}
+};
+
+    // 获取当前项目路径
+    QString filePath = "H:/PEIS/PEIS/examination_notice.json";
+
+    // 将 JSON 对象写入文件
+    QJsonDocument jsonDoc(jsonObj);
+    QFile jsonFile(filePath);
+    if (jsonFile.open(QIODevice::WriteOnly)) {
+        jsonFile.write(jsonDoc.toJson());
+        jsonFile.close();
+    }
+}
+
+void HEPDetails::setInstructions(const QString &filePath)
+{
+    QFile jsonFile(filePath);
+        if (!jsonFile.open(QIODevice::ReadOnly)) {
+            qWarning("无法打开文件进行读取: %s", qPrintable(filePath));
+            return;
+        }
+
+        QByteArray jsonData = jsonFile.readAll();
+        jsonFile.close();
+
+        QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
+        QJsonObject instructions = jsonDoc.object().value("体检须知").toObject();
+
+        // 清空现有内容并创建新的布局
+        if (!ui->instructionsWidget->layout()) {
+            ui->instructionsWidget->setLayout(new QVBoxLayout());
+        } else {
+            QLayoutItem *item;
+            while ((item = ui->instructionsWidget->layout()->takeAt(0)) != nullptr) {
+                delete item->widget();
+                delete item;
+            }
+        }
+
+        // 创建 QTextEdit 用于显示内容
+        QTextEdit *textEdit = new QTextEdit(this);
+        textEdit->setReadOnly(true); // 设置为只读
+        textEdit->setStyleSheet("background-color: transparent;"); // 设置背景透明
+
+        QString allInstructions;
+        for (const QString &key : instructions.keys()) {
+            allInstructions += QString("<b>%1</b><br>").arg(key); // 加粗标题
+            QJsonArray items = instructions[key].toArray();
+            for (const QJsonValue &item : items) {
+                allInstructions += QString("  - %1<br>").arg(item.toString()); // 添加项目
+            }
+            allInstructions += "<br>"; // 添加间隔
+        }
+
+        textEdit->setHtml(allInstructions); // 设置 HTML 格式的文本
+
+        // 创建滚动区域
+        QScrollArea *scrollArea = new QScrollArea(this);
+        scrollArea->setWidgetResizable(true);
+        scrollArea->setWidget(textEdit); // 将 QTextEdit 设置为滚动区域的内容
+
+        // 添加滚动区域到布局
+        ui->instructionsWidget->layout()->addWidget(scrollArea);
 }
