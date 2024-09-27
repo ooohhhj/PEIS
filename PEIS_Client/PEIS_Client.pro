@@ -9,7 +9,10 @@ CONFIG += c++11 c++14
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    adminmainwindow.cpp \
     captchagenerator.cpp \
+    checkuprecord.cpp \
+    checkupreport.cpp \
     clientsocket.cpp \
     hepdetails.cpp \
     logindialog.cpp \
@@ -18,10 +21,14 @@ SOURCES += \
     protocol.cpp \
     registerdialog.cpp \
     schedulecheckup.cpp \
+    staffmainwindow.cpp \
     usermainwindow.cpp
 
 HEADERS += \
+    adminmainwindow.h \
     captchagenerator.h \
+    checkuprecord.h \
+    checkupreport.h \
     clientsocket.h \
     hepdetails.h \
     logindialog.h \
@@ -29,14 +36,19 @@ HEADERS += \
     protocol.h \
     registerdialog.h \
     schedulecheckup.h \
+    staffmainwindow.h \
     usermainwindow.h
 
 FORMS += \
+    adminmainwindow.ui \
+    checkuprecord.ui \
+    checkupreport.ui \
     hepdetails.ui \
     logindialog.ui \
     passwordrecoverydialog.ui \
     registerdialog.ui \
     schedulecheckup.ui \
+    staffmainwindow.ui \
     usermainwindow.ui
 
 # Default rules for deployment.

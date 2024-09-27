@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>UserMainWindow</class>
- <widget class="QMainWindow" name="UserMainWindow">
+ <class>StaffMainWindow</class>
+ <widget class="QMainWindow" name="StaffMainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
-    <height>659</height>
+    <width>941</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #F5FFFA; /* Mint Cream */
+border: 2px solid #A2D8D0; /* Lighter Sea Green */
+</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-color: #F0F8FF;
-border: 2px solid #B0C4DE;
-border-radius: 13px;
-</string>
+    <string notr="true"/>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -26,9 +28,7 @@ border-radius: 13px;
       <item>
        <widget class="QWidget" name="widget" native="true">
         <property name="styleSheet">
-         <string notr="true">border: 2px solid qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,stop: 0 #696969, stop: 1 #000000);
-border-radius: 15px;
-padding: 10px;</string>
+         <string notr="true"/>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
@@ -37,6 +37,9 @@ padding: 10px;</string>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
               <spacer name="horizontalSpacer_2">
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -65,6 +68,9 @@ padding: 10px;</string>
                  <height>70</height>
                 </size>
                </property>
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -90,6 +96,9 @@ padding: 10px;</string>
              </item>
              <item>
               <spacer name="horizontalSpacer_3">
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -110,6 +119,9 @@ padding: 10px;</string>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <spacer name="horizontalSpacer_4">
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -145,8 +157,7 @@ padding: 10px;</string>
                 </font>
                </property>
                <property name="styleSheet">
-                <string notr="true">background-color: transparent;
-border: none;</string>
+                <string notr="true"/>
                </property>
                <property name="text">
                 <string/>
@@ -155,6 +166,9 @@ border: none;</string>
              </item>
              <item>
               <spacer name="horizontalSpacer_5">
+               <property name="styleSheet">
+                <string/>
+               </property>
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -175,6 +189,9 @@ border: none;</string>
          </item>
          <item>
           <widget class="QFrame" name="frame">
+           <property name="styleSheet">
+            <string/>
+           </property>
            <property name="frameShape">
             <enum>QFrame::HLine</enum>
            </property>
@@ -211,20 +228,10 @@ border: none;</string>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton:hover {
- background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-    QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
-              <string>预约体检</string>
+              <string>患者信息</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
@@ -261,20 +268,10 @@ border: none;</string>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton:hover {
- background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-    QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
-              <string>体检记录</string>
+              <string>预约管理</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
@@ -311,20 +308,10 @@ border: none;</string>
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton:hover {
- background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-    QPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
- stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
-    }
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
-              <string>体检报告</string>
+              <string>电子病历</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
@@ -360,8 +347,11 @@ border: none;</string>
                <bold>true</bold>
               </font>
              </property>
+             <property name="styleSheet">
+              <string/>
+             </property>
              <property name="text">
-              <string>个人资料</string>
+              <string>待办日程</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
@@ -377,6 +367,9 @@ border: none;</string>
            </item>
            <item>
             <spacer name="verticalSpacer">
+             <property name="styleSheet">
+              <string/>
+             </property>
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
@@ -401,6 +394,9 @@ border: none;</string>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <spacer name="horizontalSpacer">
+              <property name="styleSheet">
+               <string/>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -425,6 +421,9 @@ border: none;</string>
                 <width>100</width>
                 <height>100</height>
                </size>
+              </property>
+              <property name="styleSheet">
+               <string/>
               </property>
               <property name="text">
                <string/>
@@ -454,6 +453,9 @@ border: none;</string>
                 <width>100</width>
                 <height>100</height>
                </size>
+              </property>
+              <property name="styleSheet">
+               <string/>
               </property>
               <property name="text">
                <string/>
@@ -488,6 +490,9 @@ border: none;</string>
             <height>0</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <widget class="QWidget" name="page_3"/>
           <widget class="QWidget" name="page_4"/>
          </widget>
@@ -503,11 +508,12 @@ border: none;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>946</width>
-     <height>21</height>
+     <width>941</width>
+     <height>25</height>
     </rect>
    </property>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
   <include location="../Resource/icom.qrc"/>

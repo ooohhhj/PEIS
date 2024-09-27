@@ -10,6 +10,8 @@
 #include "schedulecheckup.h"
 #include "protocol.h"
 #include "hepdetails.h"
+#include "checkuprecord.h"
+#include "checkupreport.h"
 
 namespace Ui {
 class UserMainWindow;
@@ -32,11 +34,17 @@ private slots:
     void buttonStyleSheet();
 
 
+    void on_healthCheckRecordButton_clicked();
+
+    void on_checkupReportButton_clicked();
+
 private:
     Ui::UserMainWindow *ui;
     QString m_username;
     std::unique_ptr<ScheduleCheckup> scheduleCheckUp ;
     std::unique_ptr<HEPDetails> hepDetails;
+    std::unique_ptr<CheckupRecord> checkupRecord;
+    std::unique_ptr<CheckupReport> checkupreport;
 
 
 };

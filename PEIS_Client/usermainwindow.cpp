@@ -9,19 +9,19 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     ui->setupUi(this);
 
     ui->usernameLabel->setText(this->m_username);
-    qDebug()<<"username="<<this->m_username;
-
-
 
     //添加预约体检界面到StackWidget中
     scheduleCheckUp =std::make_unique<ScheduleCheckup>(this);
     hepDetails =std::make_unique<HEPDetails>(this);
+    checkupRecord =std::make_unique<CheckupRecord>(this);
+    checkupreport =std::make_unique<CheckupReport>(this);
 
     setDefaultWidget();
 
     ui->stackedWidget->addWidget(scheduleCheckUp.get());
     ui->stackedWidget->addWidget(hepDetails.get());
-
+    ui->stackedWidget->addWidget(checkupRecord.get());
+    ui->stackedWidget->addWidget(checkupreport.get());
 
 
     //   设置只允许最大化，不允许最小化
@@ -167,5 +167,53 @@ void UserMainWindow::buttonStyleSheet()
                 "    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);"
                 "}"
                 );
+}
+
+void UserMainWindow::on_healthCheckRecordButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(checkupRecord.get());
+
+    ui->healthCheckRecordButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->healthCheckRecordButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->healthCheckRecordButton->setChecked(true);
 
 }
+
+
+void UserMainWindow::on_checkupReportButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(checkupreport.get());
+
+    ui->checkupReportButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->checkupReportButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->checkupReportButton->setChecked(true);
+}
+
