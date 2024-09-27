@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <memory>
+#include <QWidget>
 
 #include "clientsocket.h"
 #include "schedulecheckup.h"
@@ -23,9 +24,13 @@ public:
     ~UserMainWindow();
 
     void setUsername(const QString& username );
+
 private slots:
     void on_scheduleCheckupButton_clicked();
     void OnCardClicked(const QString & cardName);
+    void setDefaultWidget();
+    void buttonStyleSheet();
+
 
 private:
     Ui::UserMainWindow *ui;

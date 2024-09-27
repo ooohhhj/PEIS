@@ -8,6 +8,7 @@ ScheduleCheckup::ScheduleCheckup(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    searchFlag =false;
 
     this->setStyleSheet("border: 2px solid #B0C4DE;"  // 边框为银灰色
                         "border-radius: 13px;"        // 圆角，内角半径为15px
@@ -29,7 +30,15 @@ void ScheduleCheckup::requestPackagesForPage(int page)
     info["itemsPerPage"] = itemsPerPage;// 每页显示数量
 
     //封包分页查询请求
-    Packet packageQueryPacket = Protocol::createPacket(UpdateCheckupPackageRequest,info);
+    Packet packageQueryPacket ;
+    if(!searchFlag)
+    {
+        packageQueryPacket= Protocol::createPacket(UpdateCheckupPackageRequest,info);
+    }
+    else
+    {
+        packageQueryPacket= Protocol::createPacket(UpdateSearchPackageRequest,info);
+    }
 
     QByteArray dataToSend =Protocol::serializePacket(packageQueryPacket);
 
@@ -49,6 +58,12 @@ int ScheduleCheckup::getItemsPerPage()
 
 void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int &totalPage)
 {
+    if(totalPage == 0)
+    {
+        ClientSocket::instance()->showMessageBox(":/warning.png","预约套餐","套餐不存在");
+        ui->searchLineEdit->setText("");
+        return;
+    }
     //设置图标和文本
     // 更新卡片1内容
     if (packagesArray.size() > 0) {
@@ -107,8 +122,11 @@ void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int
 
 void ScheduleCheckup::on_nextBtn_clicked()
 {
+
     currentPage++;
+
     requestPackagesForPage(currentPage);
+
 }
 
 
@@ -116,7 +134,7 @@ void ScheduleCheckup::on_prevBtn_clicked()
 {
     if(currentPage>1)
     {
-        currentPage --;
+        currentPage--;
         requestPackagesForPage(currentPage);
     }
 }
@@ -128,5 +146,76 @@ void ScheduleCheckup::on_cardNameButton_clicked()
     QString cardName= ui->cardNameButton->text();
     //发送套餐名称
     emit cardClicked(cardName);
+}
+
+
+void ScheduleCheckup::on_cardNameButton_2_clicked()
+{
+    //获取套餐名称
+    QString cardName= ui->cardNameButton_2->text();
+    //发送套餐名称
+    emit cardClicked(cardName);
+}
+
+
+void ScheduleCheckup::on_cardNameButton_3_clicked()
+{
+    //获取套餐名称
+    QString cardName= ui->cardNameButton_3->text();
+    //发送套餐名称
+    emit cardClicked(cardName);
+}
+
+
+void ScheduleCheckup::on_pushButton_clicked()
+{
+    //获取搜索框
+    QString searchLineEdit =ui->searchLineEdit->text();
+
+    QJsonObject obj;
+
+    obj["searchLineEdit"]=searchLineEdit;
+
+    //发送消息
+    Packet packet =Protocol::createPacket(SearchPackageRequest,obj);
+
+    QByteArray dataTosend = Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(dataTosend);
+
+    searchFlag =true;
+
+}
+
+
+void ScheduleCheckup::on_returnExitButton_clicked()
+{
+    emit exitButtonClicked();
+}
+
+
+void ScheduleCheckup::on_reflushButton_clicked()
+{
+    searchFlag =false;
+
+    ui->searchLineEdit->setText("");
+
+    QJsonObject Info;
+
+    //获取页数 和页数量
+    Info["currentPage"] = getCurrentPage();
+    Info["itemsPerPage"] =getItemsPerPage();
+
+    qDebug()<<"getItemsPerPage="<<getCurrentPage();
+    qDebug()<<"getItemsPerPage="<<getItemsPerPage();
+
+    //封包
+    Packet reserveCheckupPacket =Protocol::createPacket(ReserveCheckupRequest,Info);
+
+    //序列化
+    QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
+
+    ClientSocket::instance()->senData(dataToSend);
+
 }
 

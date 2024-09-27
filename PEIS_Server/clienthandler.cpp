@@ -36,7 +36,6 @@ QByteArray ClientHandler::processRequest(Packet &packet)
                  << packet.length << ", message.size() = " << message.size();
         return QByteArray();  // 返回空的 QByteArray 代表错误或无效结果
     }
-    qDebug()<<"we";
     switch (packet.requestType)
     {
     case UsernameIsExistRequest:
@@ -65,6 +64,12 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case PackageInformationRequest:
         return handlePackageInformationRequest(message);
+        break;
+    case SearchPackageRequest:
+        return handleSearchPackageRequest(message);
+        break;
+    case UpdateSearchPackageRequest:
+        return handleSearchPackageRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -394,6 +399,7 @@ QByteArray ClientHandler::handleReserveCheckupRequest(const QJsonObject &reserve
 
     Packet responsePacket =Protocol::createPacket(ReserveCheckupResponce,responseObject);
     QByteArray serializedResponse =Protocol::serializePacket(responsePacket);
+
     return serializedResponse;
 
 }
@@ -426,6 +432,45 @@ QByteArray ClientHandler::handlePackageInformationRequest(const QJsonObject &pac
 
     Packet responsePacket = Protocol::createPacket(PackageInformationResponce, responseObject);
     QByteArray serializedResponse = Protocol::serializePacket(responsePacket);
+    return serializedResponse;
+}
+
+QByteArray ClientHandler::handleSearchPackageRequest(const QJsonObject &searchPackageDate)
+{
+    QString searchPackage = searchPackageDate["searchLineEdit"].toString();
+    int page = searchPackageDate.contains("page") ? searchPackageDate["page"].toInt() : 1;
+
+    int itemsPerPage = 3; // 每页显示的套餐数量
+    int offset = (page - 1) * itemsPerPage; // 计算偏移量
+
+
+    // 查询套餐总数量
+    int totalCount = DatabaseManager::instance().getPackageCount(searchPackage);
+    int totalPages = (totalCount + itemsPerPage - 1) / itemsPerPage; // 计算总页数
+
+    QSqlQuery query = DatabaseManager::instance().searchPackageNameInfo(searchPackage, offset, itemsPerPage);
+
+    QJsonArray packageNameInfoArray;
+
+    while(query.next())
+    {
+        QJsonObject packageObj;
+        packageObj["package_name"] = query.value("package_name").toString();        // 套餐名称
+        packageObj["target_population"] = query.value("target_population").toString(); // 使用人群
+        packageObj["provider"] = query.value("provider").toString();                // 体检机构
+        packageObj["price"] = query.value("price").toDouble();                      // 价格
+
+        packageNameInfoArray.append(packageObj);
+    }
+
+    QJsonObject responseObject;
+    responseObject["packages"] = packageNameInfoArray;
+    responseObject["totalPages"] = totalPages; // 返回总页数
+
+
+    Packet responsePacket = Protocol::createPacket(SearchPackageResponce, responseObject);
+    QByteArray serializedResponse = Protocol::serializePacket(responsePacket);
+
     return serializedResponse;
 }
 

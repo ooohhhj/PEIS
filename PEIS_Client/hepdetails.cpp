@@ -135,7 +135,6 @@ void HEPDetails::setPackageInfo(const QJsonArray &packageInfo, const QString &pa
     }
 
     // 创建并添加套餐描述标签
-    qDebug()<<"packageDescription="<<packageDescription;
     QLabel *packageDescriptionLabel = new QLabel(packageDescription);
     packageDescriptionLabel->setStyleSheet("color: black; font-weight: bold; font-size: 14pt; background-color: transparent; border: none;");
     layout->addWidget(packageDescriptionLabel);
@@ -183,7 +182,7 @@ void HEPDetails::setExamination()
     QJsonObject jsonObj;
 
     jsonObj["体检须知"] = QJsonObject{
-    {"体检前注意事项", QJsonArray{
+    {"一、体检前", QJsonArray{
             "1. 体检中心抽血时间为周一到周六上午 7:30-11:00 (11:00 后不抽血)。",
             "2. 如需开单位发票，请先提前电话咨询体检中心，开票成功不可撤换。",
             "3. 体检前三天，请您清淡饮食，勿饮酒，勿疲劳，体检当日禁食早餐，避免剧烈运动。",
@@ -192,12 +191,12 @@ void HEPDetails::setExamination()
             "6. 行动不便及年满 75 岁以上的体检者，请家属陪同体检。",
             "7. 教师资格证、护士等带有特殊要求的人员需按要求携带相关证件及照片。"
 }},
-    {"体检中注意事项", QJsonArray{
+    {"二、体检中", QJsonArray{
             "1. 检查项目中腹部彩超、静脉采血、肝胆彩超等项目须空腹完成。",
             "2. 请女士注意检查项目的时间安排，避免与孕期检查冲突。",
             "3. 放射检查前请摘除金属饰品和隐形眼镜。"
 }},
-    {"体检后注意事项", QJsonArray{
+    {"三、体检后", QJsonArray{
             "1. 体检报告一般发放时间为每天 15:00-17:30。",
             "2. 根据医生建议，可复查或随诊。",
             "3. 可以通过体检中心微信号查询报告。"
@@ -218,51 +217,67 @@ void HEPDetails::setExamination()
 
 void HEPDetails::setInstructions(const QString &filePath)
 {
+    // 读取 JSON 文件
     QFile jsonFile(filePath);
-        if (!jsonFile.open(QIODevice::ReadOnly)) {
-            qWarning("无法打开文件进行读取: %s", qPrintable(filePath));
-            return;
+
+    if (!jsonFile.open(QIODevice::ReadOnly)) {
+        qWarning("无法打开文件进行读取: %s", qPrintable(filePath));
+        return;
+    }
+
+    QByteArray jsonData = jsonFile.readAll();
+    jsonFile.close();
+
+    QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
+    QJsonObject instructions = jsonDoc.object().value("体检须知").toObject();
+
+    // 清空现有内容并创建新的布局
+    if (!ui->instructionsWidget->layout()) {
+        ui->instructionsWidget->setLayout(new QVBoxLayout());
+    } else {
+        QLayoutItem *item;
+        while ((item = ui->instructionsWidget->layout()->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item;
         }
+    }
 
-        QByteArray jsonData = jsonFile.readAll();
-        jsonFile.close();
+    // 创建 QTextEdit 用于显示内容
+    QTextEdit *textEdit = new QTextEdit(this);
+    textEdit->setReadOnly(true); // 设置为只读
+    textEdit->setStyleSheet("background-color: transparent; "); // 设置背景透明和字体大小
 
-        QJsonDocument jsonDoc(QJsonDocument::fromJson(jsonData));
-        QJsonObject instructions = jsonDoc.object().value("体检须知").toObject();
+    QString allInstructions;
 
-        // 清空现有内容并创建新的布局
-        if (!ui->instructionsWidget->layout()) {
-            ui->instructionsWidget->setLayout(new QVBoxLayout());
-        } else {
-            QLayoutItem *item;
-            while ((item = ui->instructionsWidget->layout()->takeAt(0)) != nullptr) {
-                delete item->widget();
-                delete item;
-            }
-        }
-
-        // 创建 QTextEdit 用于显示内容
-        QTextEdit *textEdit = new QTextEdit(this);
-        textEdit->setReadOnly(true); // 设置为只读
-        textEdit->setStyleSheet("background-color: transparent;"); // 设置背景透明
-
-        QString allInstructions;
-        for (const QString &key : instructions.keys()) {
-            allInstructions += QString("<b>%1</b><br>").arg(key); // 加粗标题
+    // 按顺序添加注意事项
+    QStringList keys = { "一、体检前", "二、体检中", "三、体检后" };
+    for (const QString &key : keys) {
+        if (instructions.contains(key)) {
+            allInstructions += QString("<span style='color: #003B5C; font-weight: bold; font-size: 16pt;'>%1</span><br>").arg(key); // 设置键的样式
+            allInstructions += "<br>"; // 添加间隔
             QJsonArray items = instructions[key].toArray();
             for (const QJsonValue &item : items) {
-                allInstructions += QString("  - %1<br>").arg(item.toString()); // 添加项目
+                allInstructions += QString("<span style='font-size: 11pt;'>- %1</span><br>").arg(item.toString()); // 添加项目并设置样式
             }
             allInstructions += "<br>"; // 添加间隔
         }
+    }
 
-        textEdit->setHtml(allInstructions); // 设置 HTML 格式的文本
 
-        // 创建滚动区域
-        QScrollArea *scrollArea = new QScrollArea(this);
-        scrollArea->setWidgetResizable(true);
-        scrollArea->setWidget(textEdit); // 将 QTextEdit 设置为滚动区域的内容
+    textEdit->setHtml(allInstructions); // 设置 HTML 格式的文本
 
-        // 添加滚动区域到布局
-        ui->instructionsWidget->layout()->addWidget(scrollArea);
+    // 创建滚动区域
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(textEdit); // 将 QTextEdit 设置为滚动区域的内容
+
+    // 添加滚动区域到布局
+    ui->instructionsWidget->layout()->addWidget(scrollArea);
 }
+
+void HEPDetails::on_exitButton_clicked()
+{
+    //返回套餐页
+    emit exitButtonClicked();
+}
+

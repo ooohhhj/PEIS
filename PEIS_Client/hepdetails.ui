@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>823</width>
-    <height>586</height>
+    <width>1480</width>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,8 +36,24 @@
       <layout class="QHBoxLayout" name="exitHLayout">
        <item>
         <widget class="QPushButton" name="exitButton">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
          <property name="text">
-          <string>exit</string>
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../Resource/icom.qrc">
+           <normaloff>:/returnExit.png</normaloff>:/returnExit.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
          </property>
         </widget>
        </item>
@@ -286,19 +302,6 @@ border: none;</string>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <spacer name="horizontalSpacer_12">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
               <widget class="QLabel" name="packageNamelabel">
                <property name="font">
                 <font>
@@ -309,91 +312,33 @@ border: none;</string>
                <property name="text">
                 <string>套餐介绍</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_13">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="packageHLayout">
              <item>
-              <spacer name="horizontalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
+              <widget class="QWidget" name="packageWidget" native="true">
+               <property name="minimumSize">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>800</width>
+                 <height>0</height>
                 </size>
                </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QWidget" name="packageWidget" native="true"/>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
+              </widget>
              </item>
             </layout>
            </item>
           </layout>
          </item>
          <item>
-          <spacer name="horizontalSpacer_16">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
           <layout class="QVBoxLayout" name="instructionsVLayout">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <spacer name="horizontalSpacer_14">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
              <item>
               <widget class="QLabel" name="instructionlabel">
                <property name="font">
@@ -405,53 +350,30 @@ border: none;</string>
                <property name="text">
                 <string>体检须知</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_15">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="instructionsHLayout">
              <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
+              <widget class="QWidget" name="instructionsWidget" native="true">
+               <property name="minimumSize">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>550</width>
+                 <height>0</height>
                 </size>
                </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QWidget" name="instructionsWidget" native="true"/>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_9">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
+               <property name="maximumSize">
                 <size>
-                 <width>40</width>
-                 <height>20</height>
+                 <width>550</width>
+                 <height>16777215</height>
                 </size>
                </property>
-              </spacer>
+              </widget>
              </item>
             </layout>
            </item>
@@ -497,6 +419,8 @@ border: none;</string>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resource/icom.qrc"/>
+ </resources>
  <connections/>
 </ui>

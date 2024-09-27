@@ -30,6 +30,8 @@ enum RequestType
     ReserveCheckupRequest,                      // 预约体检信息请求
     UpdateCheckupPackageRequest,                // 更新体检套餐请求
     PackageInformationRequest,                   //套餐信息请求
+    SearchPackageRequest,                        //搜索套餐请求
+    UpdateSearchPackageRequest,                    //更新搜索套餐请求
 
 };
 
@@ -55,6 +57,8 @@ enum ResponseType
 
     ReserveCheckupResponce,                     //体检套餐回复
     PackageInformationResponce,                 //套餐信息回复
+
+    SearchPackageResponce,                      //查找套餐回复
 
     InternalServerError,                        //未知请求
 

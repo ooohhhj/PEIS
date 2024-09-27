@@ -32,13 +32,25 @@ private slots:
     void on_prevBtn_clicked();
 
     void on_cardNameButton_clicked();
+    void on_cardNameButton_2_clicked();
+
+    void on_cardNameButton_3_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_returnExitButton_clicked();
+
+    void on_reflushButton_clicked();
+
 signals:
     void cardClicked(const QString & cardName);
+    void exitButtonClicked();
 
 private:
     Ui::ScheduleCheckup *ui;
     int currentPage ;
     const int itemsPerPage ;
+    int searchFlag;
 };
 
 #endif // SCHEDULECHECKUP_H

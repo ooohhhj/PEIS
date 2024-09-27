@@ -17,8 +17,11 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     scheduleCheckUp =std::make_unique<ScheduleCheckup>(this);
     hepDetails =std::make_unique<HEPDetails>(this);
 
+    setDefaultWidget();
+
     ui->stackedWidget->addWidget(scheduleCheckUp.get());
     ui->stackedWidget->addWidget(hepDetails.get());
+
 
 
     //   设置只允许最大化，不允许最小化
@@ -27,7 +30,14 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     //显示窗口为最大化状态
     this->showMaximized();
 
+
     connect(scheduleCheckUp.get(),&ScheduleCheckup::cardClicked,this,&UserMainWindow::OnCardClicked);
+
+    connect(scheduleCheckUp.get(),&ScheduleCheckup::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
+    connect(scheduleCheckUp.get(),&ScheduleCheckup::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
+
+    connect(hepDetails.get(),&HEPDetails::exitButtonClicked,this,&UserMainWindow::on_scheduleCheckupButton_clicked);
+
 
 }
 
@@ -86,21 +96,76 @@ void UserMainWindow::on_scheduleCheckupButton_clicked()
 void UserMainWindow::OnCardClicked(const QString &cardName)
 {
     //切换界面
-      ui->stackedWidget->setCurrentWidget(hepDetails.get());
+    ui->stackedWidget->setCurrentWidget(hepDetails.get());
 
-      hepDetails->setCardName(cardName);
+    hepDetails->setCardName(cardName);
 
-      //发送请求
-      QJsonObject Info;
+    //发送请求
+    QJsonObject Info;
 
-      Info["packageName"] =cardName;
+    Info["packageName"] =cardName;
 
-      //封包
-      Packet packet = Protocol::createPacket(PackageInformationRequest,Info);
+    //封包
+    Packet packet = Protocol::createPacket(PackageInformationRequest,Info);
 
-      //序列化
-      QByteArray dataToSend = Protocol::serializePacket(packet);
+    //序列化
+    QByteArray dataToSend = Protocol::serializePacket(packet);
 
-      ClientSocket::instance()->senData(dataToSend);
+    ClientSocket::instance()->senData(dataToSend);
+
+}
+
+void UserMainWindow::setDefaultWidget()
+{
+    // 创建一个新的 QWidget 作为堆栈窗口
+    QWidget *centralWidget = new QWidget(this);
+
+    // 创建一个垂直布局
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+
+    // 创建 QLabel 用于显示图像
+    QLabel *imageLabel = new QLabel(this);
+    QPixmap image(":/pexels-gustavo-fring.jpg"); // 确保在资源文件中包含该图像
+    imageLabel->setPixmap(image);
+    imageLabel->setScaledContents(true); // 使图像适应标签大小
+
+    // 设置 QLabel 的大小策略
+    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // 允许图像标签扩展
+
+    // 将 QLabel 添加到布局中
+    layout->addWidget(imageLabel);
+
+    // 设置中心部件的布局
+    centralWidget->setLayout(layout);
+
+    // 将 QWidget 添加到 stackedWidget
+    ui->stackedWidget->addWidget(centralWidget);
+
+    // 设置当前显示的部件为新创建的部件
+    ui->stackedWidget->setCurrentWidget(centralWidget);
+
+    // 确保 stackedWidget 也能最大化
+    ui->stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+}
+
+void UserMainWindow::buttonStyleSheet()
+{
+    ui->scheduleCheckupButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: transparent;"
+                "    border: 2px solid black;"  // 正常状态的边框为黑色
+                "    border-radius: 15px;"
+                "    padding: 10px;"
+                "}"
+                "QPushButton:hover {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);"
+                "}"
+                "QPushButton:pressed {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);"
+                "}"
+                );
 
 }

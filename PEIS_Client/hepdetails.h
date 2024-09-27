@@ -34,6 +34,12 @@ public:
 
     void setInstructions(const QString & filePath);
 
+private slots:
+    void on_exitButton_clicked();
+
+signals:
+    void exitButtonClicked();
+
 private:
     Ui::HEPDetails *ui;
     QString m_cardName;

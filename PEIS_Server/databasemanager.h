@@ -54,7 +54,11 @@ public:
 
     QSqlQuery getPackageNameInfo(const QString &packageName);
 
+    QSqlQuery searchPackageNameInfo(const QString & searchPackageName, int offset, int itemsPerPage);
+
     int calculateTotalPages(int itemsPerPage);
+
+    int getPackageCount(const QString &packageName);
 
     //检查数据库连接状态
     bool isConnected() const;

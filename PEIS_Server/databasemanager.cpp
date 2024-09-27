@@ -470,9 +470,36 @@ QSqlQuery DatabaseManager::getPackageNameInfo(const QString &packageName)
     return query;
 }
 
+QSqlQuery DatabaseManager::searchPackageNameInfo(const QString &searchPackageName, int offset, int itemsPerPage)
+{
+    if(!isConnected())
+    {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT hp.package_name, hp.target_population, hp.provider, hp.price "
+                  "FROM healthpackages hp "
+                  "WHERE hp.package_name LIKE :packageName "
+                  "LIMIT :offset, :itemsPerPage");
+
+    //使用模糊匹配
+    query.bindValue(":packageName", "%" + searchPackageName + "%");
+    query.bindValue(":offset", offset);
+    query.bindValue(":itemsPerPage", itemsPerPage);
+
+
+    if(!query.exec())
+    {
+        qDebug() << "Query failed: " << query.lastError();
+        return QSqlQuery();
+    }
+    return query;
+}
+
 int DatabaseManager::calculateTotalPages(int itemsPerPage)
 {
-    qDebug()<<"heq";
     if(!isConnected())
     {
         qDebug()<<"Failed to connect to database:"<<db.lastError().text();
@@ -501,6 +528,25 @@ int DatabaseManager::calculateTotalPages(int itemsPerPage)
     qDebug()<<"totalItems="<<totalItems;
     //计算总页数
     return (totalItems+itemsPerPage -1)/itemsPerPage;// 向上取整
+}
+
+int DatabaseManager::getPackageCount(const QString &packageName)
+{
+    if (!isConnected()) {
+            qDebug() << "Failed to connect to database:" << db.lastError().text();
+            return 0;
+        }
+
+        QSqlQuery query(db);
+        query.prepare("SELECT COUNT(*) FROM healthpackages WHERE package_name LIKE :packageName");
+        query.bindValue(":packageName", "%" + packageName + "%");
+
+        if (!query.exec() || !query.next()) {
+            qDebug() << "Query failed: " << query.lastError();
+            return 0;
+        }
+
+        return query.value(0).toInt();
 }
 
 

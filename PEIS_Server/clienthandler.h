@@ -45,6 +45,7 @@ private:
 
     QByteArray handlePackageInformationRequest(const QJsonObject & packageNameDate);
 
+    QByteArray handleSearchPackageRequest(const QJsonObject & searchPackageDate);
 
 
 

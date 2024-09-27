@@ -20,5 +20,7 @@
         <file>prePage.png</file>
         <file>search.png</file>
         <file>price.png</file>
+        <file>returnExit.png</file>
+        <file>pexels-gustavo-fring.jpg</file>
     </qresource>
 </RCC>
