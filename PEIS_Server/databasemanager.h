@@ -60,6 +60,13 @@ public:
 
     int getPackageCount(const QString &packageName);
 
+    int getAppointmentCount(const QString& cardName,const QString &selectedDate);
+
+    bool isUserAlreadyByAppointments(const QString& username,const QString &cardname,const QString &selectedDate);
+
+    int getAvailablePackageCount(const QString& cardName,const QString&selecteDate);
+
+    bool insertAppointment(const QString &username,const QString &itemName,const QString &appointmentDate);
     //检查数据库连接状态
     bool isConnected() const;
 

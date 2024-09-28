@@ -47,7 +47,9 @@ private:
 
     QByteArray handleSearchPackageRequest(const QJsonObject & searchPackageDate);
 
+    QByteArray handleGetCheckupPackageCountRequest(const QJsonObject & checkupPackageDate);
 
+    void updateUserAppointments(const QString &selectdate);
 
 private:
     QTcpSocket * clientSocket; //客户端的套接字

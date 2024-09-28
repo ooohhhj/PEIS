@@ -65,9 +65,9 @@ void ClientSocket::processResponse(Packet &packet)
                  << packet.length << ", message.size() = " << MessageObject.size();
     }
 
-     QString message;
+    QString message;
     if (MessageObject.contains("message")) {
-        QString message = MessageObject["message"].toString();
+       message = MessageObject["message"].toString();
         // 处理 message
     }
 
@@ -163,11 +163,31 @@ void ClientSocket::processResponse(Packet &packet)
         emit ReserveCheckup(packagesArray,totalPages);
         break;
     }
+    case GetCheckupPackageCountResponce:
+    {
+
+        if(message == StatusMessage::AppointmentSuccessful)
+        {
+            showMessageBox(":/successfully.png","预约套餐",message);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","预约套餐",message);
+        }
+        break;
+    }
+    case UpdateAppointmentResponce:
+    {
+        QString selectDate =MessageObject["date"].toString();
+        emit updateUserAppointment(selectDate);
+        break;
+    }
     case InternalServerError:
     {
         showMessageBox(":/warning.png","警告",message);
         break;
     }
+
 
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
@@ -178,36 +198,42 @@ void ClientSocket::processResponse(Packet &packet)
 void ClientSocket::showMessageBox(const QString &iconPath, const QString &windowsTitle, const QString &message)
 {
 
-    QMessageBox msgBox;
+    QDialog  msgBox;
     msgBox.setWindowTitle(windowsTitle);
-    msgBox.setText(message);
+    msgBox.setMinimumSize(400, 200); // 设置最小尺寸
+
+    // 去掉帮助按钮 (?)
+    msgBox.setWindowFlags(msgBox.windowFlags() & ~Qt::WindowContextHelpButtonHint);
+
 
     // 设置字体
     QFont font;
     font.setPointSize(14);  // 设置字体大小，例如 14pt
     font.setFamily("Microsoft YaHei");  // 设置支持中文的字体类型
-    msgBox.setFont(font);
+
+    QHBoxLayout *layout = new QHBoxLayout(&msgBox);
+    QLabel *label = new QLabel(message);
+    label->setFont(font);
+    label->setStyleSheet("QLabel { color: black; }");
+    layout->addWidget(label);  // 添加文本标签
 
 
-    //使用图标路径加载QPixmap 并设置图标
     QPixmap pixmap(iconPath);
-    if(!pixmap.isNull())
-    {
-        // 将图标缩放到 50x50
+    if (!pixmap.isNull()) {
         QPixmap scaledPixmap = pixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        msgBox.setIconPixmap(scaledPixmap);
-    }
-    else
-    {
-        qDebug()<<"图标加载失败"<<endl;
+        QLabel *iconLabel = new QLabel;
+        iconLabel->setPixmap(scaledPixmap);
+        layout->addWidget(iconLabel);
     }
 
-    // // 设置文本颜色为黑色
-    msgBox.setStyleSheet("QLabel { color: black;  }"  );
+    layout->addWidget(label);
+    msgBox.setLayout(layout);
+
+    // 设置定时器，2秒后关闭对话框
+    QTimer::singleShot(2000, &msgBox, &QDialog::accept);
+
     //创建一个定时器 5秒后关闭消息框
     QTimer::singleShot(2000,&msgBox,&QMessageBox::accept);
-
-    msgBox.setStandardButtons(QMessageBox::NoButton);
 
 
     msgBox.exec();

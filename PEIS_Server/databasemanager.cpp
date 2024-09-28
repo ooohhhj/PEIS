@@ -533,22 +533,120 @@ int DatabaseManager::calculateTotalPages(int itemsPerPage)
 int DatabaseManager::getPackageCount(const QString &packageName)
 {
     if (!isConnected()) {
-            qDebug() << "Failed to connect to database:" << db.lastError().text();
-            return 0;
-        }
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return 0;
+    }
 
-        QSqlQuery query(db);
-        query.prepare("SELECT COUNT(*) FROM healthpackages WHERE package_name LIKE :packageName");
-        query.bindValue(":packageName", "%" + packageName + "%");
+    QSqlQuery query(db);
+    query.prepare("SELECT COUNT(*) FROM healthpackages WHERE package_name LIKE :packageName");
+    query.bindValue(":packageName", "%" + packageName + "%");
 
-        if (!query.exec() || !query.next()) {
-            qDebug() << "Query failed: " << query.lastError();
-            return 0;
-        }
+    if (!query.exec() || !query.next()) {
+        qDebug() << "Query failed: " << query.lastError();
+        return 0;
+    }
 
-        return query.value(0).toInt();
+    return query.value(0).toInt();
 }
 
+int DatabaseManager::getAppointmentCount(const QString &cardName, const QString &selectedDate)
+{
+    //查询套餐相同日期的数量
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return 0;
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare("SELECT COUNT(*) AS appointment_count "
+                  "FROM appointments "
+                  "WHERE item_name = :itemName "
+                  "AND DATE(appointment_date) = DATE(:date)");
+
+    query.bindValue(":itemName",cardName);
+    query.bindValue(":date",selectedDate);
+
+    if(query.exec() && query.next())
+    {
+        return query.value(0).toInt();
+    }
+
+    return 0;
+}
+
+
+bool DatabaseManager::isUserAlreadyByAppointments(const QString &username, const QString &cardname, const QString &selectedDate)
+{
+    //判断用户是否预约了
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false;
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT COUNT(*) FROM appointments "
+                  "WHERE username = :username "
+                  "AND item_name = :cardName "
+                  "AND DATE(appointment_date) = DATE(:selectedDate)");
+
+    query.bindValue(":username",username);
+    query.bindValue(":cardName",cardname);
+    query.bindValue(":selectedDate",selectedDate);
+
+    if(query.exec()&&query.next())
+    {
+        return query.value(0).toInt()>0;
+    }
+
+    return false;
+}
+
+int DatabaseManager::getAvailablePackageCount(const QString &cardName, const QString &selecteDate)
+{
+    //获取套餐的上限数量
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return 0;
+    }
+
+    QSqlQuery query(db);
+    query.prepare("select available_slots from healthpackages where package_name = :cardName");
+    query.bindValue(":cardName",cardName);
+
+    if(query.exec()&&query.next())
+    {
+        return query.value(0).toInt();
+    }
+    return -1;
+}
+
+bool DatabaseManager::insertAppointment(const QString &username, const QString &itemName, const QString &appointmentDate)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return 0;
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare("insert into appointments (username, item_name, appointment_date, status) "
+                  "VALUES (:username, :itemName, :appointmentDate, :status)");
+
+    query.bindValue(":username",username);
+    query.bindValue(":itemName", itemName);
+    query.bindValue(":appointmentDate", appointmentDate);
+    query.bindValue(":status", "已预约");
+
+    // 执行插入
+    if (query.exec()) {
+        qDebug() << "Appointment inserted successfully.";
+        return true; // 插入成功，返回 true
+    } else {
+        qDebug() << "Failed to insert appointment:" << query.lastError().text();
+        return false; // 插入失败，返回 false
+    }
+}
 
 
 bool DatabaseManager::isConnected() const

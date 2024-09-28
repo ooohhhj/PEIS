@@ -34,8 +34,14 @@ public:
 
     void setInstructions(const QString & filePath);
 
+    void requestPackageInfo();
+
+    void setUsername(const QString& username );
+
 private slots:
     void on_exitButton_clicked();
+    void on_reserveButton_clicked();
+    void OnUpdateUserAppointment(const QString& selectdate);
 
 signals:
     void exitButtonClicked();
@@ -43,6 +49,7 @@ signals:
 private:
     Ui::HEPDetails *ui;
     QString m_cardName;
+    QString m_username;
 };
 
 #endif // HEPDETAILS_H

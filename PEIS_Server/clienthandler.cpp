@@ -25,7 +25,6 @@ void ClientHandler::run()
 
 QByteArray ClientHandler::processRequest(Packet &packet)
 {
-
     //检查解包后的消息长度是否与包的长度匹配
     QJsonObject message = Protocol::parsePacket(packet);
     // 如果要检查长度，可以对 JSON 对象序列化后进行字节长度检查
@@ -70,6 +69,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case UpdateSearchPackageRequest:
         return handleSearchPackageRequest(message);
+        break;
+    case GetCheckupPackageCountRequest:
+        return handleGetCheckupPackageCountRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -472,6 +474,76 @@ QByteArray ClientHandler::handleSearchPackageRequest(const QJsonObject &searchPa
     QByteArray serializedResponse = Protocol::serializePacket(responsePacket);
 
     return serializedResponse;
+}
+
+QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject &checkupPackageDate)
+{
+    QString username =checkupPackageDate["username"].toString();
+    QString cardName =checkupPackageDate["cardName"].toString();
+    QString selectDate =checkupPackageDate["selectDate"].toString();
+
+    qDebug()<<"username="<<username;
+    qDebug()<<"cardName="<<cardName;
+    qDebug()<<"selectDate="<<selectDate;
+
+
+    QJsonObject responseObject;
+    QString message ;
+
+    //先判断用户是否预约
+    if(DatabaseManager::instance().isUserAlreadyByAppointments(username,cardName,selectDate))
+    {
+
+        message =StatusMessage::UserAppointmentConfirmed;
+    }
+    else
+    {
+        //未预约
+        //获取套餐数量  获取预约表的套餐数量比较
+        if(DatabaseManager::instance().getAppointmentCount(cardName,selectDate) <
+                DatabaseManager::instance().getAvailablePackageCount(cardName,selectDate))
+        {
+            //说明还可以预约
+            //创建预约
+            if(DatabaseManager::instance().insertAppointment(username,cardName,selectDate))
+            {
+                message =StatusMessage::AppointmentSuccessful;
+                updateUserAppointments(selectDate);
+
+            }
+            else
+            {
+                 message =StatusMessage::InternalServerError;
+            }
+        }
+        else
+        {
+            //不能预约
+            message =StatusMessage::CannotMakeanAppointment;
+        }
+    }
+
+    responseObject["message"] = message;
+    qDebug()<<message;
+
+    Packet packet =Protocol::createPacket(GetCheckupPackageCountResponce,responseObject);
+    QByteArray serializedResponse = Protocol::serializePacket(packet);
+
+    return serializedResponse;
+
+
+}
+
+void ClientHandler::updateUserAppointments(const QString &selectdate)
+{
+    QJsonObject updateObj;
+    updateObj["date"]=selectdate;
+
+    Packet packet =Protocol::createPacket(UpdateAppointmentResponce,updateObj);
+    QByteArray serializedResponse = Protocol::serializePacket(packet);
+
+    emit requestProcessed(serializedResponse);
+
 }
 
 

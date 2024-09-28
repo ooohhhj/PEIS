@@ -26,12 +26,24 @@ enum RequestType
     PhoneNumberIsExistRequest,                  //手机号是否存在请求
     ForGetPasswordRequest,                      //找回密码请求
     PhoneAndPasswordIsExistRequest,             //手机号码与密码是否匹配
+
     UsernameAndPasswordIsExistRequest,          //用户名与密码是否匹配
+
     ReserveCheckupRequest,                      // 预约体检信息请求
+
     UpdateCheckupPackageRequest,                // 更新体检套餐请求
+
     PackageInformationRequest,                   //套餐信息请求
+
     SearchPackageRequest,                        //搜索套餐请求
+
     UpdateSearchPackageRequest,                    //更新搜索套餐请求
+
+    GetCheckupPackageCountRequest,                //预约体检套餐请求
+
+
+
+
 
 };
 
@@ -58,7 +70,12 @@ enum ResponseType
     ReserveCheckupResponce,                     //体检套餐回复
     PackageInformationResponce,                 //套餐信息回复
 
-    SearchPackageResponce,                      //查找套餐回复
+    SearchPackageResponce,                        //搜索套餐回复
+
+    GetCheckupPackageCountResponce,               //预约体检套餐回复
+
+    UpdateAppointmentResponce,                  //更新预约信息
+
 
     InternalServerError,                        //未知请求
 
@@ -84,6 +101,10 @@ const QString PhoneAndPasswordFailed ="手机号码或密码输入有误";
 
 const QString UsernameAndPasswordSuccessfully ="用户名与密码匹配";
 const QString UsernameAndPasswordFailed ="用户名或密码输入有误";
+
+const QString UserAppointmentConfirmed ="已预约";
+const QString AppointmentSuccessful ="预约成功";
+const QString CannotMakeanAppointment ="预约人数达到上限";
 
 const QString InternalServerError = "内部错误";
 };

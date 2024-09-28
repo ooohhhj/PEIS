@@ -16,6 +16,8 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     checkupRecord =std::make_unique<CheckupRecord>(this);
     checkupreport =std::make_unique<CheckupReport>(this);
 
+    hepDetails.get()->setUsername(this->m_username);
+
     setDefaultWidget();
 
     ui->stackedWidget->addWidget(scheduleCheckUp.get());

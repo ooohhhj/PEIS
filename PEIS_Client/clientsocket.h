@@ -50,6 +50,8 @@ signals:
 
     void ReserveCheckup(const QJsonArray & jsonArray,const int& totalPage);
     void PackageNameInfo(const QJsonArray & jsonArray,const QString &packageDescription);
+
+    void updateUserAppointment(const QString& selectdate);
 private:
     QTcpSocket * tcpSocket;
 

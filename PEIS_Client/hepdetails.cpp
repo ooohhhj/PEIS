@@ -16,6 +16,9 @@ HEPDetails::HEPDetails(QWidget *parent) :
     setInstructions("H:/PEIS/PEIS/examination_notice.json");
 
 
+    connect(ClientSocket::instance(),&ClientSocket::updateUserAppointment,this,&HEPDetails::OnUpdateUserAppointment);
+
+
 }
 
 HEPDetails::~HEPDetails()
@@ -57,10 +60,17 @@ void HEPDetails::setupSchedule()
         QString dayOfWeek = date.toString("ddd"); // 短格式星期几
         QString dateString = date.toString("MM-dd"); // 月-日
 
+        // 创建日期字符串，用于发送给服务器
+        QString fullDateString = date.toString("yyyy-MM-dd"); // 完整日期格式
+
+
         QLabel *dayLabel = new QLabel(dayOfWeek);
         QLabel *dateLabel = new QLabel(dateString);
 
         QPushButton *reserveButton = new QPushButton("预约");
+        // 设置按钮的对象名称为完整日期字符串  用于后面点击事件
+        reserveButton->setObjectName(fullDateString);
+
 
         // 设置星期几和日期的样式
         dayLabel->setStyleSheet("font-size: 16pt; background-color: transparent; border: none;"); // 透明背景和无边框
@@ -85,10 +95,7 @@ void HEPDetails::setupSchedule()
                                      "}");
 
         // 连接按钮的点击信号
-        connect(reserveButton, &QPushButton::clicked, this, [this, date]() {
-            // 处理预约逻辑
-            qDebug() << "预约日期:" << date.toString();
-        });
+        connect(reserveButton, &QPushButton::clicked, this, &HEPDetails::on_reserveButton_clicked);
 
         // 将标签和按钮添加到布局中
         dateLayout->addWidget(dayLabel);
@@ -100,6 +107,7 @@ void HEPDetails::setupSchedule()
         dateItem->setLayout(dateLayout);
         scheduleLayout->addWidget(dateItem);
     }
+
 }
 
 void HEPDetails::setCardName(const QString &cardName)
@@ -275,9 +283,66 @@ void HEPDetails::setInstructions(const QString &filePath)
     ui->instructionsWidget->layout()->addWidget(scrollArea);
 }
 
+void HEPDetails::requestPackageInfo()
+{
+    //发送获取套餐请求
+    QJsonObject info;
+    info["cardName"] = this->m_cardName;
+
+    Packet packet =Protocol::createPacket(GetCheckupPackageCountRequest,info);
+    QByteArray dataToSend = Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(dataToSend);
+}
+
+void HEPDetails::setUsername(const QString &username)
+{
+    this->m_username =username;
+}
+
 void HEPDetails::on_exitButton_clicked()
 {
     //返回套餐页
     emit exitButtonClicked();
+}
+
+void HEPDetails::on_reserveButton_clicked()
+{
+    QPushButton * button =qobject_cast<QPushButton*>(sender());
+    if(!button) return;
+
+    //获取与按钮相关联的日期
+    QString selectedDate = button->objectName();// 获取按钮对象名称（即日期字符串）
+
+    //发送获取套餐请求
+    QJsonObject info;
+    info["username"] =this->m_username;
+    info["cardName"] = this->m_cardName;
+    info["selectDate"] =selectedDate;
+
+    Packet packet =Protocol::createPacket(GetCheckupPackageCountRequest,info);
+    QByteArray dataToSend = Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(dataToSend);
+}
+
+void HEPDetails::OnUpdateUserAppointment(const QString &selectdate)
+{
+    // 获取父控件中的所有子控件
+    QList<QPushButton*> buttons = ui->scheduleWidget->findChildren<QPushButton*>();
+
+    // 遍历每个按钮并检查它的 objectName
+    for (QPushButton* button : buttons) {
+        if (button->objectName() == selectdate) {
+            qDebug() << "Found button with name 'selectdate'";
+            button->setText("已预约");
+            button->setStyleSheet("background-color: transparent;border: none;");
+            break;
+            // 执行相关操作
+        } else {
+            qDebug() << "Button name: " << button->objectName();
+        }
+    }
+
 }
 
