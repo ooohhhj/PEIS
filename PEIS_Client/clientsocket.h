@@ -52,6 +52,8 @@ signals:
     void PackageNameInfo(const QJsonArray & jsonArray,const QString &packageDescription);
 
     void updateUserAppointment(const QString& selectdate);
+
+    void userInfos(const QJsonArray &jsonArray);
 private:
     QTcpSocket * tcpSocket;
 

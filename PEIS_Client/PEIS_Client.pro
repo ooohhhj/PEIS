@@ -22,6 +22,7 @@ SOURCES += \
     registerdialog.cpp \
     schedulecheckup.cpp \
     staffmainwindow.cpp \
+    userinfo.cpp \
     usermainwindow.cpp
 
 HEADERS += \
@@ -37,6 +38,7 @@ HEADERS += \
     registerdialog.h \
     schedulecheckup.h \
     staffmainwindow.h \
+    userinfo.h \
     usermainwindow.h
 
 FORMS += \
@@ -49,6 +51,7 @@ FORMS += \
     registerdialog.ui \
     schedulecheckup.ui \
     staffmainwindow.ui \
+    userinfo.ui \
     usermainwindow.ui
 
 # Default rules for deployment.

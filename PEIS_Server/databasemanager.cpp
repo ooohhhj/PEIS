@@ -654,6 +654,36 @@ bool DatabaseManager::isConnected() const
     return db.isOpen();
 }
 
+QSqlQuery DatabaseManager::getUserInfosByRoleId(const int &role_id)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+
+    // 编写SQL查询语句，选择需要显示的用户信息
+    query.prepare("SELECT users.id, users.username, users.gender, users.birth_date, "
+                  "users.id_card, users.address, users.phone_number, roles.name AS role_name, "
+                  "users.created_at, users.updated_at "
+                  "FROM users "
+                  "JOIN roles ON users.role_id = roles.id "
+                  "WHERE users.role_id = :role_id");
+
+    // 绑定参数
+    query.bindValue(":role_id", role_id);
+
+    // 执行查询
+    if (!query.exec()) {
+        qDebug() << "Query failed:" << query.lastError().text();
+        return QSqlQuery();
+    }
+
+    return query;
+
+}
+
 QString DatabaseManager::generateSalt(int length)
 {
     //生成盐值

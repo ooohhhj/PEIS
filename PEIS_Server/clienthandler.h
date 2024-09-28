@@ -49,6 +49,8 @@ private:
 
     QByteArray handleGetCheckupPackageCountRequest(const QJsonObject & checkupPackageDate);
 
+    QByteArray handleUserInfoRequest(const QJsonObject & role_idDate);
+
     void updateUserAppointments(const QString &selectdate);
 
 private:

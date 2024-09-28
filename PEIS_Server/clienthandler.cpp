@@ -73,6 +73,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case GetCheckupPackageCountRequest:
         return handleGetCheckupPackageCountRequest(message);
         break;
+    case UserInfoRequest:
+        return handleUserInfoRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -100,13 +103,6 @@ QByteArray ClientHandler::handleRegisterRequest(const QJsonObject& registerDate)
     QString phone =registerDate["iphoneNumber"].toString();
     QString password =registerDate["password"].toString();
 
-    qDebug() << "Register request received for username:" << username
-             << " Gender:" << sex
-             << " Birthdate:" << birthdate
-             << " ID Card:" << idCard
-             << " Address:" << address
-             << " Phone:" << phone
-             <<"password"<<password;
 
     // 注册请求的业务逻辑
     //判断用户是否存在
@@ -482,10 +478,6 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
     QString cardName =checkupPackageDate["cardName"].toString();
     QString selectDate =checkupPackageDate["selectDate"].toString();
 
-    qDebug()<<"username="<<username;
-    qDebug()<<"cardName="<<cardName;
-    qDebug()<<"selectDate="<<selectDate;
-
 
     QJsonObject responseObject;
     QString message ;
@@ -531,6 +523,43 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
 
     return serializedResponse;
 
+
+}
+
+QByteArray ClientHandler::handleUserInfoRequest(const QJsonObject &role_idDate)
+{
+    int role_id = role_idDate["role_id"].toInt();
+
+    QSqlQuery query = DatabaseManager::instance().getUserInfosByRoleId(role_id);
+
+    QJsonArray userArray;
+
+    // 将查询结果填充到 JSON 数组中
+       while (query.next()) {
+           QJsonObject userObject;
+
+           userObject["id"] = query.value("id").toInt();
+           userObject["username"] = query.value("username").toString();
+           userObject["gender"] = query.value("gender").toString();
+           userObject["birth_date"] = query.value("birth_date").toString();
+           userObject["id_card"] = query.value("id_card").toString();
+           userObject["address"] = query.value("address").toString();
+           userObject["phone_number"] = query.value("phone_number").toString();
+           userObject["role"] = query.value("role_name").toString();
+           userObject["created_at"] = query.value("created_at").toString();
+           userObject["updated_at"] = query.value("updated_at").toString();
+
+           userArray.append(userObject);
+       }
+
+       QJsonObject obj;
+       obj["userInfos"]=userArray;
+
+       Packet packet =Protocol::createPacket(UserInfoResponce,obj);
+
+       QByteArray array =Protocol::serializePacket(packet);
+
+       return array;
 
 }
 

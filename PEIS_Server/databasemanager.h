@@ -70,11 +70,15 @@ public:
     //检查数据库连接状态
     bool isConnected() const;
 
+    QSqlQuery getUserInfosByRoleId(const int&role_id);
+
     //生成盐值
     QString generateSalt(int length );
 
     //对密码进行哈希加密
     QString hashPassword(const QString &password,const QString &salt);
+
+
 
 private:
     QSqlDatabase db;

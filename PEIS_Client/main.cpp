@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
         {
         case 1:
         {
-            AdminMainWindow adminWindow;
-            adminWindow.show();
+            AdminMainWindow *adminWindow =new AdminMainWindow(nullptr,username);
+            adminWindow->show();
         }
             break;
         case 2:
         {
-            StaffMainWindow staffWindow;
-            staffWindow.show();
+            StaffMainWindow *staffWindow =new StaffMainWindow(nullptr,username);
+            staffWindow->show();
         }
             break;
         case 3:

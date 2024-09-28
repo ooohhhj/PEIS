@@ -67,7 +67,7 @@ void ClientSocket::processResponse(Packet &packet)
 
     QString message;
     if (MessageObject.contains("message")) {
-       message = MessageObject["message"].toString();
+        message = MessageObject["message"].toString();
         // 处理 message
     }
 
@@ -180,6 +180,12 @@ void ClientSocket::processResponse(Packet &packet)
     {
         QString selectDate =MessageObject["date"].toString();
         emit updateUserAppointment(selectDate);
+        break;
+    }
+    case UserInfoResponce:
+    {
+        QJsonArray array =MessageObject["userInfos"].toArray();
+        emit userInfos(array);
         break;
     }
     case InternalServerError:

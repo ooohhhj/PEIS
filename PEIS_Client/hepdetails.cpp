@@ -343,6 +343,5 @@ void HEPDetails::OnUpdateUserAppointment(const QString &selectdate)
             qDebug() << "Button name: " << button->objectName();
         }
     }
-
 }
 

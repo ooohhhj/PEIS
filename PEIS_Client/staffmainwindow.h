@@ -12,11 +12,12 @@ class StaffMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit StaffMainWindow(QWidget *parent = nullptr);
+    explicit StaffMainWindow(QWidget *parent = nullptr,const QString &username="");
     ~StaffMainWindow();
 
 private:
     Ui::StaffMainWindow *ui;
+    QString m_username;
 };
 
 #endif // STAFFMAINWINDOW_H

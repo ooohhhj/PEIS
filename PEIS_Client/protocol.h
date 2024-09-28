@@ -41,9 +41,7 @@ enum RequestType
 
     GetCheckupPackageCountRequest,                //预约体检套餐请求
 
-
-
-
+    UserInfoRequest ,                           //用户信息请求
 
 };
 
@@ -75,6 +73,8 @@ enum ResponseType
     GetCheckupPackageCountResponce,               //预约体检套餐回复
 
     UpdateAppointmentResponce,                  //更新预约信息
+
+    UserInfoResponce ,                           //用户信息回复
 
 
     InternalServerError,                        //未知请求
