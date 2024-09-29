@@ -482,8 +482,10 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
     QJsonObject responseObject;
     QString message ;
 
+    int userId =DatabaseManager::instance().getUserIdByUsername(username);
+    int packageId =DatabaseManager::instance().getPackageIdByName(cardName);
     //先判断用户是否预约
-    if(DatabaseManager::instance().isUserAlreadyByAppointments(username,cardName,selectDate))
+    if(DatabaseManager::instance().isUserAlreadyByAppointments(userId,packageId,selectDate))
     {
 
         message =StatusMessage::UserAppointmentConfirmed;
@@ -492,12 +494,12 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
     {
         //未预约
         //获取套餐数量  获取预约表的套餐数量比较
-        if(DatabaseManager::instance().getAppointmentCount(cardName,selectDate) <
+        if(DatabaseManager::instance().getAppointmentCount(packageId,selectDate) <
                 DatabaseManager::instance().getAvailablePackageCount(cardName,selectDate))
         {
             //说明还可以预约
             //创建预约
-            if(DatabaseManager::instance().insertAppointment(username,cardName,selectDate))
+            if(DatabaseManager::instance().insertAppointment(userId,packageId,selectDate))
             {
                 message =StatusMessage::AppointmentSuccessful;
                 updateUserAppointments(selectDate);

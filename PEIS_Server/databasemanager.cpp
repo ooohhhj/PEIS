@@ -549,7 +549,7 @@ int DatabaseManager::getPackageCount(const QString &packageName)
     return query.value(0).toInt();
 }
 
-int DatabaseManager::getAppointmentCount(const QString &cardName, const QString &selectedDate)
+int DatabaseManager::getAppointmentCount(const int &packageId, const QString &selectedDate)
 {
     //查询套餐相同日期的数量
     if (!isConnected()) {
@@ -561,10 +561,10 @@ int DatabaseManager::getAppointmentCount(const QString &cardName, const QString 
 
     query.prepare("SELECT COUNT(*) AS appointment_count "
                   "FROM appointments "
-                  "WHERE item_name = :itemName "
+                  "WHERE packageId = :packageId "
                   "AND DATE(appointment_date) = DATE(:date)");
 
-    query.bindValue(":itemName",cardName);
+    query.bindValue(":packageId",packageId);
     query.bindValue(":date",selectedDate);
 
     if(query.exec() && query.next())
@@ -576,7 +576,7 @@ int DatabaseManager::getAppointmentCount(const QString &cardName, const QString 
 }
 
 
-bool DatabaseManager::isUserAlreadyByAppointments(const QString &username, const QString &cardname, const QString &selectedDate)
+bool DatabaseManager::isUserAlreadyByAppointments(const int &userId, const int &packageId, const QString &appointmentDate)
 {
     //判断用户是否预约了
     if (!isConnected()) {
@@ -586,13 +586,13 @@ bool DatabaseManager::isUserAlreadyByAppointments(const QString &username, const
 
     QSqlQuery query(db);
     query.prepare("SELECT COUNT(*) FROM appointments "
-                  "WHERE username = :username "
-                  "AND item_name = :cardName "
+                  "WHERE user_id = :userId "
+                  "AND package_id = :packageId "
                   "AND DATE(appointment_date) = DATE(:selectedDate)");
 
-    query.bindValue(":username",username);
-    query.bindValue(":cardName",cardname);
-    query.bindValue(":selectedDate",selectedDate);
+    query.bindValue(":username",userId);
+    query.bindValue(":cardName",packageId);
+    query.bindValue(":selectedDate",appointmentDate);
 
     if(query.exec()&&query.next())
     {
@@ -621,22 +621,31 @@ int DatabaseManager::getAvailablePackageCount(const QString &cardName, const QSt
     return -1;
 }
 
-bool DatabaseManager::insertAppointment(const QString &username, const QString &itemName, const QString &appointmentDate)
+bool DatabaseManager::insertAppointment(const int &userId, const int &packageId, const QString &appointmentDate)
 {
     if (!isConnected()) {
         qDebug() << "Failed to connect to database:" << db.lastError().text();
         return 0;
     }
 
+    // 分配医生
+    int doctorId = getDoctorByDepartment(packageId);
+    if (doctorId == -1) {
+        qDebug() << "No doctor available for this package.";
+        return false;  // 无法分配医生，插入失败
+    }
+
     QSqlQuery query(db);
 
-    query.prepare("insert into appointments (username, item_name, appointment_date, status) "
-                  "VALUES (:username, :itemName, :appointmentDate, :status)");
+    // 插入预约并分配医生
+    query.prepare("INSERT INTO appointments (user_id, package_id, appointment_date, status, doctor_id) "
+                  "VALUES (:userId, :packageId, :appointmentDate, :status, :doctorId)");
 
-    query.bindValue(":username",username);
-    query.bindValue(":itemName", itemName);
+    query.bindValue(":userId", userId);
+    query.bindValue(":packageId", packageId);
     query.bindValue(":appointmentDate", appointmentDate);
     query.bindValue(":status", "已预约");
+    query.bindValue(":doctorId", doctorId);
 
     // 执行插入
     if (query.exec()) {
@@ -645,6 +654,72 @@ bool DatabaseManager::insertAppointment(const QString &username, const QString &
     } else {
         qDebug() << "Failed to insert appointment:" << query.lastError().text();
         return false; // 插入失败，返回 false
+    }
+}
+
+int DatabaseManager::getUserIdByUsername(const QString &username)
+{
+    if(!isConnected())
+    {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return -1; // 返回 -1 表示未找到用户或数据库连接失败
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT id FROM users WHERE username = :username");
+    query.bindValue(":username", username);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    } else {
+        qDebug() << "Query failed or user not found: " << query.lastError().text();
+        return -1;
+    }
+}
+
+int DatabaseManager::getPackageIdByName(const QString &packageName)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return -1; // 返回 -1 表示未找到套餐或数据库连接失败
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT id FROM healthpackages WHERE package_name = :packageName");
+    query.bindValue(":packageName", packageName);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    } else {
+        qDebug() << "Query failed or package not found: " << query.lastError().text();
+        return -1;
+    }
+}
+
+int DatabaseManager::getDoctorByDepartment(const int &packageId)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return -1; // 返回 -1 表示出错
+    }
+
+    QSqlQuery query(db);
+
+    // 通过 packageId 查找对应的 department_id，并随机选择一个医生
+    query.prepare("SELECT d.id "
+                  "FROM doctors d "
+                  "JOIN departments dept ON d.department_id = dept.id "
+                  "JOIN healthpackages hp ON hp.department_id = dept.id "
+                  "WHERE hp.id = :packageId "
+                  "ORDER BY RAND() LIMIT 1");  // 随机分配一个医生
+
+    query.bindValue(":packageId", packageId);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();  // 返回医生 ID
+    } else {
+        qDebug() << "Failed to find doctor for the package:" << query.lastError().text();
+        return -1; // 返回 -1 表示分配失败
     }
 }
 
