@@ -188,13 +188,23 @@ void ClientSocket::processResponse(Packet &packet)
         emit userInfos(array);
         break;
     }
+    case StartDateResponce:
+    {
+        QString startDate =MessageObject["startDate"].toString();
+        emit OnstartDate(startDate);
+        break;
+    }
+    case AppointmentInformationResponce:
+    {
+        QJsonArray array =MessageObject["appointments"].toArray();
+        emit OnAppointmentsDate(array);
+        break;
+    }
     case InternalServerError:
     {
         showMessageBox(":/warning.png","警告",message);
         break;
     }
-
-
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

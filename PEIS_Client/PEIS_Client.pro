@@ -10,10 +10,12 @@ CONFIG += c++11 c++14
 
 SOURCES += \
     adminmainwindow.cpp \
+    appointmentmanagement.cpp \
     captchagenerator.cpp \
     checkuprecord.cpp \
     checkupreport.cpp \
     clientsocket.cpp \
+    delegate.cpp \
     hepdetails.cpp \
     logindialog.cpp \
     main.cpp \
@@ -27,10 +29,12 @@ SOURCES += \
 
 HEADERS += \
     adminmainwindow.h \
+    appointmentmanagement.h \
     captchagenerator.h \
     checkuprecord.h \
     checkupreport.h \
     clientsocket.h \
+    delegate.h \
     hepdetails.h \
     logindialog.h \
     passwordrecoverydialog.h \
@@ -43,6 +47,7 @@ HEADERS += \
 
 FORMS += \
     adminmainwindow.ui \
+    appointmentmanagement.ui \
     checkuprecord.ui \
     checkupreport.ui \
     hepdetails.ui \

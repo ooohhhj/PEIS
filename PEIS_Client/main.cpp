@@ -11,6 +11,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
 
+    //    StaffMainWindow staffWindow;
+    //    staffWindow.show();
+    //    return a.exec();
+
     LoginDialog loginDialog;
 
     if(loginDialog.exec() == QDialog::Accepted)

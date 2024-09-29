@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QSqlQuery>
 #include <QJsonArray>
+#include <QDate>
 
 
 #include "databasemanager.h"
@@ -50,6 +51,10 @@ private:
     QByteArray handleGetCheckupPackageCountRequest(const QJsonObject & checkupPackageDate);
 
     QByteArray handleUserInfoRequest(const QJsonObject & role_idDate);
+
+    QByteArray handleStartDateRequest(const QJsonObject & usernameDate);
+
+    QByteArray handleAppointmentInformationRequest(const QJsonObject & usernameDate);
 
     void updateUserAppointments(const QString &selectdate);
 

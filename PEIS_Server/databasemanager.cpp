@@ -723,6 +723,72 @@ int DatabaseManager::getDoctorByDepartment(const int &packageId)
     }
 }
 
+QSqlQuery DatabaseManager::getAppointmentsByusername(const QString &username)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery(); // 返回 -1 表示出错
+    }
+
+    QSqlQuery query(db);
+
+    int userId = getUserIdByUsername(username);
+    if (userId == -1) {
+        qDebug() << "Doctor with username" << username << "not found.";
+        return QSqlQuery(); // 返回空查询表示出错
+    }
+
+    qDebug()<<"调试";
+    //获取到预约医生为userid的病人信息// 查询预约信息，包括病人信息、体检套餐、体检日期和状态
+    query.prepare("SELECT p.username AS patient_name, "
+                     "p.phone_number AS patient_phone, "
+                     "h.package_name AS health_package, "
+                     "a.appointment_date, "
+                     "a.status AS appointment_status "
+                     "FROM appointments a "
+                     "JOIN users p ON a.user_id = p.id "  // 关联预约表中的病人ID
+                     "JOIN healthpackages h ON a.package_id = h.id "  // 关联体检套餐
+                     "JOIN doctors d ON a.doctor_id = d.id "  // 关联医生ID
+                     "WHERE d.user_id = :userId;");  //  通过医生的 user_id 来查
+
+    query.bindValue(":userId", userId);
+    if (!query.exec()) {
+        qDebug() << "Error retrieving appointment information:" << query.lastError();
+        return QSqlQuery(); // 返回空查询表示出错
+    }
+
+    return query; // 成功执行查询，返回结果
+}
+
+QString DatabaseManager::getStartDateByusername(const QString &username)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QString();
+    }
+
+    QSqlQuery query(db);
+
+    int userId =getUserIdByUsername(username);
+
+    query.prepare("SELECT MIN(a.appointment_date) AS first_appointment_date "
+                  "FROM appointments a "
+                  "JOIN doctors d ON a.doctor_id = d.id "
+                  "WHERE d.user_id = :userId");
+    query.bindValue(":userId", userId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            QString firstAppointmentDate = query.value(0).toString();
+            return firstAppointmentDate;
+        }
+    } else {
+        qDebug() << "Query execution failed:" << query.lastError();
+        return QString();
+    }
+
+}
+
 
 bool DatabaseManager::isConnected() const
 {

@@ -54,6 +54,10 @@ signals:
     void updateUserAppointment(const QString& selectdate);
 
     void userInfos(const QJsonArray &jsonArray);
+
+    void OnstartDate(const QString & startDate);
+
+    void OnAppointmentsDate(const QJsonArray& appointmentsArray);
 private:
     QTcpSocket * tcpSocket;
 

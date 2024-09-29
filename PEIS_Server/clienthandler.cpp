@@ -76,6 +76,12 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case UserInfoRequest:
         return handleUserInfoRequest(message);
         break;
+    case StartDateRequest:
+        return handleStartDateRequest(message);
+        break;
+    case AppointmentInformationRequest:
+        return handleAppointmentInformationRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -507,7 +513,7 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
             }
             else
             {
-                 message =StatusMessage::InternalServerError;
+                message =StatusMessage::InternalServerError;
             }
         }
         else
@@ -537,31 +543,106 @@ QByteArray ClientHandler::handleUserInfoRequest(const QJsonObject &role_idDate)
     QJsonArray userArray;
 
     // 将查询结果填充到 JSON 数组中
-       while (query.next()) {
-           QJsonObject userObject;
+    while (query.next()) {
+        QJsonObject userObject;
 
-           userObject["id"] = query.value("id").toInt();
-           userObject["username"] = query.value("username").toString();
-           userObject["gender"] = query.value("gender").toString();
-           userObject["birth_date"] = query.value("birth_date").toString();
-           userObject["id_card"] = query.value("id_card").toString();
-           userObject["address"] = query.value("address").toString();
-           userObject["phone_number"] = query.value("phone_number").toString();
-           userObject["role"] = query.value("role_name").toString();
-           userObject["created_at"] = query.value("created_at").toString();
-           userObject["updated_at"] = query.value("updated_at").toString();
+        userObject["id"] = query.value("id").toInt();
+        userObject["username"] = query.value("username").toString();
+        userObject["gender"] = query.value("gender").toString();
+        userObject["birth_date"] = query.value("birth_date").toString();
+        userObject["id_card"] = query.value("id_card").toString();
+        userObject["address"] = query.value("address").toString();
+        userObject["phone_number"] = query.value("phone_number").toString();
+        userObject["role"] = query.value("role_name").toString();
+        userObject["created_at"] = query.value("created_at").toString();
+        userObject["updated_at"] = query.value("updated_at").toString();
 
-           userArray.append(userObject);
-       }
+        userArray.append(userObject);
+    }
 
-       QJsonObject obj;
-       obj["userInfos"]=userArray;
+    QJsonObject obj;
+    obj["userInfos"]=userArray;
 
-       Packet packet =Protocol::createPacket(UserInfoResponce,obj);
+    Packet packet =Protocol::createPacket(UserInfoResponce,obj);
 
-       QByteArray array =Protocol::serializePacket(packet);
+    QByteArray array =Protocol::serializePacket(packet);
 
-       return array;
+    return array;
+
+}
+
+QByteArray ClientHandler::handleStartDateRequest(const QJsonObject &usernameDate)
+{
+    QString username = usernameDate["username"].toString();
+
+    QString startDate =DatabaseManager::instance().getStartDateByusername(username);
+
+    QJsonObject obj;
+
+    obj["startDate"]=startDate;
+
+    Packet packet = Protocol::createPacket(StartDateResponce,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+
+}
+
+QByteArray ClientHandler::handleAppointmentInformationRequest(const QJsonObject &usernameDate)
+{
+    QString username = usernameDate["username"].toString();
+
+    QSqlQuery query =DatabaseManager::instance().getAppointmentsByusername(username);
+
+    // 如果查询失败，返回错误信息
+    if (!query.isActive() || !query.isSelect()) {
+        QJsonObject errorResponse;
+        errorResponse["status"] = "error";
+        errorResponse["message"] = "Failed to retrieve appointment information.";
+        QJsonDocument errorDoc(errorResponse);
+        return QByteArray();
+    }
+
+    // 准备一个 JSON 数组存储所有预约信息
+    QJsonArray appointmentsArray;
+
+    // 遍历查询结果
+    while (query.next()) {
+        QJsonObject appointment;
+
+        // 提取每个预约的字段信息
+        QString patientName = query.value("patient_name").toString();
+        QString patientPhone = query.value("patient_phone").toString();
+        QString healthPackage = query.value("health_package").toString();
+        QDate appointmentDate = query.value("appointment_date").toDate();
+        QString appointmentStatus = query.value("appointment_status").toString();
+
+        qDebug()<<"patientName="<<patientName;
+        qDebug()<<"patientPhone="<<patientPhone;
+        qDebug()<<"healthPackage="<<healthPackage;
+        qDebug()<<"appointmentDate="<<appointmentDate;
+        qDebug()<<"appointmentStatus="<<appointmentStatus;
+
+        // 将每条预约信息存入 JSON 对象
+        appointment["patient_name"] = patientName;
+        appointment["patient_phone"] = patientPhone;
+        appointment["health_package"] = healthPackage;
+        appointment["appointment_date"] = appointmentDate.toString(Qt::ISODate);
+        appointment["appointment_status"] = appointmentStatus;
+
+        // 将该预约信息添加到 JSON 数组中
+        appointmentsArray.append(appointment);
+    }
+
+    QJsonObject appointmentInfo;
+    appointmentInfo["appointments"] =appointmentsArray;
+
+    Packet packet =Protocol::createPacket(AppointmentInformationResponce,appointmentInfo);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
 
 }
 

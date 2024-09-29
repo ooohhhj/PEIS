@@ -28,7 +28,9 @@ border: 2px solid #A2D8D0; /* Lighter Sea Green */
       <item>
        <widget class="QWidget" name="widget" native="true">
         <property name="styleSheet">
-         <string notr="true"/>
+         <string notr="true">border: 2px solid qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,stop: 0 #696969, stop: 1 #000000);
+border-radius: 15px;
+padding: 10px;</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
@@ -157,7 +159,8 @@ border: 2px solid #A2D8D0; /* Lighter Sea Green */
                 </font>
                </property>
                <property name="styleSheet">
-                <string notr="true"/>
+                <string notr="true">background-color: transparent;
+border: none;</string>
                </property>
                <property name="text">
                 <string/>

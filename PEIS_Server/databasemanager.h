@@ -72,6 +72,9 @@ public:
     int getPackageIdByName(const QString &packageName);//传入套餐名字获取套餐id
     int getDoctorByDepartment(const int &packageId);
 
+    QSqlQuery getAppointmentsByusername(const QString & username);
+
+    QString getStartDateByusername(const QString &username);
 
     //检查数据库连接状态
     bool isConnected() const;
