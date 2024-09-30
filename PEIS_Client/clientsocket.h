@@ -10,6 +10,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QJsonArray>
+#include <QDateTime>
 
 #include "protocol.h"
 
@@ -35,7 +36,7 @@ public:
 
     void showMessageBox(const QString &iconPath, const QString &windowsTitle,const QString &message);
 
-
+    QString convertAppointmentDate(const QString &inputDate);
 
 
 private slots:
@@ -59,7 +60,9 @@ signals:
 
     void OnAppointmentsDate(const QJsonArray& appointmentsArray);
 
-   void OnPatientInfoResponce(const QJsonArray& patientInfoArray);
+    void OnPatientInfoResponce(const QJsonArray& patientInfoArray);
+
+    void OnHealthCheckupItemResponce(const QJsonArray & packageItems);
 private:
     QTcpSocket * tcpSocket;
 

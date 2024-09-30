@@ -85,6 +85,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case PatientInfoRequest:
         return handlePatientInfoRequest(message);
         break;
+    case HealthCheckupItemRequest:
+        return handleHealthCheckupItemRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -664,16 +667,16 @@ QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienName
         QDateTime appointmentDate = query.value("appointment_date").toDateTime();
         QString appointmentStatus = query.value("appointment_status").toString();
 
-       patientInfo["patientName"]=patientName;
-       patientInfo["patientGender"]=patientGender;
-       patientInfo["patientPhone"]=patientPhone;
-       patientInfo["patientBirthDate"]=patientBirthDate.toString();
-       patientInfo["healthPackage"]=healthPackage;
-       patientInfo["appointmentDate"]=appointmentDate.toString();
-       patientInfo["appointmentStatus"]=appointmentStatus;
+        patientInfo["patientName"]=patientName;
+        patientInfo["patientGender"]=patientGender;
+        patientInfo["patientPhone"]=patientPhone;
+        patientInfo["patientBirthDate"]=patientBirthDate.toString();
+        patientInfo["healthPackage"]=healthPackage;
+        patientInfo["appointmentDate"]=appointmentDate.toString();
+        patientInfo["appointmentStatus"]=appointmentStatus;
 
-       // 将该预约信息添加到 JSON 数组中
-       patientInfoArray.append(patientInfo);
+        // 将该预约信息添加到 JSON 数组中
+        patientInfoArray.append(patientInfo);
 
     }
 
@@ -681,6 +684,37 @@ QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienName
     patientInfo["patientInfo"] =patientInfoArray;
 
     Packet packet =Protocol::createPacket(PatientInfoResponce,patientInfo);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+}
+
+QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &packageName)
+{
+    QString package =packageName["packageName"].toString();
+
+    QSqlQuery query =DatabaseManager::instance().getPackageItemInfo(package);
+
+
+    QJsonArray packageItemsArray;
+    // 处理查询结果
+    while (query.next())
+    {
+        QString itemName =query.value("item_name").toString();
+        QString normalRange =query.value("normal_range").toString();
+
+        QJsonObject itemObject;
+        itemObject["itemName"] = itemName;
+        itemObject["normalRange"] = normalRange;
+
+         packageItemsArray.append(itemObject);
+    }
+
+    QJsonObject patientInfo;;
+    patientInfo["packageItems"] =packageItemsArray;
+
+    Packet packet =Protocol::createPacket(HealthCheckupItemResponce,patientInfo);
 
     QByteArray array =Protocol::serializePacket(packet);
 

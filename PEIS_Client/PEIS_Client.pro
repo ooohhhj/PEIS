@@ -15,7 +15,6 @@ SOURCES += \
     checkuprecord.cpp \
     checkupreport.cpp \
     clientsocket.cpp \
-    delegate.cpp \
     hepdetails.cpp \
     inputmedicaexaminationdata.cpp \
     logindialog.cpp \
@@ -37,7 +36,6 @@ HEADERS += \
     checkuprecord.h \
     checkupreport.h \
     clientsocket.h \
-    delegate.h \
     hepdetails.h \
     inputmedicaexaminationdata.h \
     logindialog.h \

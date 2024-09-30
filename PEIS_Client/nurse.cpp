@@ -35,9 +35,22 @@ void Nurse::on_scheduleCheckupButton_clicked()
     ui->stackedWidget->setCurrentWidget(patientinfo.get());
 }
 
-void Nurse::on_EditReportButtonClicked(const QString &patientName)
+void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus)
 {
+
     ui->stackedWidget->setCurrentWidget(inputmedicaexaminationdata.get());
+
+    inputmedicaexaminationdata.get()->setPatientInfo(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
+
+    //发送请求体检项目请求
+    QJsonObject obj;
+    obj["packageName"]=healthPackage;
+
+    Packet packet =Protocol::createPacket(HealthCheckupItemRequest,obj);
+
+    QByteArray sendArray =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(sendArray);
 
 }
 

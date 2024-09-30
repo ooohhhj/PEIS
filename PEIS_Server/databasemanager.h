@@ -78,6 +78,8 @@ public:
 
     QSqlQuery getUserInfoByUsername(const QString&username);
 
+    QSqlQuery getPackageItemInfo(const QString &packagename);
+
     //检查数据库连接状态
     bool isConnected() const;
 

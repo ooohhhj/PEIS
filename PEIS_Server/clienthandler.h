@@ -58,6 +58,8 @@ private:
 
     QByteArray handlePatientInfoRequest(const QJsonObject & patienNameDate);
 
+    QByteArray handleHealthCheckupItemRequest(const QJsonObject & packageName);
+
     void updateUserAppointments(const QString &selectdate);
 
 private:

@@ -48,6 +48,8 @@ enum RequestType
 
     PatientInfoRequest,                         //患者信息请求
 
+    HealthCheckupItemRequest,                   //体检项目请求
+
 
 
 
@@ -89,6 +91,8 @@ enum ResponseType
     AppointmentInformationResponce,             //预约请求回复
 
     PatientInfoResponce,                         //患者信息回复
+
+    HealthCheckupItemResponce,                   //体检项目回复
 
 
     InternalServerError,                        //未知请求

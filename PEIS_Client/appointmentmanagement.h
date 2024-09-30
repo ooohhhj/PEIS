@@ -4,10 +4,11 @@
 #include <QWidget>
 #include <QDate>
 #include <QStandardItemModel>
+#include <QPushButton>
 
 #include "protocol.h"
 #include "clientsocket.h"
-#include "delegate.h"
+
 
 namespace Ui {
 class AppointmentManagement;

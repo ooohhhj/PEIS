@@ -824,6 +824,30 @@ QSqlQuery DatabaseManager::getUserInfoByUsername(const QString &username)
     return query;
 }
 
+QSqlQuery DatabaseManager::getPackageItemInfo(const QString &packagename)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare("SELECT hi.item_name, hi.normal_range  FROM  healthpackages hp  "
+                  "JOIN  packageitemmapping pim ON hp.id = pim.package_id "
+                  " JOIN  healthitems hi ON pim.item_id = hi.id "
+                  " WHERE  hp.package_name = :packagename;");
+
+    query.bindValue(":packagename",packagename);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+    return query;
+
+}
+
 
 bool DatabaseManager::isConnected() const
 {

@@ -8,6 +8,7 @@ PatientInformation::PatientInformation(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ClientSocket::instance(),&ClientSocket::OnPatientInfoResponce,this,&PatientInformation::OnPatientInfo);
+
 }
 
 PatientInformation::~PatientInformation()
@@ -51,9 +52,9 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
         QString patientName = appointment["patientName"].toString();
         QString patientGender = appointment["patientGender"].toString();
         QString patientPhone =appointment["patientPhone"].toString();
-        QString patientBirthDate = convertAppointmentDate(appointment["patientBirthDate"].toString());
+        QString patientBirthDate = ClientSocket::instance()->convertAppointmentDate(appointment["patientBirthDate"].toString());
         QString healthPackage = appointment["healthPackage"].toString();
-        QString appointmentDate = convertAppointmentDate(appointment["appointmentDate"].toString());
+        QString appointmentDate = ClientSocket::instance()->convertAppointmentDate(appointment["appointmentDate"].toString());
 
         QString appointmentStatus = appointment["appointmentStatus"].toString();
 
@@ -136,45 +137,16 @@ void PatientInformation::onViewReportClicked(const QModelIndex &index)
     QString appointmentDate = index.sibling(index.row(), 5).data().toString();
     QString appointmentStatus = index.sibling(index.row(), 6).data().toString();
 
-    QString status = index.sibling(index.row(), 6).data().toString();  // 获取预约状态（第 6 列）
-    if (status == "已预约") {
-        QString patientName = index.sibling(index.row(), 0).data().toString();  // 获取患者姓名（第 0 列）
-        emit onEditReportButtonClicked(patientName);
+    if (appointmentStatus == "已预约") {
+        emit onEditReportButtonClicked(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
 
-    } else if (status == "已完成") {
-        QString patientName = index.sibling(index.row(), 0).data().toString();  // 获取患者姓名（第 0 列）
-
+    } else if (appointmentStatus == "已完成") {
     }
 
 }
 
-QString PatientInformation::convertAppointmentDate(const QString &inputDate)
-{
-    // 尝试解析不同格式的日期
-    QDateTime dateTime;
 
-    // 尝试解析"周日 9月 29 00:00:00 2024"格式
-    dateTime = QDateTime::fromString(inputDate, "ddd M月 d HH:mm:ss yyyy");
-    if (dateTime.isValid()) {
-        return dateTime.toString("yyyy-M-d");
-    }
 
-    // 尝试解析"周三 6月 5 2002"格式
-    dateTime = QDateTime::fromString(inputDate, "ddd M月 d yyyy");
-    if (dateTime.isValid()) {
-        return dateTime.toString("yyyy-M-d");
-    }
-
-    // 尝试解析"2024-09-29 00:00:00"格式
-    dateTime = QDateTime::fromString(inputDate, "yyyy-MM-dd HH:mm:ss");
-    if (dateTime.isValid()) {
-        return dateTime.toString("yyyy-M-d");
-    }
-
-    // 如果没有匹配的格式，返回一个默认值或错误提示
-    qDebug() << "日期解析失败: " << inputDate;
-    return QString();
-}
 
 
 

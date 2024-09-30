@@ -8,7 +8,7 @@
 
 #include "clientsocket.h"
 #include "protocol.h"
-#include "delegate.h"
+
 
 namespace Ui {
 class PatientInformation;
@@ -27,10 +27,14 @@ private slots:
     void OnPatientInfo(const QJsonArray & patientInfoArray);
 
     void onViewReportClicked(const QModelIndex &index);
-    QString convertAppointmentDate(const QString &inputDate);
+
+
+
 
 signals:
-    void onEditReportButtonClicked(const QString& patientName);
+    void onEditReportButtonClicked(const QString& patientName,const QString &patientGender,const QString &patientPhone,
+                                   const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
+                                   const QString&appointmentStatus);
 
 private:
     Ui::PatientInformation *ui;

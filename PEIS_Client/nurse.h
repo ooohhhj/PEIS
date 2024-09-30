@@ -7,6 +7,7 @@
 #include "appointmentmanagement.h"
 #include "patientinformation.h"
 #include "inputmedicaexaminationdata.h"
+#include "protocol.h"
 
 namespace Ui {
 class Nurse;
@@ -22,7 +23,9 @@ public:
 
 private slots:
     void on_scheduleCheckupButton_clicked();
-    void on_EditReportButtonClicked(const QString&patientName);
+    void on_EditReportButtonClicked(const QString&patientName,const QString &patientGender,const QString &patientPhone,
+                                    const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
+                                    const QString&appointmentStatus);
 
 private:
     Ui::Nurse *ui;

@@ -82,10 +82,10 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
 
     // 添加按钮到 "操作" 列
     for (int row = 0; row < model->rowCount(); ++row) {
-        QString status = model->item(row, 5)->text();  // 获取预约状态
+        QString status = model->item(row, 4)->text();  // 获取预约状态
 
         QPushButton *button = new QPushButton();
-        if (status == "已体检") {
+        if (status == "已预约") {
             button->setText("编辑报告");
         } else if (status == "已完成") {
             button->setText("查看报告");
@@ -93,20 +93,26 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
             button->setText("未知操作");
         }
 
-        // 设置按钮样式
         button->setStyleSheet(
                     "QPushButton {"
-                    "   background-color: #4CAF50;"
-                    "   color: white;"
-                    "   border: none;"
-                    "   padding: 5px 10px;"
-                    "   font-size: 14px;"
-                    "   border-radius: 10px;"
+                    "   background-color: #A2D8D0;"      // Lighter Sea Green 背景色，与边框相配
+                    "   color: #004D40;"                 // 深绿色文字
+                    "   border: 2px solid #78C1B1;"      // 边框为稍深的绿色
+                    "   padding: 8px 16px;"              // 内边距增加，按钮更大
+                    "   font-size: 16px;"                // 字体稍大，视觉舒适
+                    "   font-weight: bold;"              // 字体加粗
+                    "   border-radius: 12px;"            // 圆角，按钮更柔和
                     "}"
                     "QPushButton:hover {"
-                    "   background-color: #45a049;"
+                    "   background-color: #87C5BB;"      // 鼠标悬停时的颜色，稍深一点的绿色
+                    "   border: 2px solid #5DA49D;"      // 鼠标悬停时边框色稍深
+                    "}"
+                    "QPushButton:pressed {"
+                    "   background-color: #5DA49D;"      // 按下时的背景色，深绿色
+                    "   border: 2px solid #468882;"      // 按下时的边框色
                     "}"
                     );
+
 
         // 将按钮设置到表格中
         ui->tableView->setIndexWidget(model->index(row, 5), button);  // 使用 setIndexWidget 设置按钮到 "操作" 列
@@ -117,6 +123,7 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
             onViewReportClicked(index);  // 传递 QModelIndex 而不是 int // 假设你有一个槽函数处理报告点击事件
         });
     }
+
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }

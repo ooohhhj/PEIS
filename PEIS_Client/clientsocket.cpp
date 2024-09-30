@@ -211,6 +211,12 @@ void ClientSocket::processResponse(Packet &packet)
         showMessageBox(":/warning.png","警告",message);
         break;
     }
+    case HealthCheckupItemResponce:
+    {
+        QJsonArray packageItems =MessageObject["packageItems"].toArray();
+        emit OnHealthCheckupItemResponce(packageItems);
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;
@@ -271,6 +277,34 @@ void ClientSocket::readData()
 
     //根据类型处理数据
     processResponse(packet);
+}
+
+QString ClientSocket::convertAppointmentDate(const QString &inputDate)
+{
+    // 尝试解析不同格式的日期
+    QDateTime dateTime;
+
+    // 尝试解析"周日 9月 29 00:00:00 2024"格式
+    dateTime = QDateTime::fromString(inputDate, "ddd M月 d HH:mm:ss yyyy");
+    if (dateTime.isValid()) {
+        return dateTime.toString("yyyy-M-d");
+    }
+
+    // 尝试解析"周三 6月 5 2002"格式
+    dateTime = QDateTime::fromString(inputDate, "ddd M月 d yyyy");
+    if (dateTime.isValid()) {
+        return dateTime.toString("yyyy-M-d");
+    }
+
+    // 尝试解析"2024-09-29 00:00:00"格式
+    dateTime = QDateTime::fromString(inputDate, "yyyy-MM-dd HH:mm:ss");
+    if (dateTime.isValid()) {
+        return dateTime.toString("yyyy-M-d");
+    }
+
+    // 如果没有匹配的格式，返回一个默认值或错误提示
+    qDebug() << "日期解析失败: " << inputDate;
+    return QString();
 }
 
 
