@@ -23,6 +23,7 @@ public:
 
 private slots:
     void OnUserItemClicked(QTreeWidgetItem* item,int column);
+    void OnDoctorItemClicked(QTreeWidgetItem* item,int column);
 
 
 private:

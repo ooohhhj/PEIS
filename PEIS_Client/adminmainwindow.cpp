@@ -47,3 +47,22 @@ void AdminMainWindow::OnUserItemClicked(QTreeWidgetItem *item, int column)
     }
 }
 
+void AdminMainWindow::OnDoctorItemClicked(QTreeWidgetItem *item, int column)
+{
+    if(item->parent() && item->parent()->text(0)=="基础管理"&&item->text(0)=="医护人员")
+    {
+        ui->stackedWidget->setCurrentWidget(userinfo.get());
+
+        //发送请求 请求用户信息
+        QJsonObject obj;
+
+        obj["role_id"]=2;
+
+        Packet packet =Protocol::createPacket(UserInfoRequest,obj);
+
+        QByteArray date =Protocol::serializePacket(packet);
+
+        ClientSocket::instance()->senData(date);
+    }
+}
+

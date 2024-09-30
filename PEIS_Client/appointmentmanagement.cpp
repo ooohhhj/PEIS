@@ -70,7 +70,9 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
                  << new QStandardItem(contactNumber)
                  << new QStandardItem(packageName)
                  << new QStandardItem(appointmentDate)
-                 <<new QStandardItem(status);
+                 <<new QStandardItem(status)
+                << new QStandardItem();
+
 
         model->appendRow(rowItems);
     }
@@ -78,12 +80,43 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
     ui->tableView->setModel(model);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers); // 设置为不可编辑
 
-    // 设置委托用于最后一列（操作列）
-    Delegate *delegate = new Delegate(this);
-    ui->tableView->setItemDelegateForColumn(5, delegate);
+    // 添加按钮到 "操作" 列
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QString status = model->item(row, 5)->text();  // 获取预约状态
 
-    // 连接按钮点击信号到槽函数
-    connect(delegate, &Delegate::buttonClicked, this, &AppointmentManagement::onViewReportClicked);
+        QPushButton *button = new QPushButton();
+        if (status == "已体检") {
+            button->setText("编辑报告");
+        } else if (status == "已完成") {
+            button->setText("查看报告");
+        } else {
+            button->setText("未知操作");
+        }
+
+        // 设置按钮样式
+        button->setStyleSheet(
+                    "QPushButton {"
+                    "   background-color: #4CAF50;"
+                    "   color: white;"
+                    "   border: none;"
+                    "   padding: 5px 10px;"
+                    "   font-size: 14px;"
+                    "   border-radius: 10px;"
+                    "}"
+                    "QPushButton:hover {"
+                    "   background-color: #45a049;"
+                    "}"
+                    );
+
+        // 将按钮设置到表格中
+        ui->tableView->setIndexWidget(model->index(row, 5), button);  // 使用 setIndexWidget 设置按钮到 "操作" 列
+
+        // 连接按钮点击信号到槽函数
+        connect(button, &QPushButton::clicked, this, [this,model, row]() {
+            QModelIndex index = model->index(row, 0);  // 获取第 row 行的 QModelIndex
+            onViewReportClicked(index);  // 传递 QModelIndex 而不是 int // 假设你有一个槽函数处理报告点击事件
+        });
+    }
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
@@ -91,6 +124,7 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
 void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
 {
     QString patientName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toString();
+
     qDebug() << "查看报告按钮被点击，患者姓名：" << patientName;
 
 }

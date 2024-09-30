@@ -2,6 +2,7 @@
 #include "staffmainwindow.h"
 #include "usermainwindow.h"
 #include "logindialog.h"
+#include "nurse.h"
 
 #include <QApplication>
 #include <QString>
@@ -43,6 +44,12 @@ int main(int argc, char *argv[])
             qDebug() << "User role: 3";
             UserMainWindow *userWindow = new UserMainWindow(nullptr,username);
             userWindow->show();
+            break;
+        }
+        case 4:
+        {
+            Nurse * nurse = new Nurse(nullptr,username);
+            nurse->show();
             break;
         }
         default:

@@ -46,6 +46,8 @@ enum RequestType
 
     AppointmentInformationRequest,              //预约信息请求
 
+    PatientInfoRequest,                         //患者信息请求
+
 
 
 
@@ -85,6 +87,8 @@ enum ResponseType
     StartDateResponce,                          //起始日期回复
 
     AppointmentInformationResponce,             //预约请求回复
+
+    PatientInfoResponce,                         //患者信息回复
 
 
     InternalServerError,                        //未知请求

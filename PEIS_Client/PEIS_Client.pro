@@ -17,9 +17,12 @@ SOURCES += \
     clientsocket.cpp \
     delegate.cpp \
     hepdetails.cpp \
+    inputmedicaexaminationdata.cpp \
     logindialog.cpp \
     main.cpp \
+    nurse.cpp \
     passwordrecoverydialog.cpp \
+    patientinformation.cpp \
     protocol.cpp \
     registerdialog.cpp \
     schedulecheckup.cpp \
@@ -36,8 +39,11 @@ HEADERS += \
     clientsocket.h \
     delegate.h \
     hepdetails.h \
+    inputmedicaexaminationdata.h \
     logindialog.h \
+    nurse.h \
     passwordrecoverydialog.h \
+    patientinformation.h \
     protocol.h \
     registerdialog.h \
     schedulecheckup.h \
@@ -51,8 +57,11 @@ FORMS += \
     checkuprecord.ui \
     checkupreport.ui \
     hepdetails.ui \
+    inputmedicaexaminationdata.ui \
     logindialog.ui \
+    nurse.ui \
     passwordrecoverydialog.ui \
+    patientinformation.ui \
     registerdialog.ui \
     schedulecheckup.ui \
     staffmainwindow.ui \

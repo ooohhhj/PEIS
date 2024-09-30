@@ -129,6 +129,7 @@ QSqlQuery DatabaseManager::findUserByName(const QString &username)
         if(!query.exec())
         {
             qDebug()<<"Failed to find user:"<<query.lastError().text();
+            return QSqlQuery();
         }
         return query;
     }
@@ -741,15 +742,15 @@ QSqlQuery DatabaseManager::getAppointmentsByusername(const QString &username)
     qDebug()<<"调试";
     //获取到预约医生为userid的病人信息// 查询预约信息，包括病人信息、体检套餐、体检日期和状态
     query.prepare("SELECT p.username AS patient_name, "
-                     "p.phone_number AS patient_phone, "
-                     "h.package_name AS health_package, "
-                     "a.appointment_date, "
-                     "a.status AS appointment_status "
-                     "FROM appointments a "
-                     "JOIN users p ON a.user_id = p.id "  // 关联预约表中的病人ID
-                     "JOIN healthpackages h ON a.package_id = h.id "  // 关联体检套餐
-                     "JOIN doctors d ON a.doctor_id = d.id "  // 关联医生ID
-                     "WHERE d.user_id = :userId;");  //  通过医生的 user_id 来查
+                  "p.phone_number AS patient_phone, "
+                  "h.package_name AS health_package, "
+                  "a.appointment_date, "
+                  "a.status AS appointment_status "
+                  "FROM appointments a "
+                  "JOIN users p ON a.user_id = p.id "  // 关联预约表中的病人ID
+                  "JOIN healthpackages h ON a.package_id = h.id "  // 关联体检套餐
+                  "JOIN doctors d ON a.doctor_id = d.id "  // 关联医生ID
+                  "WHERE d.user_id = :userId;");  //  通过医生的 user_id 来查
 
     query.bindValue(":userId", userId);
     if (!query.exec()) {
@@ -787,6 +788,40 @@ QString DatabaseManager::getStartDateByusername(const QString &username)
         return QString();
     }
 
+}
+
+QSqlQuery DatabaseManager::getUserInfoByUsername(const QString &username)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    int userId =getUserIdByUsername(username);
+    if (userId == -1) {
+        qDebug() << "Patient with username" << username << "not found.";
+        return QSqlQuery(); // 返回空查询表示出错
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT u.username AS patient_name, "
+                  "u.gender AS patient_gender, "
+                  "u.phone_number AS patient_phone, "
+                  "u.birth_date AS patient_birth_date, "
+                  "h.package_name AS health_package, "
+                  "a.appointment_date, "
+                  "a.status AS appointment_status "
+                  "FROM appointments a "
+                  "JOIN users u ON a.user_id = u.id "
+                  "JOIN healthpackages h ON a.package_id = h.id "
+                  "WHERE u.id = :userId");
+
+    query.bindValue(":userId", userId);
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+    return query;
 }
 
 

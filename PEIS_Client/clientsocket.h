@@ -58,6 +58,8 @@ signals:
     void OnstartDate(const QString & startDate);
 
     void OnAppointmentsDate(const QJsonArray& appointmentsArray);
+
+   void OnPatientInfoResponce(const QJsonArray& patientInfoArray);
 private:
     QTcpSocket * tcpSocket;
 

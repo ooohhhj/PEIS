@@ -76,6 +76,8 @@ public:
 
     QString getStartDateByusername(const QString &username);
 
+    QSqlQuery getUserInfoByUsername(const QString&username);
+
     //检查数据库连接状态
     bool isConnected() const;
 

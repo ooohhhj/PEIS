@@ -10,8 +10,7 @@ class Delegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit Delegate(QObject *parent = nullptr);
-
+    Delegate(int statusColumn, QObject *parent = nullptr) : QStyledItemDelegate(parent), statusColumn(statusColumn) {}
     // 重写创建编辑器的函数
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
@@ -24,6 +23,9 @@ public:
 
 signals:
     void buttonClicked(const QModelIndex &index) const;
+
+private:
+    int statusColumn;  // 动态存储状态列的索引
 
 
 };

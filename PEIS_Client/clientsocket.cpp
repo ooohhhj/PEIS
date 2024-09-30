@@ -200,6 +200,12 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnAppointmentsDate(array);
         break;
     }
+    case PatientInfoResponce:
+    {
+        QJsonArray patientInfo =MessageObject["patientInfo"].toArray();
+        emit OnPatientInfoResponce(patientInfo);
+        break;
+    }
     case InternalServerError:
     {
         showMessageBox(":/warning.png","警告",message);
