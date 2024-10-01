@@ -217,6 +217,60 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnHealthCheckupItemResponce(packageItems);
         break;
     }
+    case   HealthCheckupItemDateResponce:
+    {
+        QString message =MessageObject["message"].toString();
+        if(message ==StatusMessage::SubmissionSuccessful)
+        {
+            showMessageBox(":/successfully.png","患者信息",message);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","患者信息",message);
+        }
+        break;
+    }
+    case RecordHealthCheckupResponce:
+    {
+        QJsonArray date =MessageObject["Date"].toArray();
+        emit OnRecordHealthCheckupResponce(date);
+        break;
+    }
+    case AppointmentInfoResponce:
+    {
+        QString message =MessageObject["message"].toString();
+
+        if(message == StatusMessage::GetAppointmentSuccessful)
+        {
+            QString username =MessageObject["username"].toString();
+            QString packageName =MessageObject["packageName"].toString();
+            QString appointmentDate =convertAppointmentDate(MessageObject["appointmentDate"].toString());
+            QString status =MessageObject["status"].toString();
+
+            emit onGetAppointmentInfo(username,packageName,appointmentDate,status);
+        }
+        else if(message == StatusMessage::GetAppointmentFalied)
+        {
+            qDebug()<<"message"<<message;
+            showMessageBox(":/warning.png","预约信息",message);
+        }
+        break;
+    }
+    case CancelAppointmentResponce:
+    {
+        QString message =MessageObject["message"].toString();
+
+        if(message ==StatusMessage::CancelAppointmentSuccessful)
+        {
+            showMessageBox(":/successfully.png","预约信息",message);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","预约信息",message);
+        }
+
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

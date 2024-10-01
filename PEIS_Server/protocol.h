@@ -50,6 +50,12 @@ enum RequestType
 
     HealthCheckupItemRequest,                   //体检项目请求
 
+    HealthCheckupDataRequest,                   //体检数据请求
+
+    AppointmentInfoRequest,                     //预约信息请求
+
+    CancelAppointmentRequest,                   //取消预约请求
+
 
 
 
@@ -95,6 +101,15 @@ enum ResponseType
     HealthCheckupItemResponce,                   //体检项目回复
 
 
+    HealthCheckupItemDateResponce,              //体检数据回复
+
+    RecordHealthCheckupResponce,                //录入数据回复
+
+    AppointmentInfoResponce,                    //预约信息回复
+
+    CancelAppointmentResponce,                   //取消预约回复
+
+
     InternalServerError,                        //未知请求
 
 };
@@ -123,6 +138,15 @@ const QString UsernameAndPasswordFailed ="用户名或密码输入有误";
 const QString UserAppointmentConfirmed ="已预约";
 const QString AppointmentSuccessful ="预约成功";
 const QString CannotMakeanAppointment ="预约人数达到上限";
+
+const QString SubmissionSuccessful ="提交成功";
+const QString SubmissionFailed ="提交失败";
+
+const QString GetAppointmentSuccessful ="获取预约信息成功";
+const QString GetAppointmentFalied ="抱歉，没查到预约信息";
+
+const QString CancelAppointmentSuccessful ="预约已取消";
+
 
 const QString InternalServerError = "内部错误";
 };

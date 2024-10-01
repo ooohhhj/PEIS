@@ -88,6 +88,15 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case HealthCheckupItemRequest:
         return handleHealthCheckupItemRequest(message);
         break;
+    case HealthCheckupDataRequest:
+        return handleHealthCheckupDataRequest(message);
+        break;
+    case AppointmentInfoRequest:
+        return handleAppointmentInfoRequest(message);
+        break;
+    case CancelAppointmentRequest:
+        return handleCancelAppointmentRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -496,12 +505,15 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
 
     int userId =DatabaseManager::instance().getUserIdByUsername(username);
     int packageId =DatabaseManager::instance().getPackageIdByName(cardName);
-    //先判断用户是否预约
+
+
     if(DatabaseManager::instance().isUserAlreadyByAppointments(userId,packageId,selectDate))
     {
-
+        //已预约  更新
         message =StatusMessage::UserAppointmentConfirmed;
+
     }
+    //先判断用户是否预约
     else
     {
         //未预约
@@ -692,32 +704,170 @@ QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienName
 
 QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &packageName)
 {
-    QString package =packageName["packageName"].toString();
+    const QString package =packageName["packageName"].toString();
 
-    QSqlQuery query =DatabaseManager::instance().getPackageItemInfo(package);
+    const  QString patientName =packageName["patientName"].toString();
 
+    const  QString appointmentDate = packageName["appointmentDate"].toString();
 
-    QJsonArray packageItemsArray;
-    // 处理查询结果
-    while (query.next())
+    //查询是否有这个记录
+
+    bool ret =DatabaseManager::instance().isExistCheckupDate(package,patientName,appointmentDate);
+
+    if(ret)
     {
-        QString itemName =query.value("item_name").toString();
-        QString normalRange =query.value("normal_range").toString();
+        return handleRecordHealthCheckup(patientName);
+    }
+    else
+    {
 
-        QJsonObject itemObject;
-        itemObject["itemName"] = itemName;
-        itemObject["normalRange"] = normalRange;
+        QSqlQuery query =DatabaseManager::instance().getPackageItemInfo(package);
 
-         packageItemsArray.append(itemObject);
+        QJsonArray packageItemsArray;
+        // 处理查询结果
+        while (query.next())
+        {
+            QString itemName =query.value("item_name").toString();
+            QString normalRange =query.value("normal_range").toString();
+
+            QJsonObject itemObject;
+            itemObject["itemName"] = itemName;
+            itemObject["normalRange"] = normalRange;
+
+            packageItemsArray.append(itemObject);
+        }
+
+        QJsonObject patientInfo;;
+        patientInfo["packageItems"] =packageItemsArray;
+
+        Packet packet =Protocol::createPacket(HealthCheckupItemResponce,patientInfo);
+
+        QByteArray array =Protocol::serializePacket(packet);
+
+        return array;
+    }
+}
+
+QByteArray ClientHandler::handleHealthCheckupDataRequest(QJsonObject &healthcheckupDate)
+{
+    bool ret =DatabaseManager::instance(). HealthCheckDataEntry(healthcheckupDate);
+
+    QJsonObject obj;
+    QString message ;
+    if(ret)
+    {
+        message =StatusMessage::SubmissionSuccessful;
+    }
+    else
+    {
+        message =StatusMessage::SubmissionFailed;
     }
 
-    QJsonObject patientInfo;;
-    patientInfo["packageItems"] =packageItemsArray;
+    obj["message"]=message;
 
-    Packet packet =Protocol::createPacket(HealthCheckupItemResponce,patientInfo);
+    Packet packet =Protocol::createPacket(HealthCheckupItemDateResponce,obj);
 
     QByteArray array =Protocol::serializePacket(packet);
 
+    return array;
+
+}
+
+QByteArray ClientHandler::handleRecordHealthCheckup(const QString &patientName)
+{
+    QSqlQuery query =DatabaseManager::instance().getRecordHealthCheckupDate(patientName);
+
+    QJsonArray DateArray;
+
+    while(query.next())
+    {
+        QJsonObject dateObject;
+        QString itemName = query.value("item_name").toString();
+        QString normalRange = query.value("normal_range").toString();
+        QString inputData = query.value("input_data").toString();
+        QString responsiblePerson = query.value("responsible_person").toString();
+
+        dateObject["item_name"] =itemName;
+        dateObject["normal_range"] =normalRange;
+        dateObject["input_data"] =inputData;
+        dateObject["responsible_person"] =responsiblePerson;
+
+        qDebug()<<itemName<<" "<<normalRange<<" "<<inputData<<" "<<responsiblePerson;
+
+        DateArray.append(dateObject);
+    }
+
+    QJsonObject obj;
+    obj["Date"] =DateArray;
+
+    Packet packet =Protocol::createPacket(RecordHealthCheckupResponce,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+}
+
+QByteArray ClientHandler::handleAppointmentInfoRequest(const QJsonObject &usernameObj)
+{
+    QString username = usernameObj["username"].toString();
+
+    qDebug()<<"username="<<username;
+
+    QJsonObject obj;
+
+    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoByusername(username);
+
+    if (!query.next() && !query.isValid()) {
+        // 没有找到预约信息
+        obj ["message"]=StatusMessage::GetAppointmentFalied;
+        Packet packet =Protocol::createPacket(AppointmentInfoResponce,obj);
+        QByteArray array =Protocol::serializePacket(packet);
+        return array;  // 例如，显示相应的对话框
+    }
+
+    QString appointmentStatus = query.value("status").toString();
+    if(appointmentStatus == "已预约" )
+    {
+        QString packageName = query.value("package_name").toString();
+        QDateTime appointmentDate = query.value("appointment_date").toDateTime();
+
+        obj["username"] =username;
+        obj["packageName"] =packageName;
+        obj["appointmentDate"]=appointmentDate.toString();
+        obj["status"]=appointmentStatus;
+
+        obj ["message"]=StatusMessage::GetAppointmentSuccessful;
+    }
+
+    Packet packet =Protocol::createPacket(AppointmentInfoResponce,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+}
+
+QByteArray ClientHandler::handleCancelAppointmentRequest(const QJsonObject &AppointmentObj)
+{
+    QString username = AppointmentObj["username"].toString();
+    QString packageName =AppointmentObj["packageName"].toString();
+    QString appointmentDate =AppointmentObj["appointmentDate"].toString();
+
+
+    bool ret =DatabaseManager::instance().CancelAppointment(username,packageName,appointmentDate);
+
+    QJsonObject obj;
+    QString message;
+    if(ret)
+    {
+        message =StatusMessage::CancelAppointmentSuccessful;
+    }
+    else
+    {
+        message =StatusMessage::InternalServerError;
+    }
+    obj["message"]=message;
+    Packet packet =Protocol::createPacket(CancelAppointmentResponce,obj);
+    QByteArray array = Protocol::serializePacket(packet);
     return array;
 }
 

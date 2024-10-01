@@ -586,7 +586,7 @@ bool DatabaseManager::isUserAlreadyByAppointments(const int &userId, const int &
     }
 
     QSqlQuery query(db);
-    query.prepare("SELECT COUNT(*) FROM appointments "
+    query.prepare("SELECT status FROM appointments "
                   "WHERE user_id = :userId "
                   "AND package_id = :packageId "
                   "AND DATE(appointment_date) = DATE(:selectedDate)");
@@ -595,12 +595,25 @@ bool DatabaseManager::isUserAlreadyByAppointments(const int &userId, const int &
     query.bindValue(":cardName",packageId);
     query.bindValue(":selectedDate",appointmentDate);
 
-    if(query.exec()&&query.next())
-    {
-        return query.value(0).toInt()>0;
+    if (!query.exec()) {
+        qDebug() << "Failed to execute select query:" << query.lastError().text();
+        return false;
     }
 
-    return false;
+    if (query.next())
+    {
+        QString status = query.value(0).toString();  // 获取状态
+
+        if(status == "已取消" || status == "未预约")
+        {
+            return false;
+        }
+        else
+        {
+            return "true";
+        }
+    }
+
 }
 
 int DatabaseManager::getAvailablePackageCount(const QString &cardName, const QString &selecteDate)
@@ -640,7 +653,10 @@ bool DatabaseManager::insertAppointment(const int &userId, const int &packageId,
 
     // 插入预约并分配医生
     query.prepare("INSERT INTO appointments (user_id, package_id, appointment_date, status, doctor_id) "
-                  "VALUES (:userId, :packageId, :appointmentDate, :status, :doctorId)");
+                  "VALUES (:userId, :packageId, :appointmentDate, :status, :doctorId) "
+                  "ON DUPLICATE KEY UPDATE "
+                  "appointment_date = :appointmentDate, status = :status, doctor_id = :doctorId");
+
 
     query.bindValue(":userId", userId);
     query.bindValue(":packageId", packageId);
@@ -657,6 +673,7 @@ bool DatabaseManager::insertAppointment(const int &userId, const int &packageId,
         return false; // 插入失败，返回 false
     }
 }
+
 
 int DatabaseManager::getUserIdByUsername(const QString &username)
 {
@@ -722,6 +739,134 @@ int DatabaseManager::getDoctorByDepartment(const int &packageId)
         qDebug() << "Failed to find doctor for the package:" << query.lastError().text();
         return -1; // 返回 -1 表示分配失败
     }
+}
+
+bool DatabaseManager::HealthCheckDataEntry(QJsonObject &healthcheckupDate)
+{
+    QString patientName = healthcheckupDate["patientName"].toString();
+    QString gender =healthcheckupDate["gender"].toString();
+    QString birthDate =healthcheckupDate["birthDate"].toString();
+    QString phoneNumber =healthcheckupDate["phoneNumber"].toString();
+    QString packageName =healthcheckupDate["packageName"].toString();
+    QString packageDate =healthcheckupDate["packageDate"].toString();
+
+    QJsonArray HealthCheckupDate =healthcheckupDate["HealthCheckupDate"].toArray();
+
+    QString status = healthcheckupDate["status"].toString();
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false; // 返回 false 表示连接错误
+    }
+
+    QSqlQuery query(db);
+    query.prepare("INSERT INTO health_checkup (patient_name, gender, birth_date, phone_number, package_name, package_date, report_status) "
+                  "VALUES (:patientName, :gender, :birthDate, :phoneNumber, :packageName, :packageDate, :reportStatus) "
+                  "ON DUPLICATE KEY UPDATE "
+                  "patient_name = :patientName, "
+                  "gender = :gender, "
+                  "birth_date = :birthDate, "
+                  "package_name = :packageName, "
+                  "package_date = :packageDate, "
+                  "report_status = :reportStatus"); // 将需要更新的字段列出
+
+    // 绑定值
+    query.bindValue(":patientName", patientName);
+    query.bindValue(":gender", gender);
+    query.bindValue(":birthDate", birthDate);
+    query.bindValue(":phoneNumber", phoneNumber);
+    query.bindValue(":packageName", packageName);
+    query.bindValue(":packageDate", packageDate);
+    query.bindValue(":reportStatus", status);
+
+    // 执行查询
+    if (!query.exec()) {
+        qDebug() << "Error inserting into health_checkup:" << query.lastError().text();
+        return false;
+    } else {
+        qDebug() << "Insert or update successful.";
+    }
+
+
+    // 获取插入的 health_checkup 记录的 ID
+    int healthCheckupId = query.lastInsertId().toInt();
+
+    // 插入到 health_checkup_items 表
+    foreach (const QJsonValue &item, HealthCheckupDate)
+    {
+        QJsonObject itemObject = item.toObject();
+        QString itemName = itemObject["itemName"].toString();
+        QString normalRange = itemObject["normalRange"].toString();
+        QString inputData = itemObject["inputData"].toString();
+        QString resultDate =itemObject["resultData"].toString();
+        QString responsiblePerson = itemObject["responsiblePerson"].toString();
+
+        query.prepare("INSERT INTO health_checkup_items (health_checkup_id, item_name, normal_range, input_data,result_data, responsible_person) "
+                      "VALUES (:healthCheckupId, :itemName, :normalRange, :inputData, :responsiblePerson) "
+                      "ON DUPLICATE KEY UPDATE "
+                      "normal_range = :normalRange, "
+                      "input_data = :inputData, "
+                      "result_data = :resultData"
+                      "responsible_person = :responsiblePerson"); // 指定更新的字段
+
+        // 绑定值
+        query.bindValue(":healthCheckupId", healthCheckupId);
+        query.bindValue(":itemName", itemName);
+        query.bindValue(":normalRange", normalRange);
+        query.bindValue(":inputData", inputData);
+        query.bindValue(":resultDate",resultDate);
+        query.bindValue(":responsiblePerson", responsiblePerson);
+
+        // 执行查询
+        if (!query.exec()) {
+            return false; // 插入失败
+        }
+    }
+    return true;
+}
+
+bool DatabaseManager::isExistCheckupDate(const QString &packageName, const QString &patientName, const QString &appointmentDate)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false; // 返回 -1 表示出错
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare("SELECT COUNT(*) FROM health_checkup "
+                  "WHERE package_name = :packageName "
+                  "AND patient_name = :patientName "
+                  "AND package_date = :appointmentDate");
+
+    // 绑定参数
+    query.bindValue(":packageName", packageName);
+    query.bindValue(":patientName", patientName);
+    query.bindValue(":appointmentDate", appointmentDate);
+
+    // 执行查询
+    if (query.exec())
+    {
+        if (query.next())
+        {
+            int count = query.value(0).toInt(); // 获取记录数
+            if (count > 0)
+            {
+                // 存在记录
+                return true;
+            } else {
+                // 不存在记录
+                return  false;
+            }
+        }
+    }
+    else
+    {
+        // 查询执行失败的处理
+        qDebug() << "查询执行失败: " << query.lastError().text();
+        return false;
+    }
+
 }
 
 QSqlQuery DatabaseManager::getAppointmentsByusername(const QString &username)
@@ -847,6 +992,90 @@ QSqlQuery DatabaseManager::getPackageItemInfo(const QString &packagename)
     return query;
 
 }
+
+QSqlQuery DatabaseManager::getRecordHealthCheckupDate(const QString &patientName)
+{
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+
+    query.prepare("SELECT hci.item_name, hci.normal_range, hci.input_data,hci.result_data,hci.responsible_person "
+                  "FROM health_checkup hc "
+                  "JOIN health_checkup_items hci ON hc.id = hci.health_checkup_id "
+                  "WHERE hc.patient_name = :patientName");
+    query.bindValue(":patientName", patientName);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+    return query;
+}
+
+QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
+{
+    int userId = getUserIdByUsername(username);
+
+    qDebug()<<"userId="<<userId;
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT hp.package_name, a.appointment_date, a.status "
+                  "FROM appointments a "
+                  "JOIN healthpackages hp ON a.package_id = hp.id "
+                  "WHERE a.user_id = :userId");
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+    return query;
+
+}
+
+bool DatabaseManager::CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate)
+{
+
+
+    int userId = getUserIdByUsername(username);
+    int packageId =getPackageIdByName(packageName);
+
+    qDebug()<<"userId="<<userId;
+    qDebug()<<"packageId="<<packageId;
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false;
+    }
+
+    qDebug()<<"appointmentDate="<<appointmentDate;
+    // 准备 SQL 语句
+    QSqlQuery query(db);
+    query.prepare("DELETE FROM appointments "
+                  "WHERE user_id = :userId AND package_id = :packageId AND appointment_date = :appointmentDate");
+
+    // 绑定参数
+    query.bindValue(":userId", userId);
+    query.bindValue(":packageId", packageId);
+    query.bindValue(":appointmentDate", appointmentDate);
+
+    // 执行删除
+    if (!query.exec()) {
+        qDebug() << "Failed to delete appointment:" << query.lastError().text();
+        return false;
+    }
+
+    return true;
+}
+
 
 
 bool DatabaseManager::isConnected() const

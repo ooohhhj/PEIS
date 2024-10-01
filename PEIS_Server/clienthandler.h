@@ -60,6 +60,14 @@ private:
 
     QByteArray handleHealthCheckupItemRequest(const QJsonObject & packageName);
 
+    QByteArray handleHealthCheckupDataRequest( QJsonObject & healthcheckupDate);
+
+    QByteArray handleRecordHealthCheckup(const QString & patientName);
+
+    QByteArray handleAppointmentInfoRequest(const QJsonObject &usernameObj);
+
+    QByteArray handleCancelAppointmentRequest(const QJsonObject & AppointmentObj);
+
     void updateUserAppointments(const QString &selectdate);
 
 private:

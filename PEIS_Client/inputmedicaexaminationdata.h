@@ -28,6 +28,7 @@ public:
 private slots:
     void onHealthCheckupItemResponce(const QJsonArray & packageItems);
     void on_submitButton_clicked();
+    void on_OnRecordHealthCheckupResponce(const QJsonArray & checkupDate);
 
 private:
     Ui::InputMedicaExaminationData *ui;

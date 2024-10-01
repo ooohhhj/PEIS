@@ -6,6 +6,8 @@
 #include <QSqlError>
 #include <QVariant>
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonArray>
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -68,9 +70,14 @@ public:
 
     bool insertAppointment(const int &userId, const int &packageId,const QString &appointmentDate);
 
+
     int getUserIdByUsername(const QString &username);//传入用户名获取用户id
     int getPackageIdByName(const QString &packageName);//传入套餐名字获取套餐id
     int getDoctorByDepartment(const int &packageId);
+
+    bool HealthCheckDataEntry( QJsonObject &healthcheckupDate);
+
+    bool isExistCheckupDate(const QString & packageName,const QString & patientName,const QString & appointmentDate);
 
     QSqlQuery getAppointmentsByusername(const QString & username);
 
@@ -79,6 +86,12 @@ public:
     QSqlQuery getUserInfoByUsername(const QString&username);
 
     QSqlQuery getPackageItemInfo(const QString &packagename);
+
+    QSqlQuery getRecordHealthCheckupDate(const QString & patientName);
+
+    QSqlQuery getAppointmentInfoByusername(const QString & username);
+
+    bool CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate);
 
     //检查数据库连接状态
     bool isConnected() const;
@@ -90,7 +103,6 @@ public:
 
     //对密码进行哈希加密
     QString hashPassword(const QString &password,const QString &salt);
-
 
 
 private:

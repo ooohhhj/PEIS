@@ -16,6 +16,9 @@ ScheduleCheckup::ScheduleCheckup(QWidget *parent) :
 
 
     connect(ClientSocket::instance(),&ClientSocket::ReserveCheckup,this,&ScheduleCheckup::reserveCheckup);
+
+    connect(ClientSocket::instance(),&ClientSocket::onGetAppointmentInfo,this,&ScheduleCheckup::onGetAppointmentInfo);
+
 }
 
 ScheduleCheckup::~ScheduleCheckup()
@@ -120,6 +123,11 @@ void ScheduleCheckup::reserveCheckup(const QJsonArray &packagesArray , const int
 
 }
 
+void ScheduleCheckup::setUsername(const QString &username)
+{
+    this->m_username =username;
+}
+
 void ScheduleCheckup::on_nextBtn_clicked()
 {
 
@@ -190,7 +198,9 @@ void ScheduleCheckup::on_pushButton_clicked()
 
 void ScheduleCheckup::on_returnExitButton_clicked()
 {
+
     emit exitButtonClicked();
+
 }
 
 
@@ -216,6 +226,99 @@ void ScheduleCheckup::on_reflushButton_clicked()
     QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
 
     ClientSocket::instance()->senData(dataToSend);
+
+}
+
+
+void ScheduleCheckup::on_AppointmentButton_clicked()
+{
+    //发送预约信息请求
+
+    QJsonObject obj;
+    obj["username"] =this->m_username;
+
+    Packet packet =Protocol::createPacket(AppointmentInfoRequest,obj);
+
+    QByteArray array = Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
+
+}
+
+void ScheduleCheckup::onGetAppointmentInfo(const QString &username, const QString &packageName, const QString &appointmentDate, const QString &status)
+{
+
+    // 创建对话框
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("预约信息");
+    dialog->setWindowFlags(dialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);  // 移除帮助按钮
+
+    // 设置对话框的大小
+    dialog->setFixedSize(500, 400);
+
+    // 设置对话框图标
+    QIcon dialogIcon(":/appointment.png");  // 替换为你的图标路径
+    dialog->setWindowIcon(dialogIcon);
+
+    // 创建控件
+    QLabel *nameLabel = new QLabel("姓名: " + username, dialog);
+    QLabel *packageLabel = new QLabel("套餐: " + packageName, dialog);
+    QLabel *dateLabel = new QLabel("预约时间: " + appointmentDate, dialog);
+    QLabel *statusLabel = new QLabel("预约状态: " + status, dialog);
+
+    QPushButton *cancelButton = new QPushButton("取消", dialog);
+
+    QString labelStyle = "background-color: transparent; border: none; font-size: 12pt;";  // 增加字体大小
+
+    nameLabel->setStyleSheet(labelStyle);
+    packageLabel->setStyleSheet(labelStyle);
+    dateLabel->setStyleSheet(labelStyle);
+    statusLabel->setStyleSheet(labelStyle);
+
+    cancelButton->setStyleSheet("font-size: 12pt;");
+
+
+    // 设置布局
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    layout->addWidget(nameLabel);
+    layout->addWidget(packageLabel);
+    layout->addWidget(dateLabel);
+    layout->addWidget(statusLabel);
+    layout->addWidget(cancelButton);
+
+    dialog->setLayout(layout);
+
+    // 连接信号与槽
+    connect(cancelButton, &QPushButton::clicked, this,[this, dialog,username, packageName, appointmentDate]() {
+        dialog->close();
+        OncancelAppointmentButton(username, packageName, appointmentDate);
+    });
+    // 以模态方式显示对话框
+    dialog->exec();
+
+    // 释放对话框内存
+    delete dialog;
+
+}
+
+
+void ScheduleCheckup::OncancelAppointmentButton(const QString &username, const QString &packageName, const QString &appointmentDate)
+{
+    qDebug()<<"取消按钮被点击";
+
+    QJsonObject obj;
+    obj["username"] =username;
+    obj["packageName"]=packageName;
+    obj["appointmentDate"] =appointmentDate;
+
+    Packet packet =Protocol::createPacket(CancelAppointmentRequest,obj);
+
+    QByteArray array  = Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
+
+
+
 
 }
 

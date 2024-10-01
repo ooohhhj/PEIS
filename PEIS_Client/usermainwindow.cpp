@@ -16,6 +16,7 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     checkupRecord =std::make_unique<CheckupRecord>(this);
     checkupreport =std::make_unique<CheckupReport>(this);
 
+    scheduleCheckUp.get()->setUsername(this->m_username);
     hepDetails.get()->setUsername(this->m_username);
 
     setDefaultWidget();
@@ -57,6 +58,7 @@ void UserMainWindow::on_scheduleCheckupButton_clicked()
 {
 
     ui->stackedWidget->setCurrentWidget(scheduleCheckUp.get());
+
 
     ui->scheduleCheckupButton->setStyleSheet(
                 "QPushButton {"

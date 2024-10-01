@@ -45,6 +45,8 @@ void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString
     //发送请求体检项目请求
     QJsonObject obj;
     obj["packageName"]=healthPackage;
+    obj["patientName"] =patientName;
+    obj["appointmentDate"] =appointmentDate;
 
     Packet packet =Protocol::createPacket(HealthCheckupItemRequest,obj);
 

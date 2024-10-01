@@ -302,8 +302,10 @@ void HEPDetails::setUsername(const QString &username)
 
 void HEPDetails::on_exitButton_clicked()
 {
+
     //返回套餐页
     emit exitButtonClicked();
+
 }
 
 void HEPDetails::on_reserveButton_clicked()

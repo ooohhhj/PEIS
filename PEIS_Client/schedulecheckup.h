@@ -26,6 +26,8 @@ public:
 
     void reserveCheckup(const QJsonArray & packagesArray ,const int& totalPage);
 
+    void setUsername(const QString & username);
+
 private slots:
     void on_nextBtn_clicked();
 
@@ -42,6 +44,12 @@ private slots:
 
     void on_reflushButton_clicked();
 
+    void on_AppointmentButton_clicked();
+
+    void onGetAppointmentInfo(const QString &username,const QString &packageName,const QString &appointmentDate,const QString&status);
+
+    void OncancelAppointmentButton(const QString &username, const QString &packageName, const QString &appointmentDate);
+
 signals:
     void cardClicked(const QString & cardName);
     void exitButtonClicked();
@@ -51,6 +59,7 @@ private:
     int currentPage ;
     const int itemsPerPage ;
     int searchFlag;
+    QString m_username;
 };
 
 #endif // SCHEDULECHECKUP_H
