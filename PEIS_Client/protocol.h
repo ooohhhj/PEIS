@@ -57,6 +57,8 @@ enum RequestType
 
     CancelAppointmentRequest,                   //取消预约
 
+    updateCheckupRequest,                       //更新用户预约按钮请求
+
 
 
 

@@ -328,17 +328,31 @@ void HEPDetails::on_reserveButton_clicked()
     ClientSocket::instance()->senData(dataToSend);
 }
 
-void HEPDetails::OnUpdateUserAppointment(const QString &selectdate)
+void HEPDetails::OnUpdateUserAppointment(const QString &selectdate,const QString & dateText)
 {
     // 获取父控件中的所有子控件
     QList<QPushButton*> buttons = ui->scheduleWidget->findChildren<QPushButton*>();
 
+    // 将获取的日期格式化为 YYYY-MM-DD
+    QString formattedDate = QDate::fromString(selectdate, "yyyy-M-d").toString("yyyy-MM-dd");
+
     // 遍历每个按钮并检查它的 objectName
     for (QPushButton* button : buttons) {
-        if (button->objectName() == selectdate) {
+        if (button->objectName() == formattedDate) {
             qDebug() << "Found button with name 'selectdate'";
-            button->setText("已预约");
-            button->setStyleSheet("background-color: transparent;border: none;");
+            qDebug()<<"dateText"<<dateText;
+            button->setText(dateText);
+            button->setStyleSheet("QPushButton {"
+                                  "background-color: #A9D5E8;"
+                                  "color: #333;"
+                                  "border: none;"
+                                  "padding: 8px;"
+                                  "border-radius: 5px;"
+                                  "font-size: 12pt;" // 设置按钮字体大小
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "background-color: #A0C4D4;"
+                                  "}");
             break;
             // 执行相关操作
         } else {

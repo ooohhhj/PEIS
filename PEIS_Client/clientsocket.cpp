@@ -179,7 +179,7 @@ void ClientSocket::processResponse(Packet &packet)
     case UpdateAppointmentResponce:
     {
         QString selectDate =MessageObject["date"].toString();
-        emit updateUserAppointment(selectDate);
+        emit updateUserAppointment(selectDate,"已预约");
         break;
     }
     case UserInfoResponce:
@@ -259,10 +259,14 @@ void ClientSocket::processResponse(Packet &packet)
     case CancelAppointmentResponce:
     {
         QString message =MessageObject["message"].toString();
+        QString appointmentDate =MessageObject["appointmentDate"].toString();
 
         if(message ==StatusMessage::CancelAppointmentSuccessful)
         {
             showMessageBox(":/successfully.png","预约信息",message);
+            QString selectDate =MessageObject["appointmentDate"].toString();
+            qDebug()<<"selectDate="<<selectDate;
+            emit updateUserAppointment(selectDate,"预约");
         }
         else
         {

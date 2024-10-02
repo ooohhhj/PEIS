@@ -495,61 +495,71 @@ QByteArray ClientHandler::handleSearchPackageRequest(const QJsonObject &searchPa
 
 QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject &checkupPackageDate)
 {
-    QString username =checkupPackageDate["username"].toString();
-    QString cardName =checkupPackageDate["cardName"].toString();
-    QString selectDate =checkupPackageDate["selectDate"].toString();
-
+    QString username = checkupPackageDate["username"].toString();
+    QString cardName = checkupPackageDate["cardName"].toString();
+    QString selectDate = checkupPackageDate["selectDate"].toString();
 
     QJsonObject responseObject;
-    QString message ;
+    QString message;
 
-    int userId =DatabaseManager::instance().getUserIdByUsername(username);
-    int packageId =DatabaseManager::instance().getPackageIdByName(cardName);
+    // 获取用户和套餐ID
+    int userId = DatabaseManager::instance().getUserIdByUsername(username);
+    int packageId = DatabaseManager::instance().getPackageIdByName(cardName);
 
-
-    if(DatabaseManager::instance().isUserAlreadyByAppointments(userId,packageId,selectDate))
-    {
-        //已预约  更新
-        message =StatusMessage::UserAppointmentConfirmed;
-
-    }
-    //先判断用户是否预约
-    else
-    {
-        //未预约
-        //获取套餐数量  获取预约表的套餐数量比较
-        if(DatabaseManager::instance().getAppointmentCount(packageId,selectDate) <
-                DatabaseManager::instance().getAvailablePackageCount(cardName,selectDate))
-        {
-            //说明还可以预约
-            //创建预约
-            if(DatabaseManager::instance().insertAppointment(userId,packageId,selectDate))
-            {
-                message =StatusMessage::AppointmentSuccessful;
-                updateUserAppointments(selectDate);
-
-            }
-            else
-            {
-                message =StatusMessage::InternalServerError;
-            }
-        }
-        else
-        {
-            //不能预约
-            message =StatusMessage::CannotMakeanAppointment;
-        }
+    // 检查获取的ID是否合法
+    if (userId == -1 || packageId == -1) {
+        message = StatusMessage::InternalServerError;
+        responseObject["message"] = message;
+        return Protocol::serializePacket(Protocol::createPacket(GetCheckupPackageCountResponce, responseObject));
     }
 
+    // 开启事务
+    if (!DatabaseManager::instance().beginTransaction()) {
+        message = StatusMessage::InternalServerError;
+        responseObject["message"] = message;
+        return Protocol::serializePacket(Protocol::createPacket(GetCheckupPackageCountResponce, responseObject));
+    }
+
+    // 检查用户是否已经预约
+    if (DatabaseManager::instance().isUserAlreadyByAppointments(userId, packageId, selectDate)) {
+        // 如果已预约，返回确认信息
+        message = StatusMessage::UserAppointmentConfirmed;
+    } else {
+        // 如果未预约，检查是否还有可预约的名额
+        int currentAppointmentCount = DatabaseManager::instance().getAppointmentCount(packageId, selectDate);
+        int availablePackageCount = DatabaseManager::instance().getAvailablePackageCount(cardName, selectDate);
+
+        if (currentAppointmentCount < availablePackageCount) {
+            // 有空位，可以预约
+            if (DatabaseManager::instance().insertAppointment(userId, packageId, selectDate)) {
+                message = StatusMessage::AppointmentSuccessful;
+                updateUserAppointments(selectDate); // 更新预约
+                // 提交事务
+                if (!DatabaseManager::instance().commitTransaction()) {
+                    message = StatusMessage::InternalServerError;
+                }
+            } else {
+                message = StatusMessage::InternalServerError;
+                DatabaseManager::instance().rollbackTransaction();
+            }
+        } else {
+            // 无法预约，已满
+            message = StatusMessage::CannotMakeanAppointment;
+            DatabaseManager::instance().rollbackTransaction();
+        }
+    }
+
+    // 如果没有执行事务（如上面的else语句），需要回滚
+    if (DatabaseManager::instance().isTransactionActive()) {
+        DatabaseManager::instance().rollbackTransaction();
+    }
+
+    // 构造响应
     responseObject["message"] = message;
-    qDebug()<<message;
+    qDebug() << message;
 
-    Packet packet =Protocol::createPacket(GetCheckupPackageCountResponce,responseObject);
-    QByteArray serializedResponse = Protocol::serializePacket(packet);
-
-    return serializedResponse;
-
-
+    Packet packet = Protocol::createPacket(GetCheckupPackageCountResponce, responseObject);
+    return Protocol::serializePacket(packet);
 }
 
 QByteArray ClientHandler::handleUserInfoRequest(const QJsonObject &role_idDate)
@@ -811,37 +821,37 @@ QByteArray ClientHandler::handleAppointmentInfoRequest(const QJsonObject &userna
 {
     QString username = usernameObj["username"].toString();
 
-    qDebug()<<"username="<<username;
+    qDebug() << "username=" << username;
 
     QJsonObject obj;
 
-    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoByusername(username);
+    // 获取用户的预约信息
+    QSqlQuery query = DatabaseManager::instance().getAppointmentInfoByusername(username);
 
-    if (!query.next() && !query.isValid()) {
+    if (!query.next()) {
         // 没有找到预约信息
-        obj ["message"]=StatusMessage::GetAppointmentFalied;
-        Packet packet =Protocol::createPacket(AppointmentInfoResponce,obj);
-        QByteArray array =Protocol::serializePacket(packet);
-        return array;  // 例如，显示相应的对话框
+        obj["message"] = StatusMessage::GetAppointmentFalied;
+        Packet packet = Protocol::createPacket(AppointmentInfoResponce, obj);
+        QByteArray array = Protocol::serializePacket(packet);
+        return array;  // 返回相应的对话框
     }
 
+    // 获取预约状态及其他信息
+    QString packageName = query.value("package_name").toString();
+    QDateTime appointmentDate = query.value("appointment_date").toDateTime();
     QString appointmentStatus = query.value("status").toString();
-    if(appointmentStatus == "已预约" )
-    {
-        QString packageName = query.value("package_name").toString();
-        QDateTime appointmentDate = query.value("appointment_date").toDateTime();
 
-        obj["username"] =username;
-        obj["packageName"] =packageName;
-        obj["appointmentDate"]=appointmentDate.toString();
-        obj["status"]=appointmentStatus;
+    // 填充响应对象
+    obj["username"] = username;
+    obj["packageName"] = packageName;
+    obj["appointmentDate"] = appointmentDate.toString();
+    obj["status"] = appointmentStatus;
 
-        obj ["message"]=StatusMessage::GetAppointmentSuccessful;
-    }
+    obj["message"] = StatusMessage::GetAppointmentSuccessful;
 
-    Packet packet =Protocol::createPacket(AppointmentInfoResponce,obj);
-
-    QByteArray array =Protocol::serializePacket(packet);
+    // 构造并序列化响应包
+    Packet packet = Protocol::createPacket(AppointmentInfoResponce, obj);
+    QByteArray array = Protocol::serializePacket(packet);
 
     return array;
 }
@@ -860,6 +870,7 @@ QByteArray ClientHandler::handleCancelAppointmentRequest(const QJsonObject &Appo
     if(ret)
     {
         message =StatusMessage::CancelAppointmentSuccessful;
+        obj["appointmentDate"] =appointmentDate;
     }
     else
     {

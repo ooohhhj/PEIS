@@ -33,6 +33,21 @@ DatabaseManager::~DatabaseManager()
     }
 }
 
+bool DatabaseManager::beginTransaction()
+{
+    return db.transaction();  // QSqlDatabase 的事务方法
+}
+
+bool DatabaseManager::commitTransaction()
+{
+    return db.commit();  // QSqlDatabase 的提交方法
+}
+
+void DatabaseManager::rollbackTransaction()
+{
+    db.rollback();  // QSqlDatabase 的回滚方法
+}
+
 bool DatabaseManager::insertUser(const QString &username, const QString &gender, const QString &birthdate, const QString &idCard, const QString &address, const QString &phoneNumber, const QString &password, const int &role_id)
 {
     if(!isConnected())
@@ -579,7 +594,7 @@ int DatabaseManager::getAppointmentCount(const int &packageId, const QString &se
 
 bool DatabaseManager::isUserAlreadyByAppointments(const int &userId, const int &packageId, const QString &appointmentDate)
 {
-    //判断用户是否预约了
+    // 判断用户是否预约了
     if (!isConnected()) {
         qDebug() << "Failed to connect to database:" << db.lastError().text();
         return false;
@@ -591,28 +606,31 @@ bool DatabaseManager::isUserAlreadyByAppointments(const int &userId, const int &
                   "AND package_id = :packageId "
                   "AND DATE(appointment_date) = DATE(:selectedDate)");
 
-    query.bindValue(":username",userId);
-    query.bindValue(":cardName",packageId);
-    query.bindValue(":selectedDate",appointmentDate);
+    // 绑定参数
+    query.bindValue(":userId", userId);
+    query.bindValue(":packageId", packageId);
+    query.bindValue(":selectedDate", appointmentDate);
 
+    // 执行查询
     if (!query.exec()) {
         qDebug() << "Failed to execute select query:" << query.lastError().text();
-        return false;
+        return false;  // 查询失败
     }
 
-    if (query.next())
-    {
+    // 如果找到记录
+    if (query.next()) {
         QString status = query.value(0).toString();  // 获取状态
 
-        if(status == "已取消" || status == "未预约")
-        {
+        // 只要不是已取消的状态，都返回 true
+        if (status == "已取消") {
             return false;
-        }
-        else
-        {
-            return "true";
+        } else {
+            return true;
         }
     }
+
+    // 没有匹配的记录，返回 false
+    return false;
 
 }
 
@@ -1020,10 +1038,10 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
 {
     int userId = getUserIdByUsername(username);
 
-    qDebug()<<"userId="<<userId;
+    qDebug() << "userId=" << userId;
     if (!isConnected()) {
         qDebug() << "Failed to connect to database:" << db.lastError().text();
-        return QSqlQuery();
+        return QSqlQuery();  // 返回空查询
     }
 
     QSqlQuery query(db);
@@ -1037,8 +1055,8 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
         qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
         return QSqlQuery();  // 查询执行失败，返回空查询
     }
-    return query;
 
+    return query;  // 返回查询结果
 }
 
 bool DatabaseManager::CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate)

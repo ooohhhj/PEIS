@@ -41,7 +41,7 @@ public:
 private slots:
     void on_exitButton_clicked();
     void on_reserveButton_clicked();
-    void OnUpdateUserAppointment(const QString& selectdate);
+    void OnUpdateUserAppointment(const QString& selectdate,const QString & dateText);
 
 signals:
     void exitButtonClicked();

@@ -26,6 +26,22 @@ public:
 
     ~DatabaseManager();
 
+    // 开始事务
+      bool beginTransaction() ;
+
+      // 提交事务
+      bool commitTransaction() ;
+
+      // 回滚事务
+      void rollbackTransaction() ;
+
+      // 检查事务状态
+      bool isTransactionActive() const {
+          // 检查数据库连接是否处于事务中，返回 true 或 false
+          // 实际上，QSqlDatabase 没有直接的接口可以检查，所以这个方法可以根据你的需求进行设计
+          return false; // 这里简单返回 false，具体逻辑你可以根据需要实现
+      }
+
     //插入用户信息
     bool insertUser(const QString &username,const QString &gender,const QString &birthdate,const QString &idCard,const QString &address,const QString &phoneNumber,const QString &password,const int &role_id);
 

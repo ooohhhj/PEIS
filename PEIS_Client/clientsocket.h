@@ -52,7 +52,7 @@ signals:
     void ReserveCheckup(const QJsonArray & jsonArray,const int& totalPage);
     void PackageNameInfo(const QJsonArray & jsonArray,const QString &packageDescription);
 
-    void updateUserAppointment(const QString& selectdate);
+    void updateUserAppointment(const QString& selectdate,const QString & dateText);
 
     void userInfos(const QJsonArray &jsonArray);
 
