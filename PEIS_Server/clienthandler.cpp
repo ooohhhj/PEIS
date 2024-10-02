@@ -760,24 +760,24 @@ QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &pack
 
 QByteArray ClientHandler::handleHealthCheckupDataRequest(QJsonObject &healthcheckupDate)
 {
-    bool ret =DatabaseManager::instance(). HealthCheckDataEntry(healthcheckupDate);
+    bool ret = DatabaseManager::instance().HealthCheckDataEntry(healthcheckupDate);
 
     QJsonObject obj;
-    QString message ;
-    if(ret)
+    QString message;
+    if (ret)
     {
-        message =StatusMessage::SubmissionSuccessful;
+        message = StatusMessage::SubmissionSuccessful;
     }
     else
     {
-        message =StatusMessage::SubmissionFailed;
+        message = StatusMessage::SubmissionFailed;
     }
 
-    obj["message"]=message;
+    obj["message"] = message;
 
-    Packet packet =Protocol::createPacket(HealthCheckupItemDateResponce,obj);
+    Packet packet = Protocol::createPacket(HealthCheckupItemDateResponce, obj);
 
-    QByteArray array =Protocol::serializePacket(packet);
+    QByteArray array = Protocol::serializePacket(packet);
 
     return array;
 

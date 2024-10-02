@@ -58,6 +58,7 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
 
         QString appointmentStatus = appointment["appointmentStatus"].toString();
 
+
         QList<QStandardItem *> rowItems;
         rowItems << new QStandardItem(patientName)
                  << new QStandardItem(patientGender)
@@ -83,7 +84,7 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
         QPushButton *button = new QPushButton();
         if (status == "已预约") {
             button->setText("编辑报告");
-        } else if (status == "已完成") {
+        } else if (status == "已体检" ||status == "已完成") {
             button->setText("查看报告");
         } else {
             button->setText("未知操作");
@@ -140,7 +141,9 @@ void PatientInformation::onViewReportClicked(const QModelIndex &index)
     if (appointmentStatus == "已预约") {
         emit onEditReportButtonClicked(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
 
-    } else if (appointmentStatus == "已完成") {
+    } else if (appointmentStatus == "已完成")
+    {
+
     }
 
 }

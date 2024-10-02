@@ -109,6 +109,8 @@ public:
 
     bool CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate);
 
+    int getPatientIdByName(const QString &patientName);
+
     //检查数据库连接状态
     bool isConnected() const;
 

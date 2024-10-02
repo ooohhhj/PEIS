@@ -762,31 +762,33 @@ int DatabaseManager::getDoctorByDepartment(const int &packageId)
 bool DatabaseManager::HealthCheckDataEntry(QJsonObject &healthcheckupDate)
 {
     QString patientName = healthcheckupDate["patientName"].toString();
-    QString gender =healthcheckupDate["gender"].toString();
-    QString birthDate =healthcheckupDate["birthDate"].toString();
-    QString phoneNumber =healthcheckupDate["phoneNumber"].toString();
-    QString packageName =healthcheckupDate["packageName"].toString();
-    QString packageDate =healthcheckupDate["packageDate"].toString();
-
-    QJsonArray HealthCheckupDate =healthcheckupDate["HealthCheckupDate"].toArray();
-
+    QString gender = healthcheckupDate["gender"].toString();
+    QString birthDate = healthcheckupDate["birthDate"].toString();
+    QString phoneNumber = healthcheckupDate["phoneNumber"].toString();
+    QString packageName = healthcheckupDate["packageName"].toString();
+    QString packageDate = healthcheckupDate["packageDate"].toString();
     QString status = healthcheckupDate["status"].toString();
 
+    QJsonArray HealthCheckupDate = healthcheckupDate["HealthCheckupDate"].toArray();
+
     if (!isConnected()) {
-        qDebug() << "Failed to connect to database:" << db.lastError().text();
-        return false; // 返回 false 表示连接错误
+        qDebug() << "数据库连接失败:" << db.lastError().text();
+        return false;
     }
 
+    // 开始事务
+    db.transaction();
+
+    // 插入或更新主要健康检查信息
     QSqlQuery query(db);
     query.prepare("INSERT INTO health_checkup (patient_name, gender, birth_date, phone_number, package_name, package_date, report_status) "
                   "VALUES (:patientName, :gender, :birthDate, :phoneNumber, :packageName, :packageDate, :reportStatus) "
                   "ON DUPLICATE KEY UPDATE "
-                  "patient_name = :patientName, "
                   "gender = :gender, "
                   "birth_date = :birthDate, "
                   "package_name = :packageName, "
                   "package_date = :packageDate, "
-                  "report_status = :reportStatus"); // 将需要更新的字段列出
+                  "report_status = :reportStatus");
 
     // 绑定值
     query.bindValue(":patientName", patientName);
@@ -799,48 +801,61 @@ bool DatabaseManager::HealthCheckDataEntry(QJsonObject &healthcheckupDate)
 
     // 执行查询
     if (!query.exec()) {
-        qDebug() << "Error inserting into health_checkup:" << query.lastError().text();
+        qDebug() << "插入/更新 health_checkup 时出错:" << query.lastError().text();
+        db.rollback(); // 回滚事务
         return false;
-    } else {
-        qDebug() << "Insert or update successful.";
     }
 
-
-    // 获取插入的 health_checkup 记录的 ID
+    // 获取插入或更新后生成的健康检查 ID
     int healthCheckupId = query.lastInsertId().toInt();
+    if (healthCheckupId == 0) {
+        // 如果没有插入新记录，意味着是更新操作，需要根据 patientName 查询对应的 id
+        query.prepare("SELECT id FROM health_checkup WHERE patient_name = :patientName");
+        query.bindValue(":patientName", patientName);
+        if (!query.exec() || !query.next()) {
+            qDebug() << "无法获取健康检查 ID：" << query.lastError().text();
+            db.rollback(); // 回滚事务
+            return false;
+        }
+        healthCheckupId = getPatientIdByName(patientName); // 获取对应的健康检查 ID
+    }
 
-    // 插入到 health_checkup_items 表
-    foreach (const QJsonValue &item, HealthCheckupDate)
-    {
+    qDebug() << "healthCheckupId =" << healthCheckupId;
+
+    // 插入或更新健康检查项目
+    foreach (const QJsonValue &item, HealthCheckupDate) {
         QJsonObject itemObject = item.toObject();
         QString itemName = itemObject["itemName"].toString();
         QString normalRange = itemObject["normalRange"].toString();
         QString inputData = itemObject["inputData"].toString();
-        QString resultDate =itemObject["resultData"].toString();
+        QString resultDate = itemObject["resultField"].toString();
         QString responsiblePerson = itemObject["responsiblePerson"].toString();
 
-        query.prepare("INSERT INTO health_checkup_items (health_checkup_id, item_name, normal_range, input_data,result_data, responsible_person) "
-                      "VALUES (:healthCheckupId, :itemName, :normalRange, :inputData, :responsiblePerson) "
+        query.prepare("INSERT INTO health_checkup_items (health_checkup_id, item_name, normal_range, input_data, result_data, responsible_person) "
+                      "VALUES (:healthCheckupId, :itemName, :normalRange, :inputData, :resultData, :responsiblePerson) "
                       "ON DUPLICATE KEY UPDATE "
                       "normal_range = :normalRange, "
                       "input_data = :inputData, "
-                      "result_data = :resultData"
-                      "responsible_person = :responsiblePerson"); // 指定更新的字段
+                      "result_data = :resultData, "
+                      "responsible_person = :responsiblePerson");
 
-        // 绑定值
+        // 绑定健康检查项目的值
         query.bindValue(":healthCheckupId", healthCheckupId);
         query.bindValue(":itemName", itemName);
         query.bindValue(":normalRange", normalRange);
         query.bindValue(":inputData", inputData);
-        query.bindValue(":resultDate",resultDate);
+        query.bindValue(":resultData", resultDate);
         query.bindValue(":responsiblePerson", responsiblePerson);
 
-        // 执行查询
         if (!query.exec()) {
-            return false; // 插入失败
+            qDebug() << "插入/更新 health_checkup_items 时出错:" << query.lastError().text();
+            db.rollback(); // 回滚事务
+            return false; // 如果任何项目插入/更新失败，返回失败
         }
     }
-    return true;
+
+    db.commit(); // 提交事务
+    return true; // 成功完成所有操作
 }
 
 bool DatabaseManager::isExistCheckupDate(const QString &packageName, const QString &patientName, const QString &appointmentDate)
@@ -1094,6 +1109,29 @@ bool DatabaseManager::CancelAppointment(const QString &username, const QString &
     return true;
 }
 
+int DatabaseManager::getPatientIdByName(const QString &patientName)
+{
+    if (!isConnected()) {
+        qDebug() << "数据库连接失败：" << db.lastError().text();
+        return -1; // 连接失败返回 -1 表示未找到
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT id FROM health_checkup WHERE patient_name = :patientName");
+    query.bindValue(":patientName", patientName);
+
+    if (!query.exec()) {
+        qDebug() << "查询 health_checkup 时出错：" << query.lastError().text();
+        return -1; // 查询失败返回 -1
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt(); // 返回查询到的 id
+    } else {
+        qDebug() << "未找到患者：" << patientName;
+        return -1; // 未找到患者返回 -1
+    }
+}
 
 
 bool DatabaseManager::isConnected() const
