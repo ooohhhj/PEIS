@@ -67,6 +67,8 @@ signals:
     void OnRecordHealthCheckupResponce(const QJsonArray & checkUpDate);
 
     void onGetAppointmentInfo(const QString &username,const QString &packageName,const QString &appointmentDate,const QString&status);
+
+    void OnPatientHealthExaminationReview();
 private:
     QTcpSocket * tcpSocket;
 

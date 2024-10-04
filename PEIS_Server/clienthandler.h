@@ -10,6 +10,7 @@
 #include <QSqlQuery>
 #include <QJsonArray>
 #include <QDate>
+#include <QMap>
 
 
 #include "databasemanager.h"
@@ -20,13 +21,15 @@ class ClientHandler : public QObject,public QRunnable
 {
     Q_OBJECT
 public:
-    explicit ClientHandler(QTcpSocket*socket,QObject *parent = nullptr);
+    explicit ClientHandler(QTcpSocket *socket, QObject *parent = nullptr);
 
     virtual void run() override;
 
+
+
 signals:
     // 当处理完请求后，可能会发出一些信号给服务端
-       void requestProcessed(const  QByteArray &response);
+    void requestProcessed(const  QByteArray &response);
 private:
     QByteArray processRequest(Packet &packet);
 
@@ -68,11 +71,18 @@ private:
 
     QByteArray handleCancelAppointmentRequest(const QJsonObject & AppointmentObj);
 
+    void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
+
     void updateUserAppointments(const QString &selectdate);
+
+signals:
+    void InsertDoctorMapById(const int & id,QTcpSocket*clientSocket);
+    void ForwardMessage(const int & doctorsId);
 
 private:
     QTcpSocket * clientSocket; //客户端的套接字
     QByteArray data;           // 用于存储读取的客户端数据
+
 };
 
 #endif // CLIENTHANDLER_H

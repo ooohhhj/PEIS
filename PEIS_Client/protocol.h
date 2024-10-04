@@ -112,6 +112,8 @@ enum ResponseType
 
     CancelAppointmentResponce,                   //取消预约回复
 
+    PatientHealthExaminationReview,             //病人体检审核
+
 
     InternalServerError,                        //未知请求
 

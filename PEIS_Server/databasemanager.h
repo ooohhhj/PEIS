@@ -86,14 +86,21 @@ public:
 
     bool insertAppointment(const int &userId, const int &packageId,const QString &appointmentDate);
 
+    int getdoctorIdByDoctorTable(const int&userId);
 
     int getUserIdByUsername(const QString &username);//传入用户名获取用户id
     int getPackageIdByName(const QString &packageName);//传入套餐名字获取套餐id
     int getDoctorByDepartment(const int &packageId);
 
-    bool HealthCheckDataEntry( QJsonObject &healthcheckupDate);
+    int getDoctorIdByAppointments(const int & patientId,const int & packageId,const QString & appointmentDate);
+
+    bool InsertHealthCheckData( QJsonObject &healthcheckupDate);
+
+    bool UpdateHealthCheckData( QJsonObject &healthcheckupDate);
 
     bool isExistCheckupDate(const QString & packageName,const QString & patientName,const QString & appointmentDate);
+
+    bool updateStatusByAppointment(const int & patientId,const int & packageId,const QString & appointmentDate);
 
     QSqlQuery getAppointmentsByusername(const QString & username);
 

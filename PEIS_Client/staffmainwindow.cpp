@@ -17,14 +17,13 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     appointmentmanagement.get()->setUsername(m_username);
 
 
-
-
-
     //   设置只允许最大化，不允许最小化
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |Qt::WindowCloseButtonHint);
 
     //显示窗口为最大化状态
     this->showMaximized();
+
+    connect(ClientSocket::instance(),&ClientSocket::OnPatientHealthExaminationReview,this,&StaffMainWindow::updatenoticeButton);
 }
 
 StaffMainWindow::~StaffMainWindow()
@@ -56,5 +55,20 @@ void StaffMainWindow::on_healthCheckRecordButton_clicked()
     QByteArray sendArray =Protocol::serializePacket(packet);
 
     ClientSocket::instance()->senData(sendArray);
+}
+
+
+void StaffMainWindow::on_noticeButton_clicked()
+{
+    QIcon icon(":/notice-No.png"); // 替换成你想要的图标路径
+    ui->noticeButton->setIcon(icon);
+
+}
+
+void StaffMainWindow::updatenoticeButton()
+{
+    QIcon icon(":/notice-Yes.png"); // 替换成你想要的图标路径
+    ui->noticeButton->setIcon(icon);
+    qDebug()<<"来提醒";
 }
 

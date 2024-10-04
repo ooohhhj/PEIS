@@ -82,7 +82,7 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
         QString status = model->item(row, 6)->text();  // 获取预约状态
 
         QPushButton *button = new QPushButton();
-        if (status == "已预约") {
+        if (status == "已预约" ) {
             button->setText("编辑报告");
         } else if (status == "已体检" ||status == "已完成") {
             button->setText("查看报告");

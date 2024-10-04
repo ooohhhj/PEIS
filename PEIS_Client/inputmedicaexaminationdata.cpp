@@ -114,7 +114,7 @@ void InputMedicaExaminationData::on_submitButton_clicked()
     QString packageDate =ui->packageDate->text();
 
     // 获取包裹项的数量
-    int itemCount = ui->packageItemsWidget->findChildren<QLineEdit *>().size() / 4; // 假设每个体检项目有4个输入框
+    int itemCount = ui->packageItemsWidget->findChildren<QLineEdit *>().size() / 3; // 假设每个体检项目有4个输入框
 
     QJsonArray HealthCheckupDate;
 
@@ -142,7 +142,7 @@ void InputMedicaExaminationData::on_submitButton_clicked()
             itemData["responsiblePerson"] = responsiblePersonField->text();
 
 
-            if(inputField->text().isEmpty())
+            if(inputField->text().isEmpty() || resultField->text().isEmpty() || responsiblePersonField->text().isEmpty())
             {
                 str="体检中";
             }

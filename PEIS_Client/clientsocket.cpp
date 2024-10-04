@@ -275,6 +275,11 @@ void ClientSocket::processResponse(Packet &packet)
 
         break;
     }
+    case PatientHealthExaminationReview:
+    {
+        emit OnPatientHealthExaminationReview();
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

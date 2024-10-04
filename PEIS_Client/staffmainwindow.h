@@ -24,6 +24,9 @@ private slots:
     void on_healthCheckRecordButton_clicked();
 
 
+    void on_noticeButton_clicked();
+    void updatenoticeButton();
+
 private:
     Ui::StaffMainWindow *ui;
     QString m_username;

@@ -1,9 +1,10 @@
 #include "clienthandler.h"
 
 
-ClientHandler::ClientHandler(QTcpSocket *socket, QObject *parent) : QObject(parent), clientSocket(socket)
-{
 
+
+ClientHandler::ClientHandler(QTcpSocket *socket, QObject *parent):clientSocket(socket)
+{
     // 设置此 runnable 对象在执行完成后自动删除
     setAutoDelete(true);
 }
@@ -356,9 +357,29 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
             msgType =UsernameAndPasswordSuccessfullyResponce;
             responceJson["roleId"] = roleId;
             responceJson["username"]=username;
+
             qDebug()<<"roleId="<<roleId;
             qDebug()<<"username="<<username;
+
             responceMsg =StatusMessage::UsernameAndPasswordSuccessfully;
+
+            if(roleId == 2)
+            {
+                qDebug()<<"进来";
+                // 获取医生id
+                int userId = DatabaseManager::instance().getUserIdByUsername(username);
+                qDebug() << "userId=" << userId;
+
+                if (userId != -1)
+                {
+                    int doctorId = DatabaseManager::instance().getdoctorIdByDoctorTable(userId);
+                    qDebug() << "doctorId=" << doctorId;
+                    if (doctorId != -1)
+                    {
+                        InsertDoctorMapById(doctorId,clientSocket);
+                    }
+                }
+            }
         }
         else
         {
@@ -726,11 +747,12 @@ QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &pack
 
     if(ret)
     {
+        qDebug()<<"存在记录";//将结果发送
         return handleRecordHealthCheckup(patientName);
     }
     else
     {
-
+        qDebug()<<"不存在记录";
         QSqlQuery query =DatabaseManager::instance().getPackageItemInfo(package);
 
         QJsonArray packageItemsArray;
@@ -760,7 +782,45 @@ QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &pack
 
 QByteArray ClientHandler::handleHealthCheckupDataRequest(QJsonObject &healthcheckupDate)
 {
-    bool ret = DatabaseManager::instance().HealthCheckDataEntry(healthcheckupDate);
+    //判断记录表是否存在记录
+    QString patientName = healthcheckupDate["patientName"].toString();
+    QString gender =healthcheckupDate["gender"].toString();
+    QString birthDate =healthcheckupDate["birthDate"].toString();
+    QString phoneNumber =healthcheckupDate["phoneNumber"].toString();
+    QString packageName =healthcheckupDate["packageName"].toString();
+    QString packageDate =healthcheckupDate["packageDate"].toString();
+
+    QJsonArray HealthCheckupDate =healthcheckupDate["HealthCheckupDate"].toArray();
+    QString status =healthcheckupDate["status"].toString();
+
+    //判断记录表是否存在记录
+    bool ret =DatabaseManager::instance().isExistCheckupDate(packageName,patientName,packageDate);
+
+    if(!ret)
+    {
+        //不存在
+        //插入
+        ret = DatabaseManager::instance().InsertHealthCheckData(healthcheckupDate);
+    }
+    else
+    {
+        //更新
+        ret = DatabaseManager::instance().UpdateHealthCheckData(healthcheckupDate);
+    }
+
+    if(status == "待审核")
+    {
+        //获取名字  修改预约表的状态
+        int userId =DatabaseManager::instance().getUserIdByUsername(patientName);
+        int packageId =DatabaseManager::instance().getPackageIdByName(packageName);
+
+
+        ret = DatabaseManager::instance().updateStatusByAppointment(userId,packageId,packageDate);
+
+        //发送给医生
+        handlePendingUserData(userId,packageId,packageDate);
+    }
+
 
     QJsonObject obj;
     QString message;
@@ -795,14 +855,14 @@ QByteArray ClientHandler::handleRecordHealthCheckup(const QString &patientName)
         QString itemName = query.value("item_name").toString();
         QString normalRange = query.value("normal_range").toString();
         QString inputData = query.value("input_data").toString();
+        QString  inputField= query.value("result_data").toString();
         QString responsiblePerson = query.value("responsible_person").toString();
 
         dateObject["item_name"] =itemName;
         dateObject["normal_range"] =normalRange;
         dateObject["input_data"] =inputData;
+        dateObject["result_date"] =inputField;
         dateObject["responsible_person"] =responsiblePerson;
-
-        qDebug()<<itemName<<" "<<normalRange<<" "<<inputData<<" "<<responsiblePerson;
 
         DateArray.append(dateObject);
     }
@@ -882,6 +942,29 @@ QByteArray ClientHandler::handleCancelAppointmentRequest(const QJsonObject &Appo
     return array;
 }
 
+void ClientHandler::handlePendingUserData(const int &patientId, const int &packageId, const QString &appointmentDate)
+{
+    qDebug()<<"patientId="<<patientId;
+    qDebug()<<"packageId="<<packageId;
+    qDebug()<<"appointmentDate="<<appointmentDate;
+
+    QString formattedDate = QDate::fromString(appointmentDate, "yyyy-M-d").toString("yyyy-MM-dd");
+
+
+    int doctorId =DatabaseManager::instance().getDoctorIdByAppointments(patientId,packageId,formattedDate);
+    qDebug()<<"doctorId="<<doctorId;
+
+    // 检查医生 ID 是否有效
+    if (doctorId <= 0) {
+        qDebug() << "无效的医生 ID:" << doctorId;
+        emit requestProcessed(QByteArray()); // 返回空的 QByteArray 或适当处理
+        return ;
+    }
+
+
+    emit ForwardMessage(doctorId);
+
+}
 
 void ClientHandler::updateUserAppointments(const QString &selectdate)
 {
