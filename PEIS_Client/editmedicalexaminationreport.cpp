@@ -104,7 +104,6 @@ void EditMedicalExaminationReport::setCheckupDate(const QJsonArray &checkupDate)
 
 void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const QJsonObject &patientDateArray)
 {
-    qDebug()<<"hhh";
     QString patientName = patientDateArray["patient_name"].toString();
     QString gender = patientDateArray["gender"].toString();
     QString birth_date = patientDateArray["birth_date"].toString();
@@ -124,7 +123,7 @@ void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const 
     ui->phoneNumber->setText(phone_number);
     ui->packageName->setText(package_name);
     ui->packageDate->setText(package_date);
-    ui->report_generateTimeLabel->setText(report_generated);
+    ui->report_generateTime->setText(report_generated);
     ui->status->setText(report_status);
 
 
@@ -132,3 +131,22 @@ void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const 
 
 
 }
+
+void EditMedicalExaminationReport::on_submitButton_clicked()
+{
+    QString doctorAdvice =ui->doctorAdvice->toPlainText();
+    QString editDorctor = ui->EditDorctor->text();
+
+    if(doctorAdvice.isEmpty() || editDorctor.isEmpty())
+    {
+        ClientSocket::instance()->showMessageBox(":/warning.png","预约管理","输入信息为空！！");
+        return ;
+    }
+
+    //报告生成时间
+    QString reportGenerateTime = QDate::currentDate().toString();
+
+
+
+}
+

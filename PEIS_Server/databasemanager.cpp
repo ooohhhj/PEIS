@@ -1022,6 +1022,10 @@ bool DatabaseManager::UpdateHealthCheckData(QJsonObject &healthcheckupDate)
 
 bool DatabaseManager::isExistCheckupDate(const QString &packageName, const QString &patientName, const QString &appointmentDate)
 {
+    qDebug() << "patientName=" << patientName;
+    qDebug() << "packageName=" << packageName;
+    qDebug() << "appointmentDate=" << appointmentDate;
+
     if (!isConnected()) {
         qDebug() << "Failed to connect to database:" << db.lastError().text();
         return false; // 返回 -1 表示出错
@@ -1275,10 +1279,6 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
 
 QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, const QString &packageName, const QString &appointmentDate)
 {
-    qDebug() << "patientName=" << patientName;
-    qDebug() << "packageName=" << packageName;
-    qDebug() << "appointmentDate=" << appointmentDate;
-
     if (!isConnected()) {
         qDebug() << "Failed to connect to database:" << db.lastError().text();
         return QSqlQuery();
@@ -1287,9 +1287,9 @@ QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, con
     QSqlQuery query(db);
     // 修正 SQL 查询，确保 :patientName 的使用
     query.prepare("SELECT * FROM health_checkup "
-                  "WHERE patient_name = '教师资格认定体检' "
-                  "AND package_name = '李乐乐' "
-                  "AND package_date = '2024-10-04'");
+                  "WHERE patient_name = :patientName "
+                  "AND package_name = :packageName "
+                  "AND package_date = :appointmentDate");
 
 
 
@@ -1304,27 +1304,6 @@ QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, con
     if (!query.exec()) {
         qDebug() << "Query execution failed:" << query.lastError().text();
         return QSqlQuery();
-    }
-
-    qDebug() << "Generated Query:" << query.lastQuery();
-
-    // 检查是否有结果
-    if (query.next()) {
-        QString patientName2 = query.value("patient_name").toString();
-        QString gender = query.value("gender").toString();
-        QString birth_date = query.value("birth_date").toString();
-        QString phone_number = query.value("phone_number").toString();
-        QString package_name = query.value("package_name").toString();
-        QString package_date = query.value("package_date").toString();
-        QString report_generated = query.value("report_generated").toString();
-        QString report_status = query.value("report_status").toString();
-        QString doctor_name = query.value("doctor_name").toString();
-        QString doctor_advice = query.value("doctor_advice").toString();
-
-        qDebug() << "patientName2=" << patientName2;
-        // 可以继续处理其他数据
-    } else {
-        qDebug() << "没有找到匹配的记录。";
     }
 
     return query;

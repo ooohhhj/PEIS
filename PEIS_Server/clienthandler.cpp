@@ -926,15 +926,13 @@ QByteArray ClientHandler::handleEditCheckupReportRequest(const QJsonObject &pati
     QString packageName =patientObj["packageName"].toString();
     QString appointmentDate =patientObj["appointmentDate"].toString();
 
-
     //查询是否有这个记录
-    QSqlQuery query = DatabaseManager::instance().getPatientCheckupDate(packageName,patientName,appointmentDate);
+    QSqlQuery query = DatabaseManager::instance().getPatientCheckupDate(patientName,packageName,appointmentDate);
 
     //获取病人信息
 
     if(!query.next())
     {
-        qDebug()<<"df";
         return QByteArray();
     }
 
@@ -948,8 +946,6 @@ QByteArray ClientHandler::handleEditCheckupReportRequest(const QJsonObject &pati
     QString report_status =query.value("report_status").toString();
     QString doctor_name =query.value("doctor_name").toString();
     QString doctor_advice =query.value("doctor_advice").toString();
-
-    qDebug()<<"name="<<patientName;
 
     QJsonObject obj;
 
