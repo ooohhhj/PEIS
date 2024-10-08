@@ -217,7 +217,7 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnHealthCheckupItemResponce(packageItems);
         break;
     }
-    case   HealthCheckupItemDateResponce:
+    case  HealthCheckupItemDateResponce:
     {
         QString message =MessageObject["message"].toString();
         if(message ==StatusMessage::SubmissionSuccessful)
@@ -278,6 +278,11 @@ void ClientSocket::processResponse(Packet &packet)
     case PatientHealthExaminationReview:
     {
         emit OnPatientHealthExaminationReview();
+        break;
+    }
+    case PatientHealthExaminationDateResponce:
+    {
+        emit OnPatientHealthExaminationDateResponce(MessageObject);
         break;
     }
     default:

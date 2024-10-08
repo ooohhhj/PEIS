@@ -31,6 +31,9 @@ private slots:
     void OnAppointmentsDate(const QJsonArray & appointments);
     void onViewReportClicked(const QModelIndex &index);
 
+signals:
+    void EditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
+
 
 private:
     Ui::AppointmentManagement *ui;

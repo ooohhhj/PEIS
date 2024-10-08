@@ -11,8 +11,10 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
 
 
     appointmentmanagement=std::make_unique<AppointmentManagement>(this);
+    editmedicalexaminationreport =std::make_unique<EditMedicalExaminationReport>(this);
 
     ui->stackedWidget->addWidget(appointmentmanagement.get());
+    ui->stackedWidget->addWidget(editmedicalexaminationreport.get());
 
     appointmentmanagement.get()->setUsername(m_username);
 
@@ -24,6 +26,8 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     this->showMaximized();
 
     connect(ClientSocket::instance(),&ClientSocket::OnPatientHealthExaminationReview,this,&StaffMainWindow::updatenoticeButton);
+
+    connect(appointmentmanagement.get(),&AppointmentManagement::EditCheckuppreport,this,&StaffMainWindow::OnEditCheckuppreport);
 }
 
 StaffMainWindow::~StaffMainWindow()
@@ -70,5 +74,31 @@ void StaffMainWindow::updatenoticeButton()
     QIcon icon(":/notice-Yes.png"); // 替换成你想要的图标路径
     ui->noticeButton->setIcon(icon);
     qDebug()<<"来提醒";
+}
+
+
+void StaffMainWindow::on_checkupReportButton_clicked()
+{
+
+
+
+
+}
+
+void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QString &packageName, const QString &appointmentDate)
+{
+    ui->stackedWidget->setCurrentWidget(editmedicalexaminationreport.get());
+
+    QJsonObject Obj;
+    Obj["patientName"]=patientName;
+    Obj["packageName"]=packageName;
+
+    // 将获取的日期格式化为 YYYY-MM-DD
+    Obj["appointmentDate"] = QDate::fromString(appointmentDate, "yyyy-M-d").toString("yyyy-MM-dd");
+    Packet packet =Protocol::createPacket(EditCheckupReportRequest,Obj);
+
+    QByteArray sendArray =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(sendArray);
 }
 

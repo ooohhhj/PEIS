@@ -1,7 +1,7 @@
 #include "clienthandler.h"
 
 
-
+QMutex dbMutex;
 
 ClientHandler::ClientHandler(QTcpSocket *socket, QObject *parent):clientSocket(socket)
 {
@@ -97,6 +97,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case CancelAppointmentRequest:
         return handleCancelAppointmentRequest(message);
+        break;
+    case EditCheckupReportRequest:
+        return handleEditCheckupReportRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -340,8 +343,6 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
     QString username =usernameAndPasswordDate["username"].toString();
     QString password =usernameAndPasswordDate["password"].toString();
 
-    qDebug()<<"username"<<username;
-    qDebug()<<"password"<<password;
     bool success =DatabaseManager::instance().findUserByUsernameAndPassword(username,password);
 
     QString responceMsg;
@@ -358,22 +359,16 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
             responceJson["roleId"] = roleId;
             responceJson["username"]=username;
 
-            qDebug()<<"roleId="<<roleId;
-            qDebug()<<"username="<<username;
-
             responceMsg =StatusMessage::UsernameAndPasswordSuccessfully;
 
             if(roleId == 2)
             {
-                qDebug()<<"进来";
                 // 获取医生id
                 int userId = DatabaseManager::instance().getUserIdByUsername(username);
-                qDebug() << "userId=" << userId;
 
                 if (userId != -1)
                 {
                     int doctorId = DatabaseManager::instance().getdoctorIdByDoctorTable(userId);
-                    qDebug() << "doctorId=" << doctorId;
                     if (doctorId != -1)
                     {
                         InsertDoctorMapById(doctorId,clientSocket);
@@ -516,6 +511,7 @@ QByteArray ClientHandler::handleSearchPackageRequest(const QJsonObject &searchPa
 
 QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject &checkupPackageDate)
 {
+    QMutexLocker locker(&dbMutex); // 加锁，确保在函数执行期间其他线程无法访问数据库
     QString username = checkupPackageDate["username"].toString();
     QString cardName = checkupPackageDate["cardName"].toString();
     QString selectDate = checkupPackageDate["selectDate"].toString();
@@ -534,12 +530,6 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
         return Protocol::serializePacket(Protocol::createPacket(GetCheckupPackageCountResponce, responseObject));
     }
 
-    // 开启事务
-    if (!DatabaseManager::instance().beginTransaction()) {
-        message = StatusMessage::InternalServerError;
-        responseObject["message"] = message;
-        return Protocol::serializePacket(Protocol::createPacket(GetCheckupPackageCountResponce, responseObject));
-    }
 
     // 检查用户是否已经预约
     if (DatabaseManager::instance().isUserAlreadyByAppointments(userId, packageId, selectDate)) {
@@ -555,24 +545,13 @@ QByteArray ClientHandler::handleGetCheckupPackageCountRequest(const QJsonObject 
             if (DatabaseManager::instance().insertAppointment(userId, packageId, selectDate)) {
                 message = StatusMessage::AppointmentSuccessful;
                 updateUserAppointments(selectDate); // 更新预约
-                // 提交事务
-                if (!DatabaseManager::instance().commitTransaction()) {
-                    message = StatusMessage::InternalServerError;
-                }
             } else {
                 message = StatusMessage::InternalServerError;
-                DatabaseManager::instance().rollbackTransaction();
             }
         } else {
             // 无法预约，已满
             message = StatusMessage::CannotMakeanAppointment;
-            DatabaseManager::instance().rollbackTransaction();
         }
-    }
-
-    // 如果没有执行事务（如上面的else语句），需要回滚
-    if (DatabaseManager::instance().isTransactionActive()) {
-        DatabaseManager::instance().rollbackTransaction();
     }
 
     // 构造响应
@@ -696,7 +675,6 @@ QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienName
 
     QSqlQuery query =DatabaseManager::instance().getUserInfoByUsername(patientName);
 
-
     QJsonArray patientInfoArray;
     // 处理查询结果
     while (query.next()) {
@@ -748,7 +726,14 @@ QByteArray ClientHandler::handleHealthCheckupItemRequest(const QJsonObject &pack
     if(ret)
     {
         qDebug()<<"存在记录";//将结果发送
-        return handleRecordHealthCheckup(patientName);
+
+        QJsonObject obj;
+        obj["Date"] =handleRecordHealthCheckup(patientName);
+
+        Packet packet =Protocol::createPacket(RecordHealthCheckupResponce,obj);
+
+        QByteArray array =Protocol::serializePacket(packet);
+        return array;
     }
     else
     {
@@ -843,7 +828,7 @@ QByteArray ClientHandler::handleHealthCheckupDataRequest(QJsonObject &healthchec
 
 }
 
-QByteArray ClientHandler::handleRecordHealthCheckup(const QString &patientName)
+QJsonArray ClientHandler::handleRecordHealthCheckup(const QString &patientName)
 {
     QSqlQuery query =DatabaseManager::instance().getRecordHealthCheckupDate(patientName);
 
@@ -867,14 +852,7 @@ QByteArray ClientHandler::handleRecordHealthCheckup(const QString &patientName)
         DateArray.append(dateObject);
     }
 
-    QJsonObject obj;
-    obj["Date"] =DateArray;
-
-    Packet packet =Protocol::createPacket(RecordHealthCheckupResponce,obj);
-
-    QByteArray array =Protocol::serializePacket(packet);
-
-    return array;
+    return DateArray;
 }
 
 QByteArray ClientHandler::handleAppointmentInfoRequest(const QJsonObject &usernameObj)
@@ -942,17 +920,151 @@ QByteArray ClientHandler::handleCancelAppointmentRequest(const QJsonObject &Appo
     return array;
 }
 
+QByteArray ClientHandler::handleEditCheckupReportRequest(const QJsonObject &patientObj)
+{
+    QString patientName = patientObj["patientName"].toString();
+    QString packageName =patientObj["packageName"].toString();
+    QString appointmentDate =patientObj["appointmentDate"].toString();
+
+
+    //查询是否有这个记录
+    QSqlQuery query = DatabaseManager::instance().getPatientCheckupDate(packageName,patientName,appointmentDate);
+
+    //获取病人信息
+
+    if(!query.next())
+    {
+        qDebug()<<"df";
+        return QByteArray();
+    }
+
+    patientName = query.value("patient_name").toString();
+    QString gender = query.value("gender").toString();
+    QString birth_date = query.value("birth_date").toString();
+    QString phone_number = query.value("phone_number").toString();
+    QString package_name = query.value("package_name").toString();
+    QString package_date = query.value("package_date").toString();
+    QString report_generated =query.value("report_generated").toString();
+    QString report_status =query.value("report_status").toString();
+    QString doctor_name =query.value("doctor_name").toString();
+    QString doctor_advice =query.value("doctor_advice").toString();
+
+    qDebug()<<"name="<<patientName;
+
+    QJsonObject obj;
+
+    obj["patientName"]=patientName;
+    obj["gender"]=gender;
+    obj["birth_date"]=birth_date;
+    obj["phone_number"]=phone_number;
+    obj["package_name"]=package_name;
+    obj["package_date"]=package_date;
+    obj["report_generated"]=report_generated;
+    obj["report_status"]=report_status;
+    obj["doctor_name"]=doctor_name;
+    obj["doctor_advice"]=doctor_advice;
+
+
+    obj["CheckupDate"] =handleRecordHealthCheckup(patientName);
+
+    Packet packet =Protocol::createPacket(PatientHealthExaminationDateResponce,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+
+}
+
+QByteArray ClientHandler::handleEditCheckupReportRequest2(const QJsonObject &doctornameObj)
+{
+    QString doctorName = doctornameObj["doctorname"].toString();
+
+    QJsonObject patientInfo;
+    // 获取 doctorId
+    int userId = DatabaseManager::instance().getUserIdByUsername(doctorName);
+    if (userId == -1) {
+        // 返回错误信息
+        patientInfo["message"] = "Invalid doctor username.";
+        return Protocol::serializePacket(Protocol::createPacket(InternalServerError, patientInfo));
+    }
+
+    int doctorId = DatabaseManager::instance().getdoctorIdByDoctorTable(userId);
+    if (doctorId == -1) {
+        // 返回错误信息
+        patientInfo["message"] = "Doctor ID not found.";
+        return Protocol::serializePacket(Protocol::createPacket(InternalServerError, patientInfo));
+    }
+
+    // 获取健康检查患者信息
+    QList<QVariantMap> checkupList = DatabaseManager::instance().GetHealthExaminationPatientInfo(doctorId);
+
+    QJsonArray checkupArray;
+
+    // 遍历每个健康检查信息
+    for (const QVariantMap &checkup : checkupList) {
+        QJsonObject checkupObject;
+
+        // 填充健康检查信息
+        checkupObject["health_checkup_id"] = checkup["health_checkup_id"].toInt();
+        checkupObject["patient_name"] = checkup["patient_name"].toString();
+        checkupObject["gender"] = checkup["gender"].toString();
+        checkupObject["birth_date"] = checkup["birth_date"].toString();
+        checkupObject["phone_number"] = checkup["phone_number"].toString();
+        checkupObject["package_name"] = checkup["package_name"].toString();
+        checkupObject["report_generated"] = checkup["report_generated"].toString();
+        checkupObject["report_status"] = checkup["report_status"].toString();
+        checkupObject["appointment_date"] = checkup["appointment_date"].toString();
+
+        // 打印健康检查信息
+        qDebug() << "Health Checkup Info: " << checkupObject;
+
+        // 使用 health_checkup_id 查询健康检查项目
+        int healthCheckupId = checkup["health_checkup_id"].toInt();
+        QList<QVariantMap> checkupItems = DatabaseManager::instance().GetPatientHealthExaminationData(healthCheckupId);
+
+        // 创建项目数组
+        QJsonArray itemsArray;
+
+        // 遍历每个健康检查项目
+        for (const QVariantMap &item : checkupItems) {
+            QJsonObject itemObject;
+            itemObject["health_checkup_item_id"] = item["health_checkup_item_id"].toInt();
+            itemObject["health_checkup_id"] = item["health_checkup_id"].toInt();
+            itemObject["item_name"] = item["item_name"].toString();
+            itemObject["normal_range"] = item["normal_range"].toString();
+            itemObject["input_data"] = item["input_data"].toString();
+            itemObject["result_data"] = item["result_data"].toString();
+            itemObject["responsible_person"] = item["responsible_person"].toString();
+
+            // 添加项目对象到数组
+            itemsArray.append(itemObject);
+
+            // 打印健康检查项目的信息
+            qDebug() << "Health Checkup Item: " << itemObject;
+        }
+
+        // 将项目数组添加到健康检查对象
+        checkupObject["items"] = itemsArray;
+
+        // 将健康检查对象添加到主数组
+        checkupArray.append(checkupObject);
+    }
+
+    patientInfo["patientArray"] = checkupArray;
+
+    // 创建并序列化数据包
+    Packet packet = Protocol::createPacket(PatientHealthExaminationDateResponce, patientInfo);
+    return Protocol::serializePacket(packet);
+
+}
+
 void ClientHandler::handlePendingUserData(const int &patientId, const int &packageId, const QString &appointmentDate)
 {
-    qDebug()<<"patientId="<<patientId;
-    qDebug()<<"packageId="<<packageId;
-    qDebug()<<"appointmentDate="<<appointmentDate;
 
     QString formattedDate = QDate::fromString(appointmentDate, "yyyy-M-d").toString("yyyy-MM-dd");
 
-
     int doctorId =DatabaseManager::instance().getDoctorIdByAppointments(patientId,packageId,formattedDate);
-    qDebug()<<"doctorId="<<doctorId;
+
 
     // 检查医生 ID 是否有效
     if (doctorId <= 0) {

@@ -59,6 +59,7 @@ enum RequestType
 
     updateCheckupRequest,                       //更新用户预约按钮请求
 
+    EditCheckupReportRequest,                   //编辑体检报告请求
 
 
 
@@ -113,6 +114,8 @@ enum ResponseType
     CancelAppointmentResponce,                   //取消预约回复
 
     PatientHealthExaminationReview,             //病人体检审核
+
+    PatientHealthExaminationDateResponce,        //病人体检数据回复
 
 
     InternalServerError,                        //未知请求

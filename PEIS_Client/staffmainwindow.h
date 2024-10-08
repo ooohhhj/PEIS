@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "appointmentmanagement.h"
+#include "editmedicalexaminationreport.h"
 
 namespace Ui {
 class StaffMainWindow;
@@ -27,10 +28,15 @@ private slots:
     void on_noticeButton_clicked();
     void updatenoticeButton();
 
+    void on_checkupReportButton_clicked();
+
+    void OnEditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
+
 private:
     Ui::StaffMainWindow *ui;
     QString m_username;
     std::unique_ptr<AppointmentManagement> appointmentmanagement;
+    std::unique_ptr<EditMedicalExaminationReport> editmedicalexaminationreport;
 
 };
 

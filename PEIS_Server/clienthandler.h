@@ -11,6 +11,8 @@
 #include <QJsonArray>
 #include <QDate>
 #include <QMap>
+#include <QMutex>
+#include <QMutexLocker>
 
 
 #include "databasemanager.h"
@@ -65,11 +67,15 @@ private:
 
     QByteArray handleHealthCheckupDataRequest( QJsonObject & healthcheckupDate);
 
-    QByteArray handleRecordHealthCheckup(const QString & patientName);
+    QJsonArray handleRecordHealthCheckup(const QString & patientName);
 
     QByteArray handleAppointmentInfoRequest(const QJsonObject &usernameObj);
 
     QByteArray handleCancelAppointmentRequest(const QJsonObject & AppointmentObj);
+
+    QByteArray handleEditCheckupReportRequest(const QJsonObject & patientObj);
+
+    QByteArray handleEditCheckupReportRequest2(const QJsonObject & doctornameObj);
 
     void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
 

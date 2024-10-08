@@ -33,20 +33,6 @@ DatabaseManager::~DatabaseManager()
     }
 }
 
-bool DatabaseManager::beginTransaction()
-{
-    return db.transaction();  // QSqlDatabase 的事务方法
-}
-
-bool DatabaseManager::commitTransaction()
-{
-    return db.commit();  // QSqlDatabase 的提交方法
-}
-
-void DatabaseManager::rollbackTransaction()
-{
-    db.rollback();  // QSqlDatabase 的回滚方法
-}
 
 bool DatabaseManager::insertUser(const QString &username, const QString &gender, const QString &birthdate, const QString &idCard, const QString &address, const QString &phoneNumber, const QString &password, const int &role_id)
 {
@@ -788,6 +774,57 @@ int DatabaseManager::getDoctorByDepartment(const int &packageId)
     }
 }
 
+QString DatabaseManager::getUsernameByuserId(const int &userid)
+{
+    if (!isConnected()) {
+        qDebug() << "数据库连接失败:" << db.lastError().text();
+        return QString(); // 返回 -1 表示连接失败
+    }
+
+
+    QSqlQuery query(db);
+
+    query.prepare("select username from users where id = :userId");
+    query.bindValue(":userId",userid);
+
+    if (query.exec()) {
+        if (query.next()) { // 检查是否有结果
+            return query.value("username").toString(); // 返回用户名
+        }
+    } else {
+        // 处理错误
+        qWarning() << "查询失败:" << query.lastError().text();
+    }
+
+    return QString(); // 如果没有找到用户或查询失败，返回空字符串
+
+}
+
+QString DatabaseManager::getPackageNameBypackageId(const int &packageId)
+{
+    if (!isConnected()) {
+        qDebug() << "数据库连接失败:" << db.lastError().text();
+        return QString(); // 返回 -1 表示连接失败
+    }
+
+
+    QSqlQuery query(db);
+
+    query.prepare("select package_name from healthpackages where id = :packageId");
+    query.bindValue(":packageId",packageId);
+    if (query.exec()) {
+        if (query.next()) { // 检查是否有结果
+            return query.value("package_name").toString(); // 返回用户名
+        }
+    } else {
+        // 处理错误
+        qWarning() << "查询失败:" << query.lastError().text();
+    }
+
+    return QString(); // 如果没有找到用户或查询失败，返回空字符串
+
+}
+
 int DatabaseManager::getDoctorIdByAppointments(const int &patientId, const int &packageId, const QString &appointmentDate)
 {
     if (!isConnected()) {
@@ -983,7 +1020,6 @@ bool DatabaseManager::UpdateHealthCheckData(QJsonObject &healthcheckupDate)
 }
 
 
-
 bool DatabaseManager::isExistCheckupDate(const QString &packageName, const QString &patientName, const QString &appointmentDate)
 {
     if (!isConnected()) {
@@ -993,10 +1029,10 @@ bool DatabaseManager::isExistCheckupDate(const QString &packageName, const QStri
 
     QSqlQuery query(db);
 
-    query.prepare("SELECT COUNT(*) FROM health_checkup "
-                  "WHERE package_name = :packageName "
-                  "AND patient_name = :patientName "
-                  "AND package_date = :appointmentDate");
+    query.prepare("select count(*) from health_checkup "
+                  "where package_name = :packageName "
+                  "and patient_name = :patientName "
+                  "and package_date = :appointmentDate");
 
     // 绑定参数
     query.bindValue(":packageName", packageName);
@@ -1081,7 +1117,6 @@ QSqlQuery DatabaseManager::getAppointmentsByusername(const QString &username)
         return QSqlQuery(); // 返回空查询表示出错
     }
 
-    qDebug()<<"调试";
     //获取到预约医生为userid的病人信息// 查询预约信息，包括病人信息、体检套餐、体检日期和状态
     query.prepare("SELECT p.username AS patient_name, "
                   "p.phone_number AS patient_phone, "
@@ -1237,6 +1272,183 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
 
     return query;  // 返回查询结果
 }
+
+QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, const QString &packageName, const QString &appointmentDate)
+{
+    qDebug() << "patientName=" << patientName;
+    qDebug() << "packageName=" << packageName;
+    qDebug() << "appointmentDate=" << appointmentDate;
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();
+    }
+
+    QSqlQuery query(db);
+    // 修正 SQL 查询，确保 :patientName 的使用
+    query.prepare("SELECT * FROM health_checkup "
+                  "WHERE patient_name = '教师资格认定体检' "
+                  "AND package_name = '李乐乐' "
+                  "AND package_date = '2024-10-04'");
+
+
+
+    // 绑定参数
+    QString cleanPatientName = patientName.trimmed();
+    QString cleanPackageName = packageName.trimmed();
+    query.bindValue(":patientName", cleanPatientName);
+    query.bindValue(":packageName", cleanPackageName);
+    query.bindValue(":appointmentDate", appointmentDate);
+
+
+    if (!query.exec()) {
+        qDebug() << "Query execution failed:" << query.lastError().text();
+        return QSqlQuery();
+    }
+
+    qDebug() << "Generated Query:" << query.lastQuery();
+
+    // 检查是否有结果
+    if (query.next()) {
+        QString patientName2 = query.value("patient_name").toString();
+        QString gender = query.value("gender").toString();
+        QString birth_date = query.value("birth_date").toString();
+        QString phone_number = query.value("phone_number").toString();
+        QString package_name = query.value("package_name").toString();
+        QString package_date = query.value("package_date").toString();
+        QString report_generated = query.value("report_generated").toString();
+        QString report_status = query.value("report_status").toString();
+        QString doctor_name = query.value("doctor_name").toString();
+        QString doctor_advice = query.value("doctor_advice").toString();
+
+        qDebug() << "patientName2=" << patientName2;
+        // 可以继续处理其他数据
+    } else {
+        qDebug() << "没有找到匹配的记录。";
+    }
+
+    return query;
+}
+
+
+QList<QVariantMap> DatabaseManager::GetHealthExaminationPatientInfo(const int &doctorId)
+{
+    //查询体检病人信息
+    QList<QVariantMap> checkupList;
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return checkupList;
+    }
+
+    // 准备 SQL 查询以获取健康检查信息
+    QString sql = R"(
+           SELECT
+               hc.id AS health_checkup_id,
+               hc.patient_name,
+               hc.gender,
+               hc.birth_date,
+               hc.phone_number,
+               hc.package_name,
+               hc.report_generated,
+               hc.report_status,
+               a.appointment_date
+           FROM
+               appointments a
+           JOIN
+               users u ON a.user_id = u.id
+           JOIN
+               health_checkup hc ON hc.patient_name = u.username
+                                 AND hc.package_name = (SELECT  package_name FROM healthitems p WHERE p.id = a.package_id)
+                                 AND hc.package_date = a.appointment_date
+           WHERE
+               a.doctor_id = :doctorId
+               AND a.status = '已体检'
+               AND hc.report_status = '待审核'
+       )";
+    // 执行查询
+    QSqlQuery checkUpInfoQuery(db);
+    checkUpInfoQuery.prepare(sql);
+    checkUpInfoQuery.bindValue(":doctorId", doctorId);
+
+    if (!checkUpInfoQuery.exec()) {
+        qDebug() << "Error executing query:" << checkUpInfoQuery.lastError().text();
+        return checkupList;
+    }
+
+    // 遍历查询结果并填充数据
+    while (checkUpInfoQuery.next()) {
+        QVariantMap checkupRecord;
+        checkupRecord["health_checkup_id"] = checkUpInfoQuery.value("health_checkup_id");
+        checkupRecord["patient_name"] = checkUpInfoQuery.value("patient_name");
+        checkupRecord["gender"] = checkUpInfoQuery.value("gender");
+        checkupRecord["birth_date"] = checkUpInfoQuery.value("birth_date");
+        checkupRecord["phone_number"] = checkUpInfoQuery.value("phone_number");
+        checkupRecord["package_name"] = checkUpInfoQuery.value("package_name");
+        checkupRecord["report_generated"] = checkUpInfoQuery.value("report_generated");
+        checkupRecord["report_status"] = checkUpInfoQuery.value("report_status");
+        checkupRecord["appointment_date"] = checkUpInfoQuery.value("appointment_date");
+
+        // 添加到列表
+        checkupList.append(checkupRecord);
+    }
+
+    return checkupList;
+}
+
+QList<QVariantMap> DatabaseManager::GetPatientHealthExaminationData(const int &healthCheckupId)
+{
+    //查询病人体检数据
+    QList<QVariantMap> checkupItemsList;
+
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return checkupItemsList;
+    }
+
+    QString sql = R"(
+           SELECT
+               hci.id AS health_checkup_item_id,
+               hci.health_checkup_id,
+               hci.item_name,
+               hci.normal_range,
+               hci.input_data,
+               hci.result_data,
+               hci.responsible_person
+           FROM
+               health_checkup_items hci
+           WHERE
+               hci.health_checkup_id = :healthCheckupId
+       )";
+
+    QSqlQuery checkupItemsQuery(db);
+    checkupItemsQuery.prepare(sql);
+    checkupItemsQuery.bindValue(":healthCheckupId", healthCheckupId);
+
+    if (!checkupItemsQuery.exec()) {
+        qDebug() << "Error executing checkup items query for healthCheckupId:"
+                 << healthCheckupId << " - " << checkupItemsQuery.lastError().text();
+        return checkupItemsList; // 返回空列表
+    }
+
+    // 遍历查询结果并构建每个健康检查项目的对象
+    while (checkupItemsQuery.next()) {
+        QVariantMap itemObject;
+        itemObject["health_checkup_item_id"] = checkupItemsQuery.value("health_checkup_item_id").toInt();
+        itemObject["health_checkup_id"] = checkupItemsQuery.value("health_checkup_id").toInt();
+        itemObject["item_name"] = checkupItemsQuery.value("item_name").toString();
+        itemObject["normal_range"] = checkupItemsQuery.value("normal_range").toString();
+        itemObject["input_data"] = checkupItemsQuery.value("input_data").toString();
+        itemObject["result_data"] = checkupItemsQuery.value("result_data").toString();
+        itemObject["responsible_person"] = checkupItemsQuery.value("responsible_person").toString();
+
+        // 将项目对象添加到列表
+        checkupItemsList.append(itemObject);
+    }
+
+    return checkupItemsList;
+}
+
 
 bool DatabaseManager::CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate)
 {

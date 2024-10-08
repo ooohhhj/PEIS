@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QDate>
 
 #include <QCryptographicHash>
 #include <QRandomGenerator>
@@ -25,22 +26,6 @@ public:
     DatabaseManager& operator=(const DatabaseManager&) = delete;
 
     ~DatabaseManager();
-
-    // 开始事务
-      bool beginTransaction() ;
-
-      // 提交事务
-      bool commitTransaction() ;
-
-      // 回滚事务
-      void rollbackTransaction() ;
-
-      // 检查事务状态
-      bool isTransactionActive() const {
-          // 检查数据库连接是否处于事务中，返回 true 或 false
-          // 实际上，QSqlDatabase 没有直接的接口可以检查，所以这个方法可以根据你的需求进行设计
-          return false; // 这里简单返回 false，具体逻辑你可以根据需要实现
-      }
 
     //插入用户信息
     bool insertUser(const QString &username,const QString &gender,const QString &birthdate,const QString &idCard,const QString &address,const QString &phoneNumber,const QString &password,const int &role_id);
@@ -91,6 +76,9 @@ public:
     int getUserIdByUsername(const QString &username);//传入用户名获取用户id
     int getPackageIdByName(const QString &packageName);//传入套餐名字获取套餐id
     int getDoctorByDepartment(const int &packageId);
+    QString getUsernameByuserId(const int & userid);
+    QString getPackageNameBypackageId(const int & packageId);
+
 
     int getDoctorIdByAppointments(const int & patientId,const int & packageId,const QString & appointmentDate);
 
@@ -113,6 +101,12 @@ public:
     QSqlQuery getRecordHealthCheckupDate(const QString & patientName);
 
     QSqlQuery getAppointmentInfoByusername(const QString & username);
+
+    QSqlQuery getPatientCheckupDate(const QString& patientName,const QString &packageName,const QString & appointmentDate);
+
+    QList<QVariantMap> GetHealthExaminationPatientInfo(const int &doctorId);
+
+    QList<QVariantMap> GetPatientHealthExaminationData(const int &healthCheckupId);
 
     bool CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate);
 

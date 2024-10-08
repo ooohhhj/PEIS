@@ -85,7 +85,7 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
         QString status = model->item(row, 4)->text();  // 获取预约状态
 
         QPushButton *button = new QPushButton();
-        if (status == "已预约") {
+        if (status == "已体检") {
             button->setText("编辑报告");
         } else if (status == "已完成") {
             button->setText("查看报告");
@@ -132,7 +132,14 @@ void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
 {
     QString patientName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toString();
 
-    qDebug() << "查看报告按钮被点击，患者姓名：" << patientName;
+    QString packageName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(),2)).toString();
+
+    QString appointmentDate =ui->tableView->model()->data(ui->tableView->model()->index(index.row(),3)).toString();
+
+
+    qDebug() << "编辑报告按钮被点击，患者姓名：" << patientName;
+
+    EditCheckuppreport(patientName,packageName,appointmentDate);
 
 }
 
