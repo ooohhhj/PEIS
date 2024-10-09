@@ -287,8 +287,8 @@ void ClientSocket::processResponse(Packet &packet)
     }
     case SaveReportResponce:
     {
-         QString message =MessageObject["message"].toString();
-         if(message ==StatusMessage::GenerateReportSuccessfully)
+         qDebug()<<"message="<<message;
+         if(message == StatusMessage::GenerateReportSuccessfully)
          {
              showMessageBox(":/successfully.png","体检报告",message);
          }

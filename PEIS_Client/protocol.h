@@ -122,6 +122,8 @@ enum ResponseType
     SaveReportResponce,                          //体检报告回复
 
 
+
+
     InternalServerError,                        //未知请求
 
 };

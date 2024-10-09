@@ -9,6 +9,9 @@
 #include <QThreadPool>
 #include <QMap>
 #include <QReadWriteLock>
+#include <QTextDocument>
+#include <QJsonObject>
+#include <QDir>
 
 #include "clienthandler.h"
 

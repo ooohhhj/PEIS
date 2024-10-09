@@ -104,7 +104,6 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case SaveReportRequest:
         return handleSaveReportRequest(message);
         break;
-
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
