@@ -104,7 +104,7 @@ void EditMedicalExaminationReport::setCheckupDate(const QJsonArray &checkupDate)
 
 void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const QJsonObject &patientDateArray)
 {
-    QString patientName = patientDateArray["patient_name"].toString();
+    QString patientName = patientDateArray["patientName"].toString();
     QString gender = patientDateArray["gender"].toString();
     QString birth_date = patientDateArray["birth_date"].toString();
     QString phone_number = patientDateArray["phone_number"].toString();
@@ -143,10 +143,32 @@ void EditMedicalExaminationReport::on_submitButton_clicked()
         return ;
     }
 
+
     //报告生成时间
-    QString reportGenerateTime = QDate::currentDate().toString();
+    QString reportGenerateTime = QDate::currentDate().toString("yyyy-MM-dd");
 
 
+    QString patientName =ui->patientName->text();
+    QString packageName =ui->packageName->text();
+    QString packageDate =ui->packageDate->text();
 
+    qDebug()<<"patientName="<<patientName;
+    qDebug()<<"packageName="<<packageName;
+    qDebug()<<"packageDate="<<packageDate;
+
+    QJsonObject obj;
+
+    obj["patientName"]=patientName;
+    obj["packageName"]=packageName;
+    obj["packageDate"]=packageDate;
+    obj["doctorAdvice"]=doctorAdvice;
+    obj["editDorctor"]=editDorctor;
+    obj["reportGenerateTime"]=reportGenerateTime;
+
+    Packet packet =Protocol::createPacket(SaveReportRequest,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
 }
 

@@ -60,6 +60,8 @@ enum RequestType
 
     EditCheckupReportRequest,                   //编辑体检报告请求
 
+    SaveReportRequest,                          //保存报告请求
+
 
 
 
@@ -114,8 +116,9 @@ enum ResponseType
     CancelAppointmentResponce,                   //取消预约回复
 
     PatientHealthExaminationReview,             //病人体检审核
-
     PatientHealthExaminationDateResponce,        //病人体检数据回复
+
+    SaveReportResponce,                          //体检报告回复
 
     InternalServerError,                        //未知请求
 
@@ -153,6 +156,9 @@ const QString GetAppointmentSuccessful ="获取预约信息成功";
 const QString GetAppointmentFalied ="抱歉，没查到预约信息";
 
 const QString CancelAppointmentSuccessful ="预约已取消";
+
+const QString GenerateReportSuccessfully ="体检报告已生成";
+const QString WaitGenerateReport ="等待生成体检报告";
 
 
 const QString InternalServerError = "内部错误";

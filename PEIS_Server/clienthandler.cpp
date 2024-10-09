@@ -101,6 +101,10 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case EditCheckupReportRequest:
         return handleEditCheckupReportRequest(message);
         break;
+    case SaveReportRequest:
+        return handleSaveReportRequest(message);
+        break;
+
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -1053,6 +1057,67 @@ QByteArray ClientHandler::handleEditCheckupReportRequest2(const QJsonObject &doc
     return Protocol::serializePacket(packet);
 
 }
+
+QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateObj)
+{
+    QString patientName = reportDateObj["patientName"].toString();
+    QString packageName = reportDateObj["packageName"].toString();
+    QString packageDate =reportDateObj["packageDate"].toString();
+    QString doctorAdvice =reportDateObj["doctorAdvice"].toString();
+    QString editDorctor =reportDateObj["editDorctor"].toString();
+    QString reportGenerateTime=reportDateObj["reportGenerateTime"].toString();
+
+    qDebug()<<"patientName="<<patientName;
+    qDebug()<<"packageName="<<packageName;
+    qDebug()<<"packageDate="<<packageDate;
+
+    QJsonObject obj;
+    //将信息填入数据库
+    bool ret =DatabaseManager::instance().updatePatientReport(reportDateObj);
+
+    QString message;
+    if(!ret)
+    {
+        qDebug()<<"更新失败";
+        message=StatusMessage::InternalServerError;
+        qDebug() << "未找到病人信息，请检查数据库查询参数。";
+    }
+    else
+    {
+        //生成报告
+        //获取数据
+        QSqlQuery query = DatabaseManager::instance().getPatientCheckupDate(patientName,packageName,packageDate);
+
+        //获取病人信息
+        if(!query.next())
+        {
+            message=StatusMessage::InternalServerError;
+            qDebug()<<"执行";
+        }
+        else
+        {
+            QJsonArray dateArray = handleRecordHealthCheckup(patientName);
+
+            emit  generateReport(clientSocket,query, dateArray, patientName, packageName, packageDate);
+        }
+    }
+
+    if(message.isEmpty())
+    {
+        message =StatusMessage::WaitGenerateReport;
+    }
+
+    obj["message"]=message;
+
+    Packet packet =Protocol::createPacket(SaveReportResponce,obj);
+
+    QByteArray array = Protocol::serializePacket(packet);
+
+    return array;
+
+
+}
+
 
 void ClientHandler::handlePendingUserData(const int &patientId, const int &packageId, const QString &appointmentDate)
 {

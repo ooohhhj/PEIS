@@ -104,11 +104,15 @@ public:
 
     QSqlQuery getPatientCheckupDate(const QString& patientName,const QString &packageName,const QString & appointmentDate);
 
+    bool updatePatientReport(const QJsonObject &reportDateObj );
+
     QList<QVariantMap> GetHealthExaminationPatientInfo(const int &doctorId);
 
     QList<QVariantMap> GetPatientHealthExaminationData(const int &healthCheckupId);
 
     bool CancelAppointment(const QString &username, const QString &packageName, const QString &appointmentDate);
+
+    bool updateReportPath(const QString& patientName,const QString & packageName,const QString &appointmentDate,const QString& reportPath);
 
     int getPatientIdByName(const QString &patientName);
 

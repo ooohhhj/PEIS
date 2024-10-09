@@ -13,6 +13,9 @@
 #include <QMap>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QPrinter>
+#include <QPainter>
+#include <QCoreApplication>
 
 
 #include "databasemanager.h"
@@ -32,6 +35,9 @@ public:
 signals:
     // 当处理完请求后，可能会发出一些信号给服务端
     void requestProcessed(const  QByteArray &response);
+
+    void generateReport(QTcpSocket *socket,const QSqlQuery &query, const QJsonArray &dateArray, const QString &patientName, const QString &packageName, const QString &packageDate);
+
 private:
     QByteArray processRequest(Packet &packet);
 
@@ -77,13 +83,17 @@ private:
 
     QByteArray handleEditCheckupReportRequest2(const QJsonObject & doctornameObj);
 
+    QByteArray handleSaveReportRequest(const QJsonObject&reportDateObj);
+
     void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
 
     void updateUserAppointments(const QString &selectdate);
 
+
 signals:
     void InsertDoctorMapById(const int & id,QTcpSocket*clientSocket);
     void ForwardMessage(const int & doctorsId);
+
 
 private:
     QTcpSocket * clientSocket; //客户端的套接字

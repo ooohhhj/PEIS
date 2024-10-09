@@ -285,6 +285,22 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnPatientHealthExaminationDateResponce(MessageObject);
         break;
     }
+    case SaveReportResponce:
+    {
+         QString message =MessageObject["message"].toString();
+         if(message ==StatusMessage::GenerateReportSuccessfully)
+         {
+             showMessageBox(":/successfully.png","体检报告",message);
+         }
+         else if(message == StatusMessage::WaitGenerateReport)
+         {
+         }
+         else
+         {
+             showMessageBox(":/warning.png","体检报告",message);
+         }
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

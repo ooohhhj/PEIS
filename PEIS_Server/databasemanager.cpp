@@ -1285,13 +1285,10 @@ QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, con
     }
 
     QSqlQuery query(db);
-    // 修正 SQL 查询，确保 :patientName 的使用
     query.prepare("SELECT * FROM health_checkup "
                   "WHERE patient_name = :patientName "
                   "AND package_name = :packageName "
                   "AND package_date = :appointmentDate");
-
-
 
     // 绑定参数
     QString cleanPatientName = patientName.trimmed();
@@ -1307,6 +1304,47 @@ QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, con
     }
 
     return query;
+}
+
+bool DatabaseManager::updatePatientReport(const QJsonObject &reportDateObj)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false;
+    }
+
+    QString patientName = reportDateObj["patientName"].toString();
+    QString packageName = reportDateObj["packageName"].toString();
+    QString packageDate = reportDateObj["packageDate"].toString();
+    QString doctorAdvice = reportDateObj["doctorAdvice"].toString();
+    QString editDoctor = reportDateObj["editDorctor"].toString();  // 修正拼写错误
+    QString reportGenerateTime = reportDateObj["reportGenerateTime"].toString();   ;
+
+    QSqlQuery query(db);
+    query.prepare(
+                "UPDATE health_checkup "
+                "SET doctor_advice = :doctorAdvice, doctor_name = :editDoctor, report_generated = :reportGenerateTime, report_status = '已审核' "
+                "WHERE patient_name = :patientName AND package_name = :packageName AND package_date = :packageDate AND report_status = '待审核';"
+                );
+
+
+    query.bindValue(":doctorAdvice", doctorAdvice);
+    query.bindValue(":editDoctor", editDoctor);  // 修改为 editDoctor
+    query.bindValue(":reportGenerateTime", reportGenerateTime);
+    query.bindValue(":patientName", patientName);
+    query.bindValue(":packageName", packageName);
+    query.bindValue(":packageDate", packageDate);
+
+
+    if (query.exec()) {
+        qDebug() << "Record updated successfully.";
+        return true;
+    } else {
+        qDebug() << "Error updating record: " << query.lastError().text();
+        return false;
+    }
+
+
 }
 
 
@@ -1463,6 +1501,38 @@ bool DatabaseManager::CancelAppointment(const QString &username, const QString &
 
     return true;
 }
+
+bool DatabaseManager::updateReportPath(const QString &patientName, const QString &packageName, const QString &appointmentDate, const QString &reportPath)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return false;
+    }
+
+
+    QSqlQuery query(db);
+    query.prepare(
+                "UPDATE health_checkup "
+                "SET report_path = :reportPath, report_status = '已完成'"
+                "WHERE patient_name = :patientName AND package_name = :packageName AND package_date = :packageDate And report_status = '已审核';"
+                );
+
+    query.bindValue(":reportPath", reportPath);
+    query.bindValue(":patientName", patientName);
+    query.bindValue(":packageName", packageName);
+    query.bindValue(":packageDate", appointmentDate);
+
+    if (query.exec()) {
+        qDebug() << "Record updated successfully.";
+        return true;
+    } else {
+        qDebug() << "Error updating record: " << query.lastError().text();
+        return false;
+    }
+
+}
+
+
 
 int DatabaseManager::getPatientIdByName(const QString &patientName)
 {

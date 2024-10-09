@@ -1,5 +1,5 @@
 QT -= gui
-QT += core network sql
+QT += core network sql printsupport
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -25,3 +25,6 @@ HEADERS += \
     databasemanager.h \
     protocol.h \
     serversocket.h
+
+FORMS += \
+    serversocket.ui

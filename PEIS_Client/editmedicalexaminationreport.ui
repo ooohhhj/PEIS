@@ -936,7 +936,7 @@ border: none;</string>
 border: 2px solid black;</string>
          </property>
          <property name="text">
-          <string>提交</string>
+          <string>生成报告</string>
          </property>
         </widget>
        </item>
