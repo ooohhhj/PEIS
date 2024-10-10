@@ -1062,15 +1062,13 @@ QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateO
     QString patientName = reportDateObj["patientName"].toString();
     QString packageName = reportDateObj["packageName"].toString();
     QString packageDate =reportDateObj["packageDate"].toString();
-    QString doctorAdvice =reportDateObj["doctorAdvice"].toString();
-    QString editDorctor =reportDateObj["editDorctor"].toString();
-    QString reportGenerateTime=reportDateObj["reportGenerateTime"].toString();
+
 
     qDebug()<<"patientName="<<patientName;
     qDebug()<<"packageName="<<packageName;
     qDebug()<<"packageDate="<<packageDate;
 
-    QJsonObject obj;
+
     //将信息填入数据库
     bool ret =DatabaseManager::instance().updatePatientReport(reportDateObj);
 
@@ -1097,14 +1095,19 @@ QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateO
         {
             QJsonArray dateArray = handleRecordHealthCheckup(patientName);
 
-            emit  generateReport(clientSocket,query, dateArray, patientName, packageName, packageDate);
+
+            emit generateReport(clientSocket,query, dateArray, patientName, packageName, packageDate);
+
         }
     }
 
+
     if(message.isEmpty())
     {
-        message =StatusMessage::WaitGenerateReport;
+        return QByteArray();
     }
+
+    QJsonObject obj;
 
     obj["message"]=message;
 
@@ -1113,7 +1116,6 @@ QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateO
     QByteArray array = Protocol::serializePacket(packet);
 
     return array;
-
 
 }
 

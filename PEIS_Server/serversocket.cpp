@@ -141,7 +141,7 @@ QString ServerSocket::generateHealthCheckupReport(const QSqlQuery &query, const 
         columnWidths.push_back(fontMetrics.horizontalAdvance(header));
     }
 
-    setFont("Arial", 12);
+    setFont("Arial", 10);
     // 计算起始X坐标
     int startX = 100; // 表格左边距
     int columnSpacing = 2000; // 列间距
@@ -285,6 +285,7 @@ void ServerSocket::newConnection()
 
             connect(handler,&ClientHandler::generateReport,this,&ServerSocket::onGenerateReport);
 
+
             //将数据交给线程池中的任务处理
             threadPool->start(handler);
         });
@@ -329,7 +330,7 @@ void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, c
 {
     QString reportPath = generateHealthCheckupReport(query, dateArray);
 
-    QString message="";
+    QString message;
     // 检查报告生成是否成功
     if(reportPath.isEmpty())
     {
@@ -351,11 +352,12 @@ void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, c
 
     obj["message"] = message;
 
-
     Packet packet =Protocol::createPacket(SaveReportResponce,obj);
 
     QByteArray array = Protocol::serializePacket(packet);
 
     socket->write(array);
+
+    qDebug()<<"处理message="<<message;
 
 }

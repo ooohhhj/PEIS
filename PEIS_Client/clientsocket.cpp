@@ -294,6 +294,7 @@ void ClientSocket::processResponse(Packet &packet)
          }
          else if(message == StatusMessage::WaitGenerateReport)
          {
+             showMessageBox(":/warning.png","体检报告",message);
          }
          else
          {
