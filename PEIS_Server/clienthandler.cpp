@@ -104,6 +104,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case SaveReportRequest:
         return handleSaveReportRequest(message);
         break;
+    case QueryHealthExaminationRecordsRequest:
+        return handleQueryHealthExaminationRecordsRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -409,7 +412,6 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
                 }
             }
 
-            qDebug()<<"roleId ="<<roleId;
             if(roleId == 3)
             {
                 // 获取用户id
@@ -905,7 +907,6 @@ QByteArray ClientHandler::handleAppointmentInfoRequest(const QJsonObject &userna
 {
     QString username = usernameObj["username"].toString();
 
-    qDebug() << "username=" << username;
 
     QJsonObject obj;
 
@@ -1163,6 +1164,58 @@ QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateO
 
 }
 
+QByteArray ClientHandler::handleQueryHealthExaminationRecordsRequest(const QJsonObject &userNameDate)
+{
+    QString username = userNameDate["username"].toString();
+
+    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoByusername(username);
+
+    // 如果查询失败，返回错误信息
+    if (!query.isActive() || !query.isSelect()) {
+        QJsonObject errorResponse;
+        errorResponse["status"] = "error";
+        errorResponse["message"] = "Failed to retrieve appointment information.";
+        QJsonDocument errorDoc(errorResponse);
+        return QByteArray();
+    }
+
+    // 准备一个 JSON 数组存储所有预约信息
+    QJsonArray RecordsArray;
+
+    // 遍历查询结果
+    while (query.next()) {
+        QJsonObject appointment;
+
+        // 提取每个预约的字段信息
+        QString healthPackage = query.value("package_name").toString();
+        QDate appointmentDate = query.value("appointment_date").toDate();
+        QString appointmentStatus = query.value("status").toString();
+
+        qDebug()<<"healthPackage="<<healthPackage;
+        qDebug()<<"appointmentDate="<<appointmentDate;
+        qDebug()<<"appointmentStatus="<<appointmentStatus;
+
+
+
+        // 将每条预约信息存入 JSON 对象
+        appointment["health_package"] = healthPackage;
+        appointment["appointment_date"] = appointmentDate.toString(Qt::ISODate);
+        appointment["appointment_status"] = appointmentStatus;
+
+        // 将该预约信息添加到 JSON 数组中
+        RecordsArray.append(appointment);
+    }
+
+    QJsonObject Info;
+    Info["records"] =RecordsArray;
+
+    Packet packet =Protocol::createPacket(QueryHealthExaminationRecordsResponce,Info);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    return array;
+
+}
 
 void ClientHandler::handlePendingUserData(const int &patientId, const int &packageId, const QString &appointmentDate)
 {

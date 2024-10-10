@@ -72,7 +72,7 @@ padding: 10px;</string>
                 <enum>Qt::AutoText</enum>
                </property>
                <property name="pixmap">
-                <pixmap resource="../Resource/icom.qrc">:/defaultAvatar.png</pixmap>
+                <pixmap>:/defaultAvatar.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -227,7 +227,7 @@ border: none;</string>
               <string>预约体检</string>
              </property>
              <property name="icon">
-              <iconset resource="../Resource/icom.qrc">
+              <iconset>
                <normaloff>:/scheduleCheckup.png</normaloff>:/scheduleCheckup.png</iconset>
              </property>
              <property name="iconSize">
@@ -277,7 +277,7 @@ border: none;</string>
               <string>体检记录</string>
              </property>
              <property name="icon">
-              <iconset resource="../Resource/icom.qrc">
+              <iconset>
                <normaloff>:/healthCheckRecord.png</normaloff>:/healthCheckRecord.png</iconset>
              </property>
              <property name="iconSize">
@@ -314,12 +314,10 @@ border: none;</string>
               <string notr="true">QPushButton:hover {
  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
  stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
     }
     QPushButton:pressed {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, 
  stop: 0 #A4D0E1, stop: 1 #B0E0E6);
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); 
     }
 </string>
              </property>
@@ -327,7 +325,7 @@ border: none;</string>
               <string>体检报告</string>
              </property>
              <property name="icon">
-              <iconset resource="../Resource/icom.qrc">
+              <iconset>
                <normaloff>:/checkupReport.png</normaloff>:/checkupReport.png</iconset>
              </property>
              <property name="iconSize">
@@ -364,7 +362,7 @@ border: none;</string>
               <string>个人资料</string>
              </property>
              <property name="icon">
-              <iconset resource="../Resource/icom.qrc">
+              <iconset>
                <normaloff>:/personalInfo.png</normaloff>:/personalInfo.png</iconset>
              </property>
              <property name="iconSize">
@@ -430,7 +428,7 @@ border: none;</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resource/icom.qrc">
+               <iconset>
                 <normaloff>:/notice-No.png</normaloff>:/notice-No.png</iconset>
               </property>
               <property name="iconSize">
@@ -459,7 +457,7 @@ border: none;</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resource/icom.qrc">
+               <iconset>
                 <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
               </property>
               <property name="iconSize">
@@ -509,8 +507,6 @@ border: none;</string>
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="../Resource/icom.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

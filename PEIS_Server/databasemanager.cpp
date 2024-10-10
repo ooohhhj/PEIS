@@ -1532,6 +1532,41 @@ bool DatabaseManager::updateReportPath(const QString &patientName, const QString
 
 }
 
+bool DatabaseManager::updateAppointMents(const QString &patientName, const QString &packageName, const QString &appointmentDate)
+{
+    if (!isConnected()) {
+        qDebug() << "数据库连接失败：" << db.lastError().text();
+        return -1; // 连接失败返回 -1 表示未找到
+    }
+
+    QSqlQuery query(db);
+
+    int userId =getUserIdByUsername(patientName);
+    int packageId =getPackageIdByName(packageName);
+
+    if(userId== -1 || packageId ==-1)
+    {
+        return false;
+    }
+
+    query.prepare("UPDATE appointments SET status = '已完成' WHERE user_id = :userId "
+                  "AND package_id = :packageId "
+                  "AND appointment_date = :appointmentDate");
+
+    query.bindValue(":userId", userId);
+    query.bindValue(":packageId", packageId);
+    query.bindValue(":appointmentDate", appointmentDate);
+
+
+    if (!query.exec()) {
+        qDebug() << "更新失败：" << query.lastError().text();
+        return false; // Return false if update fails
+    }
+
+    return true; // Return true on successful update
+
+}
+
 
 
 int DatabaseManager::getPatientIdByName(const QString &patientName)

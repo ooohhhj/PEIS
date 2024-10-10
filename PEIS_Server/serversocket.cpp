@@ -356,13 +356,14 @@ void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, c
     else
     {
         bool ret = DatabaseManager::instance().updateReportPath(patientName, packageName, packageDate, reportPath);
-        if(ret) {
+
+        bool ret2 =DatabaseManager::instance().updateAppointMents(patientName, packageName, packageDate);
+
+        if(ret && ret2 ) {
             message = StatusMessage::GenerateReportSuccessfully;
 
             //转发消息给用户
             int userId = DatabaseManager::instance().getUserIdByUsername(patientName);
-
-            qDebug()<<"userId="<<userId;
 
             UserForwardMessage(userId);
 
@@ -389,8 +390,6 @@ void ServerSocket::UserForwardMessage(const int &userId)
     QReadLocker locker(&rwLock);
     if (UserConnections.contains(userId))
     {
-        qDebug()<<"转发成功";
-
         QTcpSocket *doctorSocket = UserConnections[userId];
         //发送
         QJsonObject obj;

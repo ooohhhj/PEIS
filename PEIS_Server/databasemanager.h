@@ -114,6 +114,8 @@ public:
 
     bool updateReportPath(const QString& patientName,const QString & packageName,const QString &appointmentDate,const QString& reportPath);
 
+    bool updateAppointMents(const QString& patientName,const QString & packageName,const QString &appointmentDate);
+
     int getPatientIdByName(const QString &patientName);
 
     //检查数据库连接状态

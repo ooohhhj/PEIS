@@ -2,6 +2,10 @@
 #define CHECKUPRECORD_H
 
 #include <QWidget>
+#include <QStandardItem>
+
+#include "clientsocket.h"
+
 
 namespace Ui {
 class CheckupRecord;
@@ -15,6 +19,9 @@ public:
     explicit CheckupRecord(QWidget *parent = nullptr);
     ~CheckupRecord();
 
+private slots:
+    void OnHealthExaminationRecordsResponce(const QJsonArray& recordsArray);
+    void onViewReportClicked(const QModelIndex &index);
 private:
     Ui::CheckupRecord *ui;
 };

@@ -287,23 +287,29 @@ void ClientSocket::processResponse(Packet &packet)
     }
     case SaveReportResponce:
     {
-         if(message == StatusMessage::GenerateReportSuccessfully)
-         {
-             showMessageBox(":/successfully.png","体检报告",message);
-         }
-         else if(message == StatusMessage::WaitGenerateReport)
-         {
-             showMessageBox(":/warning.png","体检报告",message);
-         }
-         else
-         {
-             showMessageBox(":/warning.png","体检报告",message);
-         }
+        if(message == StatusMessage::GenerateReportSuccessfully)
+        {
+            showMessageBox(":/successfully.png","体检报告",message);
+        }
+        else if(message == StatusMessage::WaitGenerateReport)
+        {
+            showMessageBox(":/warning.png","体检报告",message);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","体检报告",message);
+        }
         break;
     }
     case UserCheckupGenerateNotice:
     {
         emit OnUserCheckupGenerateNotice();
+        break;
+    }
+    case QueryHealthExaminationRecordsResponce:
+    {
+        QJsonArray array =MessageObject["records"].toArray();
+        emit OnHealthExaminationRecordsResponce(array);
         break;
     }
     default:

@@ -85,6 +85,8 @@ private:
 
     QByteArray handleSaveReportRequest(const QJsonObject&reportDateObj);
 
+    QByteArray handleQueryHealthExaminationRecordsRequest(const QJsonObject & userNameDate);
+
     void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
 
     void updateUserAppointments(const QString &selectdate);
