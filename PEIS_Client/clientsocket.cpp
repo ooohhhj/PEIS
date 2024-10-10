@@ -287,7 +287,6 @@ void ClientSocket::processResponse(Packet &packet)
     }
     case SaveReportResponce:
     {
-         qDebug()<<"message="<<message;
          if(message == StatusMessage::GenerateReportSuccessfully)
          {
              showMessageBox(":/successfully.png","体检报告",message);
@@ -300,6 +299,11 @@ void ClientSocket::processResponse(Packet &packet)
          {
              showMessageBox(":/warning.png","体检报告",message);
          }
+        break;
+    }
+    case UserCheckupGenerateNotice:
+    {
+        emit OnUserCheckupGenerateNotice();
         break;
     }
     default:

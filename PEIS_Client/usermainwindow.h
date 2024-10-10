@@ -38,6 +38,10 @@ private slots:
 
     void on_checkupReportButton_clicked();
 
+    void on_noticeButton_clicked();
+
+    void updatenoticeButton();
+
 private:
     Ui::UserMainWindow *ui;
     QString m_username;

@@ -121,6 +121,8 @@ enum ResponseType
 
     SaveReportResponce,                          //体检报告回复
 
+    UserCheckupGenerateNotice,                  //用户体检报告生成通知
+
 
 
 

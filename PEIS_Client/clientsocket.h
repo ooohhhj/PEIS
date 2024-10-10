@@ -71,6 +71,8 @@ signals:
     void OnPatientHealthExaminationReview();
 
     void OnPatientHealthExaminationDateResponce(const QJsonObject& patientDateInfoObject);
+
+    void OnUserCheckupGenerateNotice();
 private:
     QTcpSocket * tcpSocket;
 

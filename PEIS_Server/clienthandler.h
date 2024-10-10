@@ -92,7 +92,8 @@ private:
 
 signals:
     void InsertDoctorMapById(const int & id,QTcpSocket*clientSocket);
-    void ForwardMessage(const int & doctorsId);
+    void InsertUserMapById(const int & id,QTcpSocket*clientSocket);
+    void ForwardDoctorMessage(const int & doctorsId);
 
 
 private:

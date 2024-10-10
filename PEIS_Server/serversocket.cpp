@@ -281,7 +281,11 @@ void ServerSocket::newConnection()
 
             connect(handler,&ClientHandler::InsertDoctorMapById,this,&ServerSocket::InsertDoctorMapById);
 
-            connect(handler,&ClientHandler::ForwardMessage,this,&ServerSocket::ForwardMessage);
+            connect(handler,&ClientHandler::InsertUserMapById,this,&ServerSocket::InsertUserMapById);
+
+            connect(handler,&ClientHandler::ForwardDoctorMessage,this,&ServerSocket::ForwardDoctorMessage);
+
+
 
             connect(handler,&ClientHandler::generateReport,this,&ServerSocket::onGenerateReport);
 
@@ -309,7 +313,19 @@ void ServerSocket::InsertDoctorMapById(const int &doctorId, QTcpSocket *clientSo
     }
 }
 
-void ServerSocket::ForwardMessage(const int &doctorId)
+void ServerSocket::InsertUserMapById(const int &userId, QTcpSocket *clientSocket)
+{
+    // 加锁
+    QWriteLocker  locker(&rwLock);
+    if (!UserConnections.contains(userId)) {
+        UserConnections.insert(userId, clientSocket);
+        qDebug() << "Inserted userId=" << userId << " into UserConnections";
+    } else {
+        qDebug() << "userId=" << userId << " already exists in doctorConnections";
+    }
+}
+
+void ServerSocket::ForwardDoctorMessage(const int &doctorId)
 {
     QReadLocker locker(&rwLock);
     if (doctorConnections.contains(doctorId))
@@ -326,6 +342,7 @@ void ServerSocket::ForwardMessage(const int &doctorId)
     }
 }
 
+
 void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, const QJsonArray &dateArray, const QString &patientName, const QString &packageName, const QString &packageDate)
 {
     QString reportPath = generateHealthCheckupReport(query, dateArray);
@@ -341,7 +358,14 @@ void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, c
         bool ret = DatabaseManager::instance().updateReportPath(patientName, packageName, packageDate, reportPath);
         if(ret) {
             message = StatusMessage::GenerateReportSuccessfully;
-            qDebug() << "成功";
+
+            //转发消息给用户
+            int userId = DatabaseManager::instance().getUserIdByUsername(patientName);
+
+            qDebug()<<"userId="<<userId;
+
+            UserForwardMessage(userId);
+
         }
         else {
             message = StatusMessage::InternalServerError;
@@ -358,6 +382,24 @@ void ServerSocket::onGenerateReport(QTcpSocket *socket,const QSqlQuery &query, c
 
     socket->write(array);
 
-    qDebug()<<"处理message="<<message;
+}
+
+void ServerSocket::UserForwardMessage(const int &userId)
+{
+    QReadLocker locker(&rwLock);
+    if (UserConnections.contains(userId))
+    {
+        qDebug()<<"转发成功";
+
+        QTcpSocket *doctorSocket = UserConnections[userId];
+        //发送
+        QJsonObject obj;
+
+        Packet packet =Protocol::createPacket(UserCheckupGenerateNotice,obj);
+
+        QByteArray array =Protocol::serializePacket(packet);
+
+        doctorSocket->write(array);
+    }
 
 }

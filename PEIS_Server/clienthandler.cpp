@@ -305,8 +305,37 @@ QByteArray ClientHandler::handlePhoneAndPasswordIsExistRequest(const QJsonObject
         //获取角色
         int roleId = DatabaseManager::instance().getRoleIdByPhoneNumber(phoneNumber);
         QString username =DatabaseManager::instance().getUsernameByPhoneNumber(phoneNumber);
+
         if(roleId!=-1 && username!=nullptr)
         {
+
+            if(roleId == 2)
+            {
+                // 获取医生id
+                int userId = DatabaseManager::instance().getUserIdByUsername(username);
+
+                if (userId != -1)
+                {
+                    int doctorId = DatabaseManager::instance().getdoctorIdByDoctorTable(userId);
+                    if (doctorId != -1)
+                    {
+                        InsertDoctorMapById(doctorId,clientSocket);
+                    }
+                }
+            }
+
+            if(roleId == 3)
+            {
+                // 获取用户id
+                int userId = DatabaseManager::instance().getUserIdByUsername(username);
+
+                if (userId != -1)
+                {
+                    InsertUserMapById(userId,clientSocket);
+                }
+            }
+
+
             msgType =PhoneAndPasswordSuccessfullyResponce;
             responceJson["roleId"] = roleId;
             responceJson["username"]=username;
@@ -364,6 +393,7 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
 
             responceMsg =StatusMessage::UsernameAndPasswordSuccessfully;
 
+
             if(roleId == 2)
             {
                 // 获取医生id
@@ -378,6 +408,19 @@ QByteArray ClientHandler::handleUsernameAndPasswordIsExistRequest(const QJsonObj
                     }
                 }
             }
+
+            qDebug()<<"roleId ="<<roleId;
+            if(roleId == 3)
+            {
+                // 获取用户id
+                int userId = DatabaseManager::instance().getUserIdByUsername(username);
+
+                if (userId != -1)
+                {
+                    InsertUserMapById(userId,clientSocket);
+                }
+            }
+
         }
         else
         {
@@ -1111,6 +1154,7 @@ QByteArray ClientHandler::handleSaveReportRequest(const QJsonObject &reportDateO
 
     obj["message"]=message;
 
+
     Packet packet =Protocol::createPacket(SaveReportResponce,obj);
 
     QByteArray array = Protocol::serializePacket(packet);
@@ -1136,7 +1180,7 @@ void ClientHandler::handlePendingUserData(const int &patientId, const int &packa
     }
 
 
-    emit ForwardMessage(doctorId);
+    emit ForwardDoctorMessage(doctorId);
 
 }
 

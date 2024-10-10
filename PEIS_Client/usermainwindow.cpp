@@ -42,6 +42,8 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(hepDetails.get(),&HEPDetails::exitButtonClicked,this,&UserMainWindow::on_scheduleCheckupButton_clicked);
 
 
+    connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
+
 }
 
 UserMainWindow::~UserMainWindow()
@@ -219,5 +221,19 @@ void UserMainWindow::on_checkupReportButton_clicked()
 
     // 设置按钮为选中状态
     ui->checkupReportButton->setChecked(true);
+}
+
+
+void UserMainWindow::on_noticeButton_clicked()
+{
+    QIcon icon(":/notice-No.png"); // 替换成你想要的图标路径
+    ui->noticeButton->setIcon(icon);
+}
+
+void UserMainWindow::updatenoticeButton()
+{
+    QIcon icon(":/notice-Yes.png"); // 替换成你想要的图标路径
+    ui->noticeButton->setIcon(icon);
+    qDebug()<<"来提醒";
 }
 
