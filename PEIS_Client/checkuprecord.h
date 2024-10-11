@@ -22,6 +22,10 @@ public:
 private slots:
     void OnHealthExaminationRecordsResponce(const QJsonArray& recordsArray);
     void onViewReportClicked(const QModelIndex &index);
+    void on_returnBtn_clicked();
+
+signals:
+    void exitButtonClicked();
 private:
     Ui::CheckupRecord *ui;
 };

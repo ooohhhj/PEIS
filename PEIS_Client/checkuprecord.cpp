@@ -17,7 +17,9 @@ CheckupRecord::~CheckupRecord()
 
 void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &recordsArray)
 {
-    qDebug()<<"hhh";
+
+    ui->tableView->show();
+
     // 清空当前模型
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setHorizontalHeaderLabels({"套餐名称", "日期", "预约状态", "操作"});
@@ -28,14 +30,17 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
     ui->tableView->horizontalHeader()->setFont(headerFont);
 
     // 添加数据到模型
-    for (const QJsonValue &value : recordsArray) {
+    for (const QJsonValue &value : recordsArray)
+    {
         QJsonObject appointment = value.toObject();
 
         QString packageName = appointment["health_package"].toString();
         QString appointmentDate = appointment["appointment_date"].toString();
         QString status = appointment["appointment_status"].toString();
 
-        // 仅在状态为 "已体检" 时添加到模型
+        qDebug()<<"status="<<status;
+
+        // 仅在状态为 "已完成" 时添加到模型
         if (status == "已完成") {
             QList<QStandardItem *> rowItems;
             rowItems << new QStandardItem(packageName)
@@ -47,7 +52,8 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
         }
     }
 
-    if (model->rowCount() > 0) {
+    if (model->rowCount() > 0)
+    {
         ui->tableView->setModel(model);
 
         // 添加按钮到 "操作" 列
@@ -63,27 +69,34 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
 
             // 设置按钮样式
             button->setStyleSheet(
-                        "QPushButton {"
-                        "   background-color: #A2D8D0;"
-                        "   color: #004D40;"
-                        "   border: 2px solid #78C1B1;"
-                        "   padding: 8px 16px;"
-                        "   font-size: 16px;"
-                        "   font-weight: bold;"
-                        "   border-radius: 12px;"
-                        "}"
-                        "QPushButton:hover {"
-                        "   background-color: #87C5BB;"
-                        "   border: 2px solid #5DA49D;"
-                        "}"
-                        "QPushButton:pressed {"
-                        "   background-color: #5DA49D;"
-                        "   border: 2px solid #468882;"
-                        "}"
-                        );
+                "QPushButton {"
+                "   background-color: #A2D8D0;"
+                "   color: #004D40;"
+                "   border: 2px solid #78C1B1;"
+                "   padding: 8px 16px;"
+                "   font-size: 16px;"
+                "   font-weight: bold;"
+                "   border-radius: 12px;"
+                "}"
+                "QPushButton:hover {"
+                "   background-color: #87C5BB;"
+                "   border: 2px solid #5DA49D;"
+                "}"
+                "QPushButton:pressed {"
+                "   background-color: #5DA49D;"
+                "   border: 2px solid #468882;"
+                "}"
+            );
 
             // 将按钮设置到表格中
             ui->tableView->setIndexWidget(model->index(row, 3), button);
+
+            ui->widget->setStyleSheet("background-color: transparent;"
+                                      " border: none;");
+
+            ui->tableView->setStyleSheet("background-color: #F0F8FF;"
+                                         "border: 2px solid #B0C4DE;"
+                                         "border-radius: 13px;");
 
             // 连接按钮点击信号到槽函数
             connect(button, &QPushButton::clicked, this, [this, model, row]() {
@@ -91,15 +104,31 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
                 onViewReportClicked(index);
             });
         }
-    } else {
-        // 如果没有记录，添加标签到 tableView
-        QLabel *noRecordsLabel = new QLabel("你暂时没有体检记录");
-        noRecordsLabel->setAlignment(Qt::AlignCenter);
-        noRecordsLabel->setStyleSheet("font-size: 18px; color: #FF0000;"); // 设置标签样式
+    }
+    else {
 
-        // 清空模型并设置标签
-        ui->tableView->setModel(nullptr); // 清空模型
-        ui->tableView->setIndexWidget(model->index(0, 0), noRecordsLabel); // 添加标签到 tableView
+        // 清除 placeholderLayout 中现有的组件
+        QLayoutItem* item;
+        while ((item = ui->placeholderLayout->takeAt(0)) != nullptr) {
+            if (item->widget()) {
+                delete item->widget();
+            }
+            delete item;
+        }
+
+        // 如果没有记录，添加占位符标签到父布局或设置到 tableView 的父容器中
+        QLabel *noRecordsLabel = new QLabel("暂时没有体检记录");
+        noRecordsLabel->setAlignment(Qt::AlignCenter);
+        noRecordsLabel->setStyleSheet("font-size: 30px; color: #808080;"
+                                     " background-color: transparent;"
+                                       " border: none;"); // 设置标签样式
+
+        ui->tableView->setStyleSheet("background-color: transparent;"
+                                     " border: none;");
+
+        // 隐藏 tableView 并显示标签
+        ui->tableView->hide();
+        ui->placeholderLayout->addWidget(noRecordsLabel); // 假设有一个占位符布局
     }
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -109,3 +138,9 @@ void CheckupRecord::onViewReportClicked(const QModelIndex &index)
 {
 
 }
+
+void CheckupRecord::on_returnBtn_clicked()
+{
+     emit exitButtonClicked();
+}
+

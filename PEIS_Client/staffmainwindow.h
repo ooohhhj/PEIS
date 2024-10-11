@@ -32,6 +32,8 @@ private slots:
 
     void OnEditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
 
+
+
 private:
     Ui::StaffMainWindow *ui;
     QString m_username;

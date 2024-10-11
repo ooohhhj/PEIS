@@ -41,6 +41,9 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
 
     connect(hepDetails.get(),&HEPDetails::exitButtonClicked,this,&UserMainWindow::on_scheduleCheckupButton_clicked);
 
+    connect(checkupRecord.get(),&CheckupRecord::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
+    connect(checkupRecord.get(),&CheckupRecord::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
+
 
     connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
 
@@ -157,26 +160,33 @@ void UserMainWindow::setDefaultWidget()
 
 void UserMainWindow::buttonStyleSheet()
 {
-    ui->scheduleCheckupButton->setStyleSheet(
-                "QPushButton {"
-                "    background-color: transparent;"
-                "    border: 2px solid black;"  // 正常状态的边框为黑色
-                "    border-radius: 15px;"
-                "    padding: 10px;"
-                "}"
-                "QPushButton:hover {"
-                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
-                "    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);"
-                "}"
-                "QPushButton:pressed {"
-                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
-                "    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);"
-                "}"
-                );
+    QString buttonStyleSheet =
+            "QPushButton {"
+            "    background-color: transparent;"
+            "    border: 2px solid black;"
+            "    border-radius: 15px;"
+            "    padding: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}"
+            "QPushButton:pressed {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}";
+
+    ui->scheduleCheckupButton->setStyleSheet(buttonStyleSheet);
+
+    ui->healthCheckRecordButton->setStyleSheet(buttonStyleSheet);
+
+    ui->checkupReportButton->setStyleSheet(buttonStyleSheet);
+
+    ui->personalInfoButton->setStyleSheet(buttonStyleSheet);
+
 }
 
 void UserMainWindow::on_healthCheckRecordButton_clicked()
 {
+
     ui->stackedWidget->setCurrentWidget(checkupRecord.get());
 
     ui->healthCheckRecordButton->setStyleSheet(
@@ -197,12 +207,12 @@ void UserMainWindow::on_healthCheckRecordButton_clicked()
     // 设置按钮为选中状态
     ui->healthCheckRecordButton->setChecked(true);
 
-    //发送记录申请
 
+    //发送记录申请
     QJsonObject Info;
 
     Info["username"] =m_username;
-            //封包
+    //封包
     Packet reserveCheckupPacket =Protocol::createPacket(QueryHealthExaminationRecordsRequest,Info);
 
     //序列化
@@ -211,7 +221,6 @@ void UserMainWindow::on_healthCheckRecordButton_clicked()
     ClientSocket::instance()->senData(dataToSend);
 
 }
-
 
 void UserMainWindow::on_checkupReportButton_clicked()
 {

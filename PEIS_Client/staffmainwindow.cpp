@@ -28,12 +28,17 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     connect(ClientSocket::instance(),&ClientSocket::OnPatientHealthExaminationReview,this,&StaffMainWindow::updatenoticeButton);
 
     connect(appointmentmanagement.get(),&AppointmentManagement::EditCheckuppreport,this,&StaffMainWindow::OnEditCheckuppreport);
+
+
+
 }
 
 StaffMainWindow::~StaffMainWindow()
 {
     delete ui;
 }
+
+
 
 void StaffMainWindow::OnStartDateRequest()
 {
@@ -101,4 +106,5 @@ void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QSt
 
     ClientSocket::instance()->senData(sendArray);
 }
+
 
