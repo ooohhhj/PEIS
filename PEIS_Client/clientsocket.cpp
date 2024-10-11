@@ -312,6 +312,12 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnHealthExaminationRecordsResponce(array);
         break;
     }
+    case GetHealthExaminationRePortListResponce:
+    {
+        QJsonArray array =MessageObject["reportsList"].toArray();
+        emit OnHealthExaminationRePortListResponce(array);
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

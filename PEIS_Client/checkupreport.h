@@ -2,6 +2,9 @@
 #define CHECKUPREPORT_H
 
 #include <QWidget>
+#include <QStandardItem>
+
+#include "clientsocket.h"
 
 namespace Ui {
 class CheckupReport;
@@ -15,6 +18,9 @@ public:
     explicit CheckupReport(QWidget *parent = nullptr);
     ~CheckupReport();
 
+private slots:
+    void OnHealthExaminationRePortListResponce(const QJsonArray & reportsListArray);
+    void onViewReportClicked(const QModelIndex &index);
 private:
     Ui::CheckupReport *ui;
 };

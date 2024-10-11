@@ -17,7 +17,6 @@ CheckupRecord::~CheckupRecord()
 
 void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &recordsArray)
 {
-
     ui->tableView->show();
 
     // 清空当前模型
@@ -69,24 +68,24 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
 
             // 设置按钮样式
             button->setStyleSheet(
-                "QPushButton {"
-                "   background-color: #A2D8D0;"
-                "   color: #004D40;"
-                "   border: 2px solid #78C1B1;"
-                "   padding: 8px 16px;"
-                "   font-size: 16px;"
-                "   font-weight: bold;"
-                "   border-radius: 12px;"
-                "}"
-                "QPushButton:hover {"
-                "   background-color: #87C5BB;"
-                "   border: 2px solid #5DA49D;"
-                "}"
-                "QPushButton:pressed {"
-                "   background-color: #5DA49D;"
-                "   border: 2px solid #468882;"
-                "}"
-            );
+                        "QPushButton {"
+                        "   background-color: #E0F2F7;" // 调整为淡蓝色，与背景更协调
+                        "   color: #004D40;"
+                        "   border: 2px solid #B0C4DE;" // 边框颜色与背景边框颜色一致
+                        "   padding: 8px 16px;"
+                        "   font-size: 16px;"
+                        "   font-weight: bold;"
+                        "   border-radius: 12px;"
+                        "}"
+                        "QPushButton:hover {"
+                        "   background-color: #CFE5EB;" // 鼠标悬停时稍微深一点的蓝色
+                        "   border: 2px solid #A0B4C8;" // 略深的边框颜色
+                        "}"
+                        "QPushButton:pressed {"
+                        "   background-color: #A0C1D1;" // 鼠标按下时更深的蓝色
+                        "   border: 2px solid #8FA7B8;" // 鼠标按下时的边框颜色
+                        "}"
+                        );
 
             // 将按钮设置到表格中
             ui->tableView->setIndexWidget(model->index(row, 3), button);
@@ -120,8 +119,8 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
         QLabel *noRecordsLabel = new QLabel("暂时没有体检记录");
         noRecordsLabel->setAlignment(Qt::AlignCenter);
         noRecordsLabel->setStyleSheet("font-size: 30px; color: #808080;"
-                                     " background-color: transparent;"
-                                       " border: none;"); // 设置标签样式
+                                      " background-color: transparent;"
+                                      " border: none;"); // 设置标签样式
 
         ui->tableView->setStyleSheet("background-color: transparent;"
                                      " border: none;");
@@ -141,6 +140,6 @@ void CheckupRecord::onViewReportClicked(const QModelIndex &index)
 
 void CheckupRecord::on_returnBtn_clicked()
 {
-     emit exitButtonClicked();
+    emit exitButtonClicked();
 }
 

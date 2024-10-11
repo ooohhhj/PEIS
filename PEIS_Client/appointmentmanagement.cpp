@@ -94,24 +94,25 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
         }
 
         button->setStyleSheet(
-                    "QPushButton {"
-                    "   background-color: #A2D8D0;"      // Lighter Sea Green 背景色，与边框相配
-                    "   color: #004D40;"                 // 深绿色文字
-                    "   border: 2px solid #78C1B1;"      // 边框为稍深的绿色
-                    "   padding: 8px 16px;"              // 内边距增加，按钮更大
-                    "   font-size: 16px;"                // 字体稍大，视觉舒适
-                    "   font-weight: bold;"              // 字体加粗
-                    "   border-radius: 12px;"            // 圆角，按钮更柔和
-                    "}"
-                    "QPushButton:hover {"
-                    "   background-color: #87C5BB;"      // 鼠标悬停时的颜色，稍深一点的绿色
-                    "   border: 2px solid #5DA49D;"      // 鼠标悬停时边框色稍深
-                    "}"
-                    "QPushButton:pressed {"
-                    "   background-color: #5DA49D;"      // 按下时的背景色，深绿色
-                    "   border: 2px solid #468882;"      // 按下时的边框色
-                    "}"
-                    );
+            "QPushButton {"
+            "   background-color: #A2D8D0;"      // 背景色，Lighter Sea Green
+            "   color: #004D40;"                 // 深绿色文字
+            "   border: 2px solid #78C1B1;"      // 边框为稍深的绿色
+            "   padding: 8px 16px;"              // 内边距增加，按钮更大
+            "   font-size: 18px;"                // 字体稍大，视觉舒适
+            "   font-weight: bold;"              // 字体加粗
+            "   border-radius: 12px;"            // 圆角，按钮更柔和
+            "}"
+            "QPushButton:hover {"
+            "   background-color: #92D3C7;"      // 鼠标悬停时的颜色，稍深一点的绿色
+            "   border: 2px solid #6BAF9F;"      // 鼠标悬停时边框色稍深
+            "}"
+            "QPushButton:pressed {"
+            "   background-color: #78C1B1;"      // 按下时的背景色，深绿色
+            "   border: 2px solid #4F9E89;"      // 按下时的边框色
+            "}"
+        );
+
 
 
         // 将按钮设置到表格中
