@@ -243,8 +243,19 @@ void UserMainWindow::on_checkupReportButton_clicked()
 
     // 设置按钮为选中状态
     ui->checkupReportButton->setChecked(true);
-}
 
+    //发送记录申请
+    QJsonObject Info;
+
+    Info["username"] =m_username;
+    //封包
+    Packet reserveCheckupPacket =Protocol::createPacket(GetHealthExaminationRePortListRequest,Info);
+
+    //序列化
+    QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
+
+    ClientSocket::instance()->senData(dataToSend);
+}
 
 void UserMainWindow::on_noticeButton_clicked()
 {

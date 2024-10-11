@@ -62,7 +62,10 @@ enum RequestType
 
     SaveReportRequest,                          //保存报告请求
 
+
     QueryHealthExaminationRecordsRequest,              //查询体检记录请求
+
+    GetHealthExaminationRePortListRequest,              //获取体检报告列表请求
 
 
 
@@ -126,6 +129,8 @@ enum ResponseType
     UserCheckupGenerateNotice,                  //用户体检报告生成通知
 
     QueryHealthExaminationRecordsResponce,       //查询体检记录回复
+
+    GetHealthExaminationRePortListResponce,      //获取体检报告列表回复
 
 
     InternalServerError,                        //未知请求

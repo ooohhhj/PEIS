@@ -144,7 +144,7 @@ QString ServerSocket::generateHealthCheckupReport(const QSqlQuery &query, const 
     setFont("Arial", 10);
     // 计算起始X坐标
     int startX = 100; // 表格左边距
-    int columnSpacing = 2000; // 列间距
+    int columnSpacing = 2500; // 列间距
 
     // 绘制表头
     for (int i = 0; i < headers.size(); ++i) {
