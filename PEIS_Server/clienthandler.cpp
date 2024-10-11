@@ -110,6 +110,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case GetHealthExaminationRePortListRequest:
         return handleGetHealthExaminationRePortListRequest(message);
         break;
+    case GetHealthExaminationRePortRequest:
+        return handleGetHealthExaminationRePortRequest(message);
+        break;
     default:
         QString message =StatusMessage::InternalServerError;
         QJsonObject responseJson;
@@ -1264,6 +1267,71 @@ QByteArray ClientHandler::handleGetHealthExaminationRePortListRequest(const QJso
 
     return array;
 
+}
+
+QByteArray ClientHandler::handleGetHealthExaminationRePortRequest(const QJsonObject &reportRequestDate)
+{
+    QString username =reportRequestDate["patientName"].toString();
+    QString packageName =reportRequestDate["packageName"].toString();
+    QString appointmentDate =reportRequestDate["appointmentDate"].toString();
+
+    QString reportPath = DatabaseManager::instance().getUserReport(username,packageName,appointmentDate);
+
+    QString message;
+    QByteArray pdfData;
+
+    if(reportPath.isEmpty())
+    {
+        message = StatusMessage::InternalServerError;
+    }
+    else
+    {
+        // 获取体检报告 PDF
+        QFile pdfFile(reportPath);
+        if (!pdfFile.open(QIODevice::ReadOnly)) {
+            qDebug() << "Failed to open PDF file:" << pdfFile.errorString();
+            message = StatusMessage::InternalServerError;
+        } else {
+            pdfData = pdfFile.readAll();
+            pdfFile.close();
+        }
+    }
+
+    QJsonObject obj;
+    Packet packet;
+    QByteArray array;
+    if(!message.isEmpty() || pdfData.isEmpty() )
+    {
+        obj["message"]=message;
+    }
+    else
+    {
+        QStringList pathParts = reportPath.split("/");
+
+        // 提取姓名（假设姓名为倒数第二部分）
+        QString name = pathParts[pathParts.size() - 2];
+
+        // 提取体检类型（假设体检类型为倒数第一部分前的部分）
+        QString examinationType = pathParts[pathParts.size() - 1];
+        examinationType = examinationType.split("_").at(0);  // 取下划线前的部分
+
+        // 提取日期（假设日期为文件名的前8位，前提是文件名为日期+下划线+其他内容）
+        QString fileName = pathParts[pathParts.size() - 1];  // 获取文件名部分
+        QString date = fileName.mid(0, 8);  // 获取前8位作为日期
+
+        // 创建新的文件名称
+        QString newFileName = QString("%1_%2_%3.pdf").arg(name, examinationType, date);
+
+        obj["fileName"]=newFileName;
+        obj["fileType"] = "application/pdf";  // 文件类型
+        obj["fileData"]=QString(pdfData.toBase64());
+        // 创建数据包，指定通信类型为 SendPDF
+    }
+    packet = Protocol::createPacket(GetHealthExaminationRePortResponce,obj);
+
+    array =Protocol::serializePacket(packet);
+
+    return array;
 }
 
 void ClientHandler::handlePendingUserData(const int &patientId, const int &packageId, const QString &appointmentDate)

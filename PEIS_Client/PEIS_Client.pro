@@ -16,6 +16,7 @@ SOURCES += \
     checkupreport.cpp \
     clientsocket.cpp \
     editmedicalexaminationreport.cpp \
+    healthexaminationreport.cpp \
     hepdetails.cpp \
     inputmedicaexaminationdata.cpp \
     logindialog.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     checkupreport.h \
     clientsocket.h \
     editmedicalexaminationreport.h \
+    healthexaminationreport.h \
     hepdetails.h \
     inputmedicaexaminationdata.h \
     logindialog.h \
@@ -57,6 +59,7 @@ FORMS += \
     checkuprecord.ui \
     checkupreport.ui \
     editmedicalexaminationreport.ui \
+    healthexaminationreport.ui \
     hepdetails.ui \
     inputmedicaexaminationdata.ui \
     logindialog.ui \
@@ -74,5 +77,16 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+INCLUDEPATH += H:/msys64/mingw64/include/poppler/qt5
+LIBS += -LH:/msys64/mingw64/lib -lpoppler -lpoppler-qt5
+LIBS += -LH:/msys64/mingw64/bin             \
+
 RESOURCES += \
     ../Resource/icom.qrc
+
+
+
+
+
+
+

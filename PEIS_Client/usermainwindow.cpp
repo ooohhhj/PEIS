@@ -15,9 +15,11 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     hepDetails =std::make_unique<HEPDetails>(this);
     checkupRecord =std::make_unique<CheckupRecord>(this);
     checkupreport =std::make_unique<CheckupReport>(this);
+    healthexaminationreport =std::make_unique<HealthExaminationReport>(this);
 
     scheduleCheckUp.get()->setUsername(this->m_username);
     hepDetails.get()->setUsername(this->m_username);
+    checkupreport.get()->setUsername(this->m_username);
 
     setDefaultWidget();
 
@@ -25,6 +27,8 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     ui->stackedWidget->addWidget(hepDetails.get());
     ui->stackedWidget->addWidget(checkupRecord.get());
     ui->stackedWidget->addWidget(checkupreport.get());
+    ui->stackedWidget->addWidget(healthexaminationreport.get());
+
 
 
     //   设置只允许最大化，不允许最小化
@@ -45,8 +49,15 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(checkupRecord.get(),&CheckupRecord::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
 
 
+    connect(checkupreport.get(),&CheckupReport::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
+    connect(checkupreport.get(),&CheckupReport::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
+
+
+    connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&UserMainWindow::on_healthCheckRecordButton_clicked);
+
     connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
 
+    connect(checkupreport.get(),&CheckupReport::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
 }
 
 UserMainWindow::~UserMainWindow()
@@ -269,4 +280,29 @@ void UserMainWindow::updatenoticeButton()
     ui->noticeButton->setIcon(icon);
     qDebug()<<"来提醒";
 }
+
+void UserMainWindow::LookCheckupreport()
+{
+    ui->stackedWidget->setCurrentWidget(healthexaminationreport.get());
+
+    ui->checkupReportButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->checkupReportButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->checkupReportButton->setChecked(true);
+
+}
+
 

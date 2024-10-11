@@ -1593,6 +1593,34 @@ int DatabaseManager::getPatientIdByName(const QString &patientName)
     }
 }
 
+QString DatabaseManager::getUserReport(const QString &username, const QString &packageName, const QString &appointmentDate)
+{
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QString();
+    }
+
+    // 查询数据库以获取 reportPath
+    QString queryStr = QString("SELECT report_path FROM health_checkup WHERE patient_name = '%1' AND package_name = '%2' AND package_date = '%3'")
+            .arg(username).arg(packageName).arg(appointmentDate);
+
+    QSqlQuery query(db);
+    if (!query.exec(queryStr)) {
+        qDebug() << "Query execution failed:" << query.lastError().text();
+        return QString();
+    }
+
+    if (query.next()) {
+        // 返回 reportPath
+        return query.value("report_path").toString();
+    } else {
+        // 处理未找到报告的情况
+        qDebug() << "No report found for the specified criteria.";
+        return QString();
+    }
+
+}
+
 bool DatabaseManager::isConnected() const
 {
     return db.isOpen();

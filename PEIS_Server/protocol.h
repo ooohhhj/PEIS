@@ -67,6 +67,7 @@ enum RequestType
 
     GetHealthExaminationRePortListRequest,              //获取体检报告列表请求
 
+    GetHealthExaminationRePortRequest,            //获取用户体检报告请求
 
 
 
@@ -132,6 +133,7 @@ enum ResponseType
 
     GetHealthExaminationRePortListResponce,      //获取体检报告列表回复
 
+    GetHealthExaminationRePortResponce,            //获取用户体检报告回复
 
     InternalServerError,                        //未知请求
 

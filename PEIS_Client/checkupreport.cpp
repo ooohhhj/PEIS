@@ -15,6 +15,11 @@ CheckupReport::~CheckupReport()
     delete ui;
 }
 
+void CheckupReport::setUsername(const QString &username)
+{
+    this->m_username =username;
+}
+
 void CheckupReport::OnHealthExaminationRePortListResponce(const QJsonArray &reportsListArray)
 {
     ui->tableView->show();
@@ -135,5 +140,32 @@ void CheckupReport::OnHealthExaminationRePortListResponce(const QJsonArray &repo
 
 void CheckupReport::onViewReportClicked(const QModelIndex &index)
 {
+    QString packageName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toString();
+
+    QString appointmentDate =ui->tableView->model()->data(ui->tableView->model()->index(index.row(),1)).toString();
+
+
+    qDebug() << "编辑报告按钮被点击，患者姓名：" << m_username;
+
+    QJsonObject obj;
+
+    obj["patientName"]=m_username;
+    obj["packageName"]=packageName;
+    obj["appointmentDate"]=appointmentDate;
+
+    emit LookCheckupreport();
+
+    Packet packet =Protocol::createPacket(GetHealthExaminationRePortRequest,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
+
 
 }
+
+void CheckupReport::on_returnBtn_clicked()
+{
+
+}
+

@@ -68,7 +68,6 @@ void ClientSocket::processResponse(Packet &packet)
     QString message;
     if (MessageObject.contains("message")) {
         message = MessageObject["message"].toString();
-        // 处理 message
     }
 
 
@@ -316,6 +315,19 @@ void ClientSocket::processResponse(Packet &packet)
     {
         QJsonArray array =MessageObject["reportsList"].toArray();
         emit OnHealthExaminationRePortListResponce(array);
+        break;
+    }
+    case GetHealthExaminationRePortResponce:
+    {
+        if(message.isEmpty())
+        {
+            emit OnGetHealthExaminationRePortResponce(MessageObject);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","警告",message);
+        }
+
         break;
     }
     default:

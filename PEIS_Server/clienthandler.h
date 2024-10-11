@@ -16,6 +16,8 @@
 #include <QPrinter>
 #include <QPainter>
 #include <QCoreApplication>
+#include <QFile>
+
 
 
 #include "databasemanager.h"
@@ -88,6 +90,8 @@ private:
     QByteArray handleQueryHealthExaminationRecordsRequest(const QJsonObject & userNameDate);
 
     QByteArray handleGetHealthExaminationRePortListRequest(const QJsonObject & userNameDate);
+
+    QByteArray handleGetHealthExaminationRePortRequest(const QJsonObject & reportRequestDate);
 
     void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
 

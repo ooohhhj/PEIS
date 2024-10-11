@@ -12,6 +12,7 @@
 #include "hepdetails.h"
 #include "checkuprecord.h"
 #include "checkupreport.h"
+#include "healthexaminationreport.h"
 
 namespace Ui {
 class UserMainWindow;
@@ -42,6 +43,10 @@ private slots:
 
     void updatenoticeButton();
 
+    void LookCheckupreport();
+
+
+
 private:
     Ui::UserMainWindow *ui;
     QString m_username;
@@ -49,6 +54,7 @@ private:
     std::unique_ptr<HEPDetails> hepDetails;
     std::unique_ptr<CheckupRecord> checkupRecord;
     std::unique_ptr<CheckupReport> checkupreport;
+    std::unique_ptr<HealthExaminationReport> healthexaminationreport;
 
 
 };

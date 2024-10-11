@@ -77,6 +77,8 @@ signals:
     void OnHealthExaminationRecordsResponce(const QJsonArray& recordsArray);
 
     void OnHealthExaminationRePortListResponce(const QJsonArray& recordsArray);
+
+    void OnGetHealthExaminationRePortResponce(const QJsonObject& recordPdf);
 private:
     QTcpSocket * tcpSocket;
 

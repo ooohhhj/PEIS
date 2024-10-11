@@ -30,7 +30,6 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     connect(appointmentmanagement.get(),&AppointmentManagement::EditCheckuppreport,this,&StaffMainWindow::OnEditCheckuppreport);
 
 
-
 }
 
 StaffMainWindow::~StaffMainWindow()
@@ -84,7 +83,6 @@ void StaffMainWindow::updatenoticeButton()
 
 void StaffMainWindow::on_checkupReportButton_clicked()
 {
-
 
 
 

@@ -5,6 +5,7 @@
 #include <QStandardItem>
 
 #include "clientsocket.h"
+#include "protocol.h"
 
 namespace Ui {
 class CheckupReport;
@@ -18,11 +19,20 @@ public:
     explicit CheckupReport(QWidget *parent = nullptr);
     ~CheckupReport();
 
+    void setUsername(const QString & username);
+
 private slots:
     void OnHealthExaminationRePortListResponce(const QJsonArray & reportsListArray);
     void onViewReportClicked(const QModelIndex &index);
+    void on_returnBtn_clicked();
+
+signals:
+    void exitButtonClicked();
+    void LookCheckupreport();
+
 private:
     Ui::CheckupReport *ui;
+    QString m_username;
 };
 
 #endif // CHECKUPREPORT_H
