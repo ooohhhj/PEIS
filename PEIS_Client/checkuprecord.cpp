@@ -15,6 +15,11 @@ CheckupRecord::~CheckupRecord()
     delete ui;
 }
 
+void CheckupRecord::setUsername(const QString &username)
+{
+    this->m_username =username;
+}
+
 void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &recordsArray)
 {
     ui->tableView->show();
@@ -62,6 +67,12 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
             QPushButton *button = new QPushButton();
             if (status == "已完成") {
                 button->setText("查看报告");
+
+                // 连接按钮点击信号到槽函数
+                connect(button, &QPushButton::clicked, this, [this, model, row]() {
+                    QModelIndex index = model->index(row, 0);
+                    onViewReportClicked(index);
+                });
             } else {
                 button->setText("未知操作");
             }
@@ -97,11 +108,7 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
                                          "border: 2px solid #B0C4DE;"
                                          "border-radius: 13px;");
 
-            // 连接按钮点击信号到槽函数
-            connect(button, &QPushButton::clicked, this, [this, model, row]() {
-                QModelIndex index = model->index(row, 0);
-                onViewReportClicked(index);
-            });
+
         }
     }
     else {
@@ -135,6 +142,26 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
 
 void CheckupRecord::onViewReportClicked(const QModelIndex &index)
 {
+    QString packageName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toString();
+
+    QString appointmentDate =ui->tableView->model()->data(ui->tableView->model()->index(index.row(),1)).toString();
+
+
+    qDebug() << "编辑报告按钮被点击，患者姓名：" << m_username;
+
+    QJsonObject obj;
+
+    obj["patientName"]=m_username;
+    obj["packageName"]=packageName;
+    obj["appointmentDate"]=appointmentDate;
+
+    emit LookCheckupreport();
+
+    Packet packet =Protocol::createPacket(GetHealthExaminationRePortRequest,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
 
 }
 

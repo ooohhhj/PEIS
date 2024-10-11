@@ -20,6 +20,7 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     scheduleCheckUp.get()->setUsername(this->m_username);
     hepDetails.get()->setUsername(this->m_username);
     checkupreport.get()->setUsername(this->m_username);
+    checkupRecord.get()->setUsername(this->m_username);
 
     setDefaultWidget();
 
@@ -58,6 +59,8 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
 
     connect(checkupreport.get(),&CheckupReport::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
+
+    connect(checkupRecord.get(),&CheckupRecord::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
 }
 
 UserMainWindow::~UserMainWindow()
