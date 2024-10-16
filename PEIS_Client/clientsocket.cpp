@@ -330,6 +330,24 @@ void ClientSocket::processResponse(Packet &packet)
 
         break;
     }
+    case GetHealthExaminationRePortResponce_Nurse:
+    {
+        if(message.isEmpty())
+        {
+            emit OnGetHealthExaminationRePortResponce(MessageObject);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","警告",message);
+        }
+        break;
+    }
+    case ElectronicMedicalRecordResponce:
+    {
+        QJsonArray array =MessageObject["appointments"].toArray();
+        emit OnAppointmentsDate(array);
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

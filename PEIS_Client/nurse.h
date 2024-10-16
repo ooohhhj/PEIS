@@ -8,6 +8,7 @@
 #include "patientinformation.h"
 #include "inputmedicaexaminationdata.h"
 #include "protocol.h"
+#include "healthexaminationreport.h"
 
 namespace Ui {
 class Nurse;
@@ -27,11 +28,13 @@ private slots:
                                     const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
                                     const QString&appointmentStatus);
 
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
 private:
     Ui::Nurse *ui;
-   QString m_username;
-   std::unique_ptr<PatientInformation> patientinfo;
-   std::unique_ptr<InputMedicaExaminationData> inputmedicaexaminationdata;
+    QString m_username;
+    std::unique_ptr<PatientInformation> patientinfo;
+    std::unique_ptr<InputMedicaExaminationData> inputmedicaexaminationdata;
+    std::unique_ptr<HealthExaminationReport> healthexaminationreport;
 };
 
 #endif // NURSE_H

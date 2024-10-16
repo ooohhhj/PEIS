@@ -120,6 +120,9 @@ public:
 
     QString getUserReport(const QString& username,const QString & packageName,const QString &appointmentDate);
 
+
+    QSqlQuery getAppointmentInfoFinshByusername(const QString & username);
+
     //检查数据库连接状态
     bool isConnected() const;
 

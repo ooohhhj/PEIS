@@ -36,6 +36,8 @@ signals:
                                    const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
                                    const QString&appointmentStatus);
 
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+
 private:
     Ui::PatientInformation *ui;
 };

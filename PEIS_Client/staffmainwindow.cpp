@@ -12,11 +12,14 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
 
     appointmentmanagement=std::make_unique<AppointmentManagement>(this);
     editmedicalexaminationreport =std::make_unique<EditMedicalExaminationReport>(this);
+    electronicmedicalrecord =std::make_unique<ElectronicMedicalRecord>(this);
 
     ui->stackedWidget->addWidget(appointmentmanagement.get());
     ui->stackedWidget->addWidget(editmedicalexaminationreport.get());
+    ui->stackedWidget->addWidget(electronicmedicalrecord.get());
 
     appointmentmanagement.get()->setUsername(m_username);
+    electronicmedicalrecord.get()->setUsername(m_username);
 
 
     //   设置只允许最大化，不允许最小化
@@ -81,13 +84,6 @@ void StaffMainWindow::updatenoticeButton()
 }
 
 
-void StaffMainWindow::on_checkupReportButton_clicked()
-{
-
-
-
-}
-
 void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QString &packageName, const QString &appointmentDate)
 {
     ui->stackedWidget->setCurrentWidget(editmedicalexaminationreport.get());
@@ -105,4 +101,18 @@ void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QSt
     ClientSocket::instance()->senData(sendArray);
 }
 
+
+
+void StaffMainWindow::on_checkupReportButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
+    QJsonObject appointmentObj;
+    appointmentObj["username"]=m_username;
+
+    Packet packet =Protocol::createPacket(ElectronicMedicalRecordRequest,appointmentObj);
+
+    QByteArray sendArray =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(sendArray);
+}
 

@@ -6,6 +6,7 @@
 
 #include "appointmentmanagement.h"
 #include "editmedicalexaminationreport.h"
+#include "electronicmedicalrecord.h"
 
 namespace Ui {
 class StaffMainWindow;
@@ -39,6 +40,7 @@ private:
     QString m_username;
     std::unique_ptr<AppointmentManagement> appointmentmanagement;
     std::unique_ptr<EditMedicalExaminationReport> editmedicalexaminationreport;
+    std::unique_ptr<ElectronicMedicalRecord> electronicmedicalrecord;
 
 };
 

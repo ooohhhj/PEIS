@@ -111,7 +111,13 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         return handleGetHealthExaminationRePortListRequest(message);
         break;
     case GetHealthExaminationRePortRequest:
-        return handleGetHealthExaminationRePortRequest(message);
+        return handleGetHealthExaminationRePortRequest(message,GetHealthExaminationRePortResponce);
+        break;
+    case GetHealthExaminationRePortListRequest_Nurse:
+        return handleGetHealthExaminationRePortRequest(message,GetHealthExaminationRePortResponce_Nurse);
+        break;
+    case ElectronicMedicalRecordRequest:
+        return handleElectronicMedicalRecordRequest(message);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -1269,7 +1275,7 @@ QByteArray ClientHandler::handleGetHealthExaminationRePortListRequest(const QJso
 
 }
 
-QByteArray ClientHandler::handleGetHealthExaminationRePortRequest(const QJsonObject &reportRequestDate)
+QByteArray ClientHandler::handleGetHealthExaminationRePortRequest(const QJsonObject &reportRequestDate, const int &responceType)
 {
     QString username =reportRequestDate["patientName"].toString();
     QString packageName =reportRequestDate["packageName"].toString();
@@ -1327,9 +1333,60 @@ QByteArray ClientHandler::handleGetHealthExaminationRePortRequest(const QJsonObj
         obj["fileData"]=QString(pdfData.toBase64());
         // 创建数据包，指定通信类型为 SendPDF
     }
-    packet = Protocol::createPacket(GetHealthExaminationRePortResponce,obj);
+    packet = Protocol::createPacket(responceType,obj);
 
     array =Protocol::serializePacket(packet);
+
+    return array;
+}
+
+QByteArray ClientHandler::handleElectronicMedicalRecordRequest(const QJsonObject &userNameDate)
+{
+    QString username = userNameDate["username"].toString();
+
+    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoFinshByusername(username);
+
+    // 如果查询失败，返回错误信息
+    if (!query.isActive() || !query.isSelect()) {
+        QJsonObject errorResponse;
+        errorResponse["status"] = "error";
+        errorResponse["message"] = "Failed to retrieve appointment information.";
+        QJsonDocument errorDoc(errorResponse);
+        return QByteArray();
+    }
+
+    // 准备一个 JSON 数组存储所有预约信息
+    QJsonArray appointmentsArray;
+
+    // 遍历查询结果
+    while (query.next()) {
+        QJsonObject appointment;
+
+        // 提取每个预约的字段信息
+        QString patientName = query.value("patient_name").toString();
+        QString patientPhone = query.value("patient_phone").toString();
+        QString healthPackage = query.value("health_package").toString();
+        QDate appointmentDate = query.value("appointment_date").toDate();
+        QString appointmentStatus = query.value("appointment_status").toString();
+
+
+        // 将每条预约信息存入 JSON 对象
+        appointment["patient_name"] = patientName;
+        appointment["patient_phone"] = patientPhone;
+        appointment["health_package"] = healthPackage;
+        appointment["appointment_date"] = appointmentDate.toString(Qt::ISODate);
+        appointment["appointment_status"] = appointmentStatus;
+
+        // 将该预约信息添加到 JSON 数组中
+        appointmentsArray.append(appointment);
+    }
+
+    QJsonObject appointmentInfo;
+    appointmentInfo["appointments"] =appointmentsArray;
+
+    Packet packet =Protocol::createPacket(ElectronicMedicalRecordResponce,appointmentInfo);
+
+    QByteArray array =Protocol::serializePacket(packet);
 
     return array;
 }

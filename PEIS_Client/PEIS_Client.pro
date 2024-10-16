@@ -16,6 +16,7 @@ SOURCES += \
     checkupreport.cpp \
     clientsocket.cpp \
     editmedicalexaminationreport.cpp \
+    electronicmedicalrecord.cpp \
     healthexaminationreport.cpp \
     hepdetails.cpp \
     inputmedicaexaminationdata.cpp \
@@ -39,6 +40,7 @@ HEADERS += \
     checkupreport.h \
     clientsocket.h \
     editmedicalexaminationreport.h \
+    electronicmedicalrecord.h \
     healthexaminationreport.h \
     hepdetails.h \
     inputmedicaexaminationdata.h \
@@ -59,6 +61,7 @@ FORMS += \
     checkuprecord.ui \
     checkupreport.ui \
     editmedicalexaminationreport.ui \
+    electronicmedicalrecord.ui \
     healthexaminationreport.ui \
     hepdetails.ui \
     inputmedicaexaminationdata.ui \

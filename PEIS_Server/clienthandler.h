@@ -91,7 +91,9 @@ private:
 
     QByteArray handleGetHealthExaminationRePortListRequest(const QJsonObject & userNameDate);
 
-    QByteArray handleGetHealthExaminationRePortRequest(const QJsonObject & reportRequestDate);
+    QByteArray handleGetHealthExaminationRePortRequest(const QJsonObject & reportRequestDate,const int& responceType);
+
+    QByteArray handleElectronicMedicalRecordRequest(const QJsonObject & userNameDate);
 
     void handlePendingUserData(const int& patientId,const int&packageId,const QString & appointmentDate);
 
