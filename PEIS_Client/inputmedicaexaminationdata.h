@@ -30,6 +30,11 @@ private slots:
     void on_submitButton_clicked();
     void on_OnRecordHealthCheckupResponce(const QJsonArray & checkupDate);
 
+    void on_returnExitButton_clicked();
+
+signals:
+    void exitButtonClicked();
+
 private:
     Ui::InputMedicaExaminationData *ui;
 

@@ -90,28 +90,28 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
         } else if (status == "已完成") {
             button->setText("查看报告");
         } else {
-            button->setText("未知操作");
+            button->setText(status);
         }
 
         button->setStyleSheet(
-            "QPushButton {"
-            "   background-color: #A2D8D0;"      // 背景色，Lighter Sea Green
-            "   color: #004D40;"                 // 深绿色文字
-            "   border: 2px solid #78C1B1;"      // 边框为稍深的绿色
-            "   padding: 8px 16px;"              // 内边距增加，按钮更大
-            "   font-size: 18px;"                // 字体稍大，视觉舒适
-            "   font-weight: bold;"              // 字体加粗
-            "   border-radius: 12px;"            // 圆角，按钮更柔和
-            "}"
-            "QPushButton:hover {"
-            "   background-color: #92D3C7;"      // 鼠标悬停时的颜色，稍深一点的绿色
-            "   border: 2px solid #6BAF9F;"      // 鼠标悬停时边框色稍深
-            "}"
-            "QPushButton:pressed {"
-            "   background-color: #78C1B1;"      // 按下时的背景色，深绿色
-            "   border: 2px solid #4F9E89;"      // 按下时的边框色
-            "}"
-        );
+                    "QPushButton {"
+                    "   background-color: #A2D8D0;"      // 背景色，Lighter Sea Green
+                    "   color: #004D40;"                 // 深绿色文字
+                    "   border: 2px solid #78C1B1;"      // 边框为稍深的绿色
+                    "   padding: 8px 16px;"              // 内边距增加，按钮更大
+                    "   font-size: 18px;"                // 字体稍大，视觉舒适
+                    "   font-weight: bold;"              // 字体加粗
+                    "   border-radius: 12px;"            // 圆角，按钮更柔和
+                    "}"
+                    "QPushButton:hover {"
+                    "   background-color: #92D3C7;"      // 鼠标悬停时的颜色，稍深一点的绿色
+                    "   border: 2px solid #6BAF9F;"      // 鼠标悬停时边框色稍深
+                    "}"
+                    "QPushButton:pressed {"
+                    "   background-color: #78C1B1;"      // 按下时的背景色，深绿色
+                    "   border: 2px solid #4F9E89;"      // 按下时的边框色
+                    "}"
+                    );
 
 
 
@@ -125,22 +125,34 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
         });
     }
 
-
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
 {
+    if (!index.isValid()) {
+        return;  // 如果索引无效，则返回
+    }
+
+    QString appointmentStatus = index.sibling(index.row(), 4).data().toString();
+
     QString patientName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toString();
 
     QString packageName = ui->tableView->model()->data(ui->tableView->model()->index(index.row(),2)).toString();
 
     QString appointmentDate =ui->tableView->model()->data(ui->tableView->model()->index(index.row(),3)).toString();
 
+    if (appointmentStatus == "已体检")
+    {
+        qDebug() << "编辑报告按钮被点击，患者姓名：" << patientName;
 
-    qDebug() << "编辑报告按钮被点击，患者姓名：" << patientName;
+        EditCheckuppreport(patientName,packageName,appointmentDate);
 
-    EditCheckuppreport(patientName,packageName,appointmentDate);
+    } else if (appointmentStatus == "已完成")
+    {
+        qDebug()<<"已完成发送";
+        emit onLookCheckUpReportClicked(patientName,packageName,appointmentDate);
+    }
 
 }
 
@@ -148,5 +160,11 @@ void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
 void AppointmentManagement::setUsername(const QString &username)
 {
     this->m_username = username;
+}
+
+
+void AppointmentManagement::on_returnExitButton_clicked()
+{
+    emit exitButtonClicked();
 }
 

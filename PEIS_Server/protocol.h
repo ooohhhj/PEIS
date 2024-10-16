@@ -71,6 +71,8 @@ enum RequestType
 
     GetHealthExaminationRePortListRequest_Nurse,  //护士请求查看用户体检报告
 
+    GetHealthExaminationRePortListRequest_doctor,  //医生请求查看用户体检报告
+
     ElectronicMedicalRecordRequest,               //电子病历请求
 
 
@@ -139,10 +141,11 @@ enum ResponseType
 
     GetHealthExaminationRePortResponce,            //获取用户体检报告回复
 
-    GetHealthExaminationRePortResponce_Nurse,     //获取用户体检报告回复
+    GetHealthExaminationRePortResponce_Nurse,     //护士获取用户体检报告回复
 
     ElectronicMedicalRecordResponce,               //电子病历回复
 
+    GetHealthExaminationRePortResponce_doctor,     //医生获取用户体检报告回复
 
     InternalServerError,                        //未知请求
 

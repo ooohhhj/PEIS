@@ -21,6 +21,13 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
 
     connect(patientinfo.get(),&PatientInformation::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
 
+    connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&Nurse::exitButtonClicked);
+
+    connect(inputmedicaexaminationdata.get(),&InputMedicaExaminationData::exitButtonClicked,this,&Nurse::InputMedicaExaminationData_exitButtonClicked);
+
+    connect(patientinfo.get(),&PatientInformation::exitButtonClicked,this,&Nurse::setDefaultWidget);
+
+
     //   设置只允许最大化，不允许最小化
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |Qt::WindowCloseButtonHint);
 
@@ -78,5 +85,49 @@ void Nurse::onLookCheckUpReportClicked(const QString &patientName, const QString
     QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
 
     ClientSocket::instance()->senData(dataToSend);
+}
+
+void Nurse::exitButtonClicked()
+{
+    ui->stackedWidget->setCurrentWidget(patientinfo.get());
+}
+
+void Nurse::InputMedicaExaminationData_exitButtonClicked()
+{
+    ui->stackedWidget->setCurrentWidget(patientinfo.get());
+}
+
+void Nurse::setDefaultWidget()
+{
+    // 创建一个新的 QWidget 作为堆栈窗口
+    QWidget *centralWidget = new QWidget(this);
+
+    // 创建一个垂直布局
+    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
+
+    // 创建 QLabel 用于显示图像
+    QLabel *imageLabel = new QLabel(this);
+    QPixmap image(":/pexels-gustavo-fring.jpg"); // 确保在资源文件中包含该图像
+    imageLabel->setPixmap(image);
+    imageLabel->setScaledContents(true); // 使图像适应标签大小
+
+    // 设置 QLabel 的大小策略
+    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // 允许图像标签扩展
+
+    // 将 QLabel 添加到布局中
+    layout->addWidget(imageLabel);
+
+    // 设置中心部件的布局
+    centralWidget->setLayout(layout);
+
+    // 将 QWidget 添加到 stackedWidget
+    ui->stackedWidget->addWidget(centralWidget);
+
+    // 设置当前显示的部件为新创建的部件
+    ui->stackedWidget->setCurrentWidget(centralWidget);
+
+    // 确保 stackedWidget 也能最大化
+    ui->stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
 }
 

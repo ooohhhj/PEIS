@@ -63,9 +63,7 @@ void ElectronicMedicalRecord::OnAppointmentsDate(const QJsonArray &appointments)
         QString status = model->item(row, 4)->text();  // 获取预约状态
 
         QPushButton *button = new QPushButton();
-        if (status == "已体检") {
-            button->setText("编辑报告");
-        } else if (status == "已完成") {
+        if (status == "已完成") {
             button->setText("查看报告");
         } else {
             button->setText("未知操作");
@@ -116,7 +114,13 @@ void ElectronicMedicalRecord::onViewReportClicked(const QModelIndex &index)
     QString appointmentDate =ui->tableView->model()->data(ui->tableView->model()->index(index.row(),3)).toString();
 
 
-    qDebug() << "编辑报告按钮被点击，患者姓名：" << patientName;
+    qDebug() << "查看报告按钮被点击，患者姓名：" << patientName;
 
-    // EditCheckuppreport(patientName,packageName,appointmentDate);
+    onLookCheckUpReportClicked(patientName,packageName,appointmentDate);
 }
+
+void ElectronicMedicalRecord::on_returnExitButton_clicked()
+{
+
+}
+

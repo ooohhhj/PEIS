@@ -31,6 +31,8 @@ private slots:
 
 
 
+    void on_returnExitButton_clicked();
+
 signals:
     void onEditReportButtonClicked(const QString& patientName,const QString &patientGender,const QString &patientPhone,
                                    const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
@@ -38,6 +40,7 @@ signals:
 
     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
 
+    void exitButtonClicked();
 private:
     Ui::PatientInformation *ui;
 };

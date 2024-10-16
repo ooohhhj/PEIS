@@ -161,11 +161,10 @@ void CheckupReport::onViewReportClicked(const QModelIndex &index)
 
     ClientSocket::instance()->senData(array);
 
-
 }
 
 void CheckupReport::on_returnBtn_clicked()
 {
-
+    emit exitButtonClicked();
 }
 

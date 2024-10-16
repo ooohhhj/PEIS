@@ -24,6 +24,11 @@ private slots:
     void OnPatientHealthExaminationDateResponce(const QJsonObject& patientDateArray);
     void on_submitButton_clicked();
 
+    void on_returnExitButton_clicked();
+
+signals:
+    void exitButtonClicked();
+
 private:
     Ui::EditMedicalExaminationReport *ui;
 };

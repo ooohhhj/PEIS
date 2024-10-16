@@ -266,3 +266,9 @@ void InputMedicaExaminationData::on_OnRecordHealthCheckupResponce(const QJsonArr
 }
 
 
+
+void InputMedicaExaminationData::on_returnExitButton_clicked()
+{
+     emit exitButtonClicked();
+}
+

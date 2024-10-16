@@ -116,6 +116,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
     case GetHealthExaminationRePortListRequest_Nurse:
         return handleGetHealthExaminationRePortRequest(message,GetHealthExaminationRePortResponce_Nurse);
         break;
+    case GetHealthExaminationRePortListRequest_doctor:
+        return handleGetHealthExaminationRePortRequest(message,GetHealthExaminationRePortResponce_doctor);
+        break;
     case ElectronicMedicalRecordRequest:
         return handleElectronicMedicalRecordRequest(message);
         break;

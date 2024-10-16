@@ -7,6 +7,7 @@
 #include "appointmentmanagement.h"
 #include "editmedicalexaminationreport.h"
 #include "electronicmedicalrecord.h"
+#include "healthexaminationreport.h"
 
 namespace Ui {
 class StaffMainWindow;
@@ -22,6 +23,8 @@ public:
 
     void OnStartDateRequest();
 
+
+
 private slots:
     void on_healthCheckRecordButton_clicked();
 
@@ -33,7 +36,13 @@ private slots:
 
     void OnEditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
 
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
 
+    void setDefaultWidget();
+
+    void healthexaminationreport_exitButtonClicked();
+
+    void editmedicalexaminationreport_exitButtonClicked();
 
 private:
     Ui::StaffMainWindow *ui;
@@ -41,7 +50,7 @@ private:
     std::unique_ptr<AppointmentManagement> appointmentmanagement;
     std::unique_ptr<EditMedicalExaminationReport> editmedicalexaminationreport;
     std::unique_ptr<ElectronicMedicalRecord> electronicmedicalrecord;
-
+    std::unique_ptr<HealthExaminationReport> healthexaminationreport;
 };
 
 #endif // STAFFMAINWINDOW_H

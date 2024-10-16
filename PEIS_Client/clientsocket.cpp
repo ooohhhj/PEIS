@@ -348,6 +348,18 @@ void ClientSocket::processResponse(Packet &packet)
         emit OnAppointmentsDate(array);
         break;
     }
+    case GetHealthExaminationRePortResponce_doctor:
+    {
+        if(message.isEmpty())
+        {
+            emit OnGetHealthExaminationRePortResponce(MessageObject);
+        }
+        else
+        {
+            showMessageBox(":/warning.png","警告",message);
+        }
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

@@ -149,8 +149,8 @@ void PatientInformation::onViewReportClicked(const QModelIndex &index)
 }
 
 
-
-
-
-
+void PatientInformation::on_returnExitButton_clicked()
+{
+    emit exitButtonClicked();
+}
 

@@ -29,6 +29,12 @@ private slots:
                                     const QString&appointmentStatus);
 
     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+
+    void exitButtonClicked();
+
+    void InputMedicaExaminationData_exitButtonClicked();
+
+    void setDefaultWidget();
 private:
     Ui::Nurse *ui;
     QString m_username;

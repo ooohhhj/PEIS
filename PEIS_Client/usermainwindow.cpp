@@ -61,6 +61,8 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(checkupreport.get(),&CheckupReport::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
 
     connect(checkupRecord.get(),&CheckupRecord::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
+
+
 }
 
 UserMainWindow::~UserMainWindow()
@@ -307,5 +309,7 @@ void UserMainWindow::LookCheckupreport()
     ui->checkupReportButton->setChecked(true);
 
 }
+
+
 
 

@@ -47,6 +47,7 @@ private slots:
 
 
 
+
 private:
     Ui::UserMainWindow *ui;
     QString m_username;

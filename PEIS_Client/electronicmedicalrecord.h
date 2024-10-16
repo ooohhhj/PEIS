@@ -22,8 +22,13 @@ public:
     ~ElectronicMedicalRecord();
     void setUsername(const QString & username);
 private slots:
-     void OnAppointmentsDate(const QJsonArray & appointments);
-       void onViewReportClicked(const QModelIndex &index);
+    void OnAppointmentsDate(const QJsonArray & appointments);
+    void onViewReportClicked(const QModelIndex &index);
+
+    void on_returnExitButton_clicked();
+
+signals:
+     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
 
 private:
     Ui::ElectronicMedicalRecord *ui;

@@ -172,3 +172,9 @@ void EditMedicalExaminationReport::on_submitButton_clicked()
     ClientSocket::instance()->senData(array);
 }
 
+
+void EditMedicalExaminationReport::on_returnExitButton_clicked()
+{
+     emit exitButtonClicked();
+}
+
