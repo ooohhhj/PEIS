@@ -351,7 +351,7 @@ border: none;</string>
               <string/>
              </property>
              <property name="text">
-              <string>待办日程</string>
+              <string>个人资料</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">

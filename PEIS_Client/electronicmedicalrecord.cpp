@@ -117,7 +117,7 @@ void ElectronicMedicalRecord::onViewReportClicked(const QModelIndex &index)
 
     qDebug() << "查看报告按钮被点击，患者姓名：" << patientName;
 
-    onLookCheckUpReportClicked(patientName,packageName,appointmentDate,2);
+    onLookCheckUpReportClicked(patientName,packageName,appointmentDate,3);
 }
 
 void ElectronicMedicalRecord::on_returnExitButton_clicked()

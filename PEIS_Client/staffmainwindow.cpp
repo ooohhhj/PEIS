@@ -14,6 +14,7 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     editmedicalexaminationreport =std::make_unique<EditMedicalExaminationReport>(this);
     electronicmedicalrecord =std::make_unique<ElectronicMedicalRecord>(this);
     healthexaminationreport =std::make_unique<HealthExaminationReport>(this);
+    patientInfo =std::make_unique<PatientInformation>(this);
 
 
     appointmentmanagement.get()->setUsername(m_username);
@@ -22,6 +23,7 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
 
     setDefaultWidget();
 
+    ui->stackedWidget->addWidget(patientInfo.get());
     ui->stackedWidget->addWidget(appointmentmanagement.get());
     ui->stackedWidget->addWidget(editmedicalexaminationreport.get());
     ui->stackedWidget->addWidget(electronicmedicalrecord.get());
@@ -33,6 +35,16 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
 
     //显示窗口为最大化状态
     this->showMaximized();
+
+    connect(patientInfo.get(),&PatientInformation::onEditReportButtonClicked,this,&StaffMainWindow::onEditReportButtonClicked);
+
+    connect(patientInfo.get(),&PatientInformation::onLookCheckUpReportClicked,this,&StaffMainWindow::onLookCheckUpReportClicked);
+
+
+    connect(patientInfo.get(),&PatientInformation::exitButtonClicked,this,&StaffMainWindow::setDefaultWidget);
+    connect(patientInfo.get(),&PatientInformation::exitButtonClicked,this, [this]() {
+        buttonStyleSheet(ui->patienInfoButton);
+    });
 
     connect(ClientSocket::instance(),&ClientSocket::OnPatientHealthExaminationReview,this,&StaffMainWindow::updatenoticeButton);
 
@@ -178,9 +190,13 @@ void StaffMainWindow::healthexaminationreport_exitButtonClicked(const int &flag)
 {
     if(flag==1)
     {
+        ui->stackedWidget->setCurrentWidget(patientInfo.get());
+    }
+    else if(flag==2)
+    {
         ui->stackedWidget->setCurrentWidget(appointmentmanagement.get());
     }
-    else if(flag ==2)
+    else if(flag ==3)
     {
         ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
     }
@@ -260,6 +276,30 @@ void StaffMainWindow::on_electronicmedicalrecordButton_clicked()
 
 void StaffMainWindow::on_patienInfoButton_clicked()
 {
+    //显示界面
+    ui->stackedWidget->setCurrentWidget(patientInfo.get());
 
+    ui->patienInfoButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->patienInfoButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->patienInfoButton->setChecked(true);
+}
+
+void StaffMainWindow::onEditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus)
+{
+    OnEditCheckuppreport(patientName,healthPackage,appointmentDate);
 }
 

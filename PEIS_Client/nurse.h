@@ -10,7 +10,7 @@
 #include "protocol.h"
 #include "healthexaminationreport.h"
 #include "appointmentsmanager_nurse.h"
-#include "cancel_appointmentmanger.h"
+
 
 namespace Ui {
 class Nurse;
@@ -43,6 +43,8 @@ private slots:
     void on_appointmentButton_clicked();
 
 
+    void on_checkupReportButton_clicked();
+
 private:
     Ui::Nurse *ui;
     QString m_username;
@@ -50,7 +52,6 @@ private:
     std::unique_ptr<InputMedicaExaminationData> inputmedicaexaminationdata;
     std::unique_ptr<HealthExaminationReport> healthexaminationreport;
     std::unique_ptr<AppointmentsManager_Nurse> appointmentsmanager_nurse;
-    std::unique_ptr<Cancel_AppointmentManger> cancel_appointmentmanger;
 };
 
 #endif // NURSE_H

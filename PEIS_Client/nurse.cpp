@@ -12,13 +12,12 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
     inputmedicaexaminationdata =std::make_unique<InputMedicaExaminationData>(this);
     healthexaminationreport =std::make_unique<HealthExaminationReport>(this);
     appointmentsmanager_nurse =std::make_unique<AppointmentsManager_Nurse>(this);
-    cancel_appointmentmanger = std::make_unique<Cancel_AppointmentManger>(this);
+
 
     ui->stackedWidget->addWidget(patientinfo.get());
     ui->stackedWidget->addWidget(inputmedicaexaminationdata.get());
     ui->stackedWidget->addWidget(healthexaminationreport.get());
     ui->stackedWidget->addWidget(appointmentsmanager_nurse.get());
-    ui->stackedWidget->addWidget(cancel_appointmentmanger.get());
 
     setDefaultWidget();
 
@@ -213,4 +212,10 @@ void Nurse::on_appointmentButton_clicked()
     ui->appointmentButton->setChecked(true);
 }
 
+
+
+void Nurse::on_checkupReportButton_clicked()
+{
+
+}
 

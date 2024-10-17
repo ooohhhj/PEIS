@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <memory>
 
+#include "patientinformation.h"
 #include "appointmentmanagement.h"
 #include "editmedicalexaminationreport.h"
 #include "electronicmedicalrecord.h"
@@ -44,7 +45,12 @@ private slots:
 
     void on_electronicmedicalrecordButton_clicked();
 
+
     void on_patienInfoButton_clicked();
+
+    void onEditReportButtonClicked(const QString& patientName,const QString &patientGender,const QString &patientPhone,
+                                        const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
+                                        const QString&appointmentStatus);
 
 private:
     Ui::StaffMainWindow *ui;
@@ -53,6 +59,7 @@ private:
     std::unique_ptr<EditMedicalExaminationReport> editmedicalexaminationreport;
     std::unique_ptr<ElectronicMedicalRecord> electronicmedicalrecord;
     std::unique_ptr<HealthExaminationReport> healthexaminationreport;
+    std::unique_ptr<PatientInformation> patientInfo;
 };
 
 #endif // STAFFMAINWINDOW_H
