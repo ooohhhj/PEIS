@@ -42,8 +42,6 @@ private slots:
 
     void on_appointmentButton_clicked();
 
-    void appointmentsManager_Nurse_search(const QString&patientName);
-
 
 private:
     Ui::Nurse *ui;

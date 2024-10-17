@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QJsonObject>
+#include <QStandardItemModel>
 
 #include "clientsocket.h"
 
@@ -18,18 +19,28 @@ public:
     explicit AppointmentsManager_Nurse(QWidget *parent = nullptr);
     ~AppointmentsManager_Nurse();
 
-private slots:
-    void on_searchButton_clicked();
+    void onViewReportClicked(const QModelIndex &index);
 
+    void AppointmentManager(const QString &patientName, const QString &healthPackage,const QString &appointmentDate, const QString &appointmentStatus);
+
+    void OncancelAppointmentButton(const QString &username, const QString &packageName, const QString &appointmentDate);
+
+private slots:
+
+    void showAppointment(const QJsonArray& patientInfoArray);
+
+    void on_searchButton_clicked();
 
     void on_returnExitButton_clicked();
 
 signals:
     void appointmentsManager_Nurse_search(const QString&patientName);
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int&flag);
 
     void exitButtonClicked();
 private:
     Ui::AppointmentsManager_Nurse *ui;
+    QString m_patientName;
 };
 
 #endif // APPOINTMENTSMANAGER_NURSE_H

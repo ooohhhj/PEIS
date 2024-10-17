@@ -26,9 +26,7 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
 
     connect(patientinfo.get(),&PatientInformation::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
 
-    connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::appointmentsManager_Nurse_search,this,&Nurse::appointmentsManager_Nurse_search);
-
-    connect(cancel_appointmentmanger.get(),&Cancel_AppointmentManger::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
+    connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
 
     connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&Nurse::exitButtonClicked);
 
@@ -40,9 +38,6 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
         buttonStyleSheet(ui->patientInfoButton);
     });
 
-    connect(cancel_appointmentmanger.get(),&Cancel_AppointmentManger::exitButtonClicked,this,[this](){
-       ui->stackedWidget->setCurrentWidget(appointmentsmanager_nurse.get());
-    });
 
     connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::exitButtonClicked,this,&Nurse::setDefaultWidget);
     connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::exitButtonClicked,this, [this]() {
@@ -129,7 +124,7 @@ void Nurse::exitButtonClicked(const int &flag)
     }
     else if(flag == 2)
     {
-        ui->stackedWidget->setCurrentWidget(cancel_appointmentmanger.get());
+        ui->stackedWidget->setCurrentWidget(appointmentsmanager_nurse.get());
     }
 }
 
@@ -216,14 +211,6 @@ void Nurse::on_appointmentButton_clicked()
 
     // 设置按钮为选中状态
     ui->appointmentButton->setChecked(true);
-}
-
-void Nurse::appointmentsManager_Nurse_search(const QString&patientName)
-{
-    //显示界面
-    ui->stackedWidget->setCurrentWidget(cancel_appointmentmanger.get());
-
-    cancel_appointmentmanger.get()->setPatientName(patientName);
 }
 
 
