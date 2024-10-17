@@ -17,6 +17,8 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
     ui->stackedWidget->addWidget(inputmedicaexaminationdata.get());
     ui->stackedWidget->addWidget(healthexaminationreport.get());
 
+    setDefaultWidget();
+
     connect(patientinfo.get(),&PatientInformation::onEditReportButtonClicked,this,&Nurse::on_EditReportButtonClicked);
 
     connect(patientinfo.get(),&PatientInformation::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
@@ -99,35 +101,31 @@ void Nurse::InputMedicaExaminationData_exitButtonClicked()
 
 void Nurse::setDefaultWidget()
 {
-    // 创建一个新的 QWidget 作为堆栈窗口
     QWidget *centralWidget = new QWidget(this);
 
-    // 创建一个垂直布局
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
-    // 创建 QLabel 用于显示图像
     QLabel *imageLabel = new QLabel(this);
-    QPixmap image(":/pexels-gustavo-fring.jpg"); // 确保在资源文件中包含该图像
-    imageLabel->setPixmap(image);
-    imageLabel->setScaledContents(true); // 使图像适应标签大小
+    QPixmap image(":/pexels-algrey-Nurse .jpg");
 
-    // 设置 QLabel 的大小策略
-    imageLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // 允许图像标签扩展
+    if (!image.isNull()) {
+        imageLabel->setPixmap(image);
+        imageLabel->setScaledContents(true);
+    } else {
+        qDebug() << "Image not loaded.";
+    }
 
-    // 将 QLabel 添加到布局中
+    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     layout->addWidget(imageLabel);
-
-    // 设置中心部件的布局
     centralWidget->setLayout(layout);
 
-    // 将 QWidget 添加到 stackedWidget
+    // 添加并设置为当前显示的部件
     ui->stackedWidget->addWidget(centralWidget);
-
-    // 设置当前显示的部件为新创建的部件
     ui->stackedWidget->setCurrentWidget(centralWidget);
 
-    // 确保 stackedWidget 也能最大化
-    ui->stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // 强制刷新 stackedWidget
+    ui->stackedWidget->update();
+    ui->stackedWidget->repaint();
 
 }
 

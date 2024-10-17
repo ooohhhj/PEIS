@@ -32,6 +32,7 @@ private slots:
 
     void exitButtonClicked();
 
+
     void InputMedicaExaminationData_exitButtonClicked();
 
     void setDefaultWidget();

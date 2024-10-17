@@ -122,6 +122,6 @@ void ElectronicMedicalRecord::onViewReportClicked(const QModelIndex &index)
 
 void ElectronicMedicalRecord::on_returnExitButton_clicked()
 {
-
+    emit exitButtonClicked();
 }
 

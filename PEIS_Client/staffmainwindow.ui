@@ -295,7 +295,7 @@ border: none;</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="checkupReportButton">
+            <widget class="QPushButton" name="electronicmedicalrecordButton">
              <property name="minimumSize">
               <size>
                <width>300</width>

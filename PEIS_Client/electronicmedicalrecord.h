@@ -29,7 +29,7 @@ private slots:
 
 signals:
      void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int& flag);
-
+     void exitButtonClicked();
 private:
     Ui::ElectronicMedicalRecord *ui;
     QString  m_username;

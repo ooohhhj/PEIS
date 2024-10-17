@@ -42,6 +42,14 @@ StaffMainWindow::StaffMainWindow(QWidget *parent,const QString &username) :
     connect(appointmentmanagement.get(),&AppointmentManagement::onLookCheckUpReportClicked,this,&StaffMainWindow::onLookCheckUpReportClicked);
 
     connect(appointmentmanagement.get(),&AppointmentManagement::exitButtonClicked,this,&StaffMainWindow::setDefaultWidget);
+    connect(appointmentmanagement.get(), &AppointmentManagement::exitButtonClicked, this, [this]() {
+        buttonStyleSheet(ui->AppointmentManagerButton);
+    });
+
+    connect(electronicmedicalrecord.get(),&ElectronicMedicalRecord::exitButtonClicked,this,&StaffMainWindow::setDefaultWidget);
+    connect(electronicmedicalrecord.get(), &ElectronicMedicalRecord::exitButtonClicked, this, [this]() {
+        buttonStyleSheet(ui->electronicmedicalrecordButton);
+    });
 
     connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&StaffMainWindow::healthexaminationreport_exitButtonClicked);
     connect(editmedicalexaminationreport.get(),&EditMedicalExaminationReport::exitButtonClicked,this,&StaffMainWindow::editmedicalexaminationreport_exitButtonClicked);
@@ -53,8 +61,6 @@ StaffMainWindow::~StaffMainWindow()
 {
     delete ui;
 }
-
-
 
 void StaffMainWindow::OnStartDateRequest()
 {
@@ -68,6 +74,24 @@ void StaffMainWindow::OnStartDateRequest()
     ClientSocket::instance()->senData(sendArray);
 }
 
+void StaffMainWindow::buttonStyleSheet(QPushButton *button)
+{
+    QString buttonStyleSheet =
+            "QPushButton {"
+            "    background-color: transparent;"
+            "    border: 2px solid black;"
+            "    border-radius: 15px;"
+            "    padding: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}"
+            "QPushButton:pressed {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}";
+
+    button->setStyleSheet(buttonStyleSheet);
+}
 
 void StaffMainWindow::on_noticeButton_clicked()
 {
@@ -123,57 +147,12 @@ void StaffMainWindow::onLookCheckUpReportClicked(const QString &patientName, con
 
 void StaffMainWindow::setDefaultWidget()
 {
-    //    // 检查是否已有中心部件，并将其删除
-    //    QWidget *currentWidget = ui->stackedWidget->currentWidget();
-    //    if (currentWidget) {
-    //        ui->stackedWidget->removeWidget(currentWidget);
-    //        delete currentWidget;
-    //    }
-
-    //    // 创建一个新的 QWidget 作为堆栈窗口
-    //    QWidget *centralWidget = new QWidget(this);
-
-    //    // 创建一个垂直布局
-    //    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-
-    //    // 创建 QLabel 用于显示图像
-    //    QLabel *imageLabel = new QLabel(this);
-    //    QPixmap image(":/pexels-zeoxs-.jpg"); // 确保在资源文件中包含该图像
-
-    //    if (!image.isNull()) {
-    //        imageLabel->setPixmap(image);
-    //        imageLabel->setScaledContents(true); // 使图像适应标签大小
-    //    } else {
-    //        qDebug() << "Image not loaded.";
-    //    }
-
-    //    // 设置 QLabel 的大小策略
-    //    imageLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored); // 使 QLabel 完全适应图像大小
-
-    //    // 将 QLabel 添加到布局中
-    //    layout->addWidget(imageLabel);
-
-    //    // 设置中心部件的布局
-    //    centralWidget->setLayout(layout);
-
-    //    // 将 QWidget 添加到 stackedWidget
-    //    ui->stackedWidget->addWidget(centralWidget);
-
-    //    // 设置当前显示的部件为新创建的部件
-    //    ui->stackedWidget->setCurrentWidget(centralWidget);
-
-    //    // 确保 stackedWidget 也能最大化
-    //    ui->stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    //    // 调整 QLabel 尺寸以适应图像
-    //    imageLabel->adjustSize();
-
     QWidget *centralWidget = new QWidget(this);
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
     QLabel *imageLabel = new QLabel(this);
-    QPixmap image(":/pexels-zeoxs-.jpg");
+    QPixmap image(":/pexels-algrey-doctor.jpg");
 
     if (!image.isNull()) {
         imageLabel->setPixmap(image);
@@ -212,19 +191,6 @@ void StaffMainWindow::editmedicalexaminationreport_exitButtonClicked()
     ui->stackedWidget->setCurrentWidget(editmedicalexaminationreport.get());
 }
 
-void StaffMainWindow::on_checkupReportButton_clicked()
-{
-    ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
-    QJsonObject appointmentObj;
-    appointmentObj["username"]=m_username;
-
-    Packet packet =Protocol::createPacket(ElectronicMedicalRecordRequest,appointmentObj);
-
-    QByteArray sendArray =Protocol::serializePacket(packet);
-
-    ClientSocket::instance()->senData(sendArray);
-}
-
 
 void StaffMainWindow::on_AppointmentManagerButton_clicked()
 {
@@ -252,6 +218,39 @@ void StaffMainWindow::on_AppointmentManagerButton_clicked()
     appointmentObj["username"]=m_username;
 
     Packet packet =Protocol::createPacket(AppointmentInformationRequest,appointmentObj);
+
+    QByteArray sendArray =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(sendArray);
+}
+
+
+void StaffMainWindow::on_electronicmedicalrecordButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
+
+    ui->electronicmedicalrecordButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->electronicmedicalrecordButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->electronicmedicalrecordButton->setChecked(true);
+
+    QJsonObject appointmentObj;
+    appointmentObj["username"]=m_username;
+
+    Packet packet =Protocol::createPacket(ElectronicMedicalRecordRequest,appointmentObj);
 
     QByteArray sendArray =Protocol::serializePacket(packet);
 

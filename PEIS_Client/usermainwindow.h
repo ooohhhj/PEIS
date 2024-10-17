@@ -32,7 +32,7 @@ private slots:
     void on_scheduleCheckupButton_clicked();
     void OnCardClicked(const QString & cardName);
     void setDefaultWidget();
-    void buttonStyleSheet();
+    void buttonStyleSheet(QPushButton *button);
 
 
     void on_healthCheckRecordButton_clicked();

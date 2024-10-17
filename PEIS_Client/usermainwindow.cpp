@@ -41,17 +41,23 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(scheduleCheckUp.get(),&ScheduleCheckup::cardClicked,this,&UserMainWindow::OnCardClicked);
 
     connect(scheduleCheckUp.get(),&ScheduleCheckup::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
-    connect(scheduleCheckUp.get(),&ScheduleCheckup::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
+    connect(scheduleCheckUp.get(), &ScheduleCheckup::exitButtonClicked, this, [this]() {
+        buttonStyleSheet(ui->scheduleCheckupButton);
+    });
+
 
     connect(hepDetails.get(),&HEPDetails::exitButtonClicked,this,&UserMainWindow::on_scheduleCheckupButton_clicked);
 
     connect(checkupRecord.get(),&CheckupRecord::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
-    connect(checkupRecord.get(),&CheckupRecord::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
+    connect(checkupRecord.get(), &CheckupRecord::exitButtonClicked, this, [this]() {
+        buttonStyleSheet(ui->healthCheckRecordButton);
+    });
 
 
     connect(checkupreport.get(),&CheckupReport::exitButtonClicked,this,&UserMainWindow::setDefaultWidget);
-    connect(checkupreport.get(),&CheckupReport::exitButtonClicked,this,&UserMainWindow::buttonStyleSheet);
-
+    connect(checkupreport.get(), &CheckupReport::exitButtonClicked, this, [this]() {
+        buttonStyleSheet(ui->checkupReportButton);
+    });
 
     connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&UserMainWindow::on_healthCheckRecordButton_clicked);
 
@@ -172,7 +178,7 @@ void UserMainWindow::setDefaultWidget()
 
 }
 
-void UserMainWindow::buttonStyleSheet()
+void UserMainWindow::buttonStyleSheet(QPushButton *button)
 {
     QString buttonStyleSheet =
             "QPushButton {"
@@ -188,14 +194,8 @@ void UserMainWindow::buttonStyleSheet()
             "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
             "}";
 
-    ui->scheduleCheckupButton->setStyleSheet(buttonStyleSheet);
 
-    ui->healthCheckRecordButton->setStyleSheet(buttonStyleSheet);
-
-    ui->checkupReportButton->setStyleSheet(buttonStyleSheet);
-
-    ui->personalInfoButton->setStyleSheet(buttonStyleSheet);
-
+    button->setStyleSheet(buttonStyleSheet);
 }
 
 void UserMainWindow::on_healthCheckRecordButton_clicked()

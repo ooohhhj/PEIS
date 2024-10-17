@@ -23,12 +23,12 @@ public:
 
     void OnStartDateRequest();
 
+    void buttonStyleSheet(QPushButton *button);
+
 private slots:
 
     void on_noticeButton_clicked();
     void updatenoticeButton();
-
-    void on_checkupReportButton_clicked();
 
     void OnEditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
 
@@ -41,6 +41,8 @@ private slots:
     void editmedicalexaminationreport_exitButtonClicked();
 
     void on_AppointmentManagerButton_clicked();
+
+    void on_electronicmedicalrecordButton_clicked();
 
 private:
     Ui::StaffMainWindow *ui;
