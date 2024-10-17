@@ -27,6 +27,8 @@ private slots:
 
     void on_returnExitButton_clicked();
 
+    void on_refreshButton_clicked();
+
 signals:
      void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int& flag);
      void exitButtonClicked();

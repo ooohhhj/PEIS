@@ -125,3 +125,16 @@ void ElectronicMedicalRecord::on_returnExitButton_clicked()
     emit exitButtonClicked();
 }
 
+
+void ElectronicMedicalRecord::on_refreshButton_clicked()
+{
+    QJsonObject appointmentObj;
+    appointmentObj["username"]=m_username;
+
+    Packet packet =Protocol::createPacket(ElectronicMedicalRecordRequest,appointmentObj);
+
+    QByteArray sendArray =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(sendArray);
+}
+
