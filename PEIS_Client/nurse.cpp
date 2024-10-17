@@ -28,15 +28,26 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
 
     connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::appointmentsManager_Nurse_search,this,&Nurse::appointmentsManager_Nurse_search);
 
+    connect(cancel_appointmentmanger.get(),&Cancel_AppointmentManger::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
+
     connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&Nurse::exitButtonClicked);
 
     connect(inputmedicaexaminationdata.get(),&InputMedicaExaminationData::exitButtonClicked,this,&Nurse::InputMedicaExaminationData_exitButtonClicked);
+
 
     connect(patientinfo.get(),&PatientInformation::exitButtonClicked,this,&Nurse::setDefaultWidget);
     connect(patientinfo.get(),&PatientInformation::exitButtonClicked,this, [this]() {
         buttonStyleSheet(ui->patientInfoButton);
     });
 
+    connect(cancel_appointmentmanger.get(),&Cancel_AppointmentManger::exitButtonClicked,this,[this](){
+       ui->stackedWidget->setCurrentWidget(appointmentsmanager_nurse.get());
+    });
+
+    connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::exitButtonClicked,this,&Nurse::setDefaultWidget);
+    connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::exitButtonClicked,this, [this]() {
+        buttonStyleSheet(ui->appointmentButton);
+    });
     //   设置只允许最大化，不允许最小化
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |Qt::WindowCloseButtonHint);
 
@@ -89,9 +100,10 @@ void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString
 
 }
 
-void Nurse::onLookCheckUpReportClicked(const QString &patientName, const QString &healthPackage, const QString &appointmentDate)
+void Nurse::onLookCheckUpReportClicked(const QString &patientName, const QString &healthPackage, const QString &appointmentDate, const int &flag)
 {
     ui->stackedWidget->setCurrentWidget(healthexaminationreport.get());
+    healthexaminationreport.get()->setSignalFlag(flag);
 
     //发送记录申请
     QJsonObject Info;
@@ -109,9 +121,16 @@ void Nurse::onLookCheckUpReportClicked(const QString &patientName, const QString
     ClientSocket::instance()->senData(dataToSend);
 }
 
-void Nurse::exitButtonClicked()
+void Nurse::exitButtonClicked(const int &flag)
 {
-    ui->stackedWidget->setCurrentWidget(patientinfo.get());
+    if(flag == 1)
+    {
+        ui->stackedWidget->setCurrentWidget(patientinfo.get());
+    }
+    else if(flag == 2)
+    {
+        ui->stackedWidget->setCurrentWidget(cancel_appointmentmanger.get());
+    }
 }
 
 void Nurse::InputMedicaExaminationData_exitButtonClicked()

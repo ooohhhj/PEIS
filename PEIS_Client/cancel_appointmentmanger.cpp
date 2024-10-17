@@ -34,7 +34,7 @@ void Cancel_AppointmentManger::onViewReportClicked(const QModelIndex &index)
 
     } else if (appointmentStatus == "已完成")
     {
-        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate);
+        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate,2);
     }
 }
 
@@ -219,5 +219,11 @@ void Cancel_AppointmentManger::on_refreshButton_clicked()
     QByteArray array =Protocol::serializePacket(packet);
 
     ClientSocket::instance()->senData(array);
+}
+
+
+void Cancel_AppointmentManger::on_returnBtn_clicked()
+{
+    emit exitButtonClicked();
 }
 

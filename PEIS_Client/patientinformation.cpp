@@ -149,7 +149,7 @@ void PatientInformation::onViewReportClicked(const QModelIndex &index)
 
     } else if (appointmentStatus == "已完成")
     {
-        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate);
+        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate,1);
     }
 
 }

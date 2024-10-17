@@ -22,9 +22,12 @@ private slots:
     void on_searchButton_clicked();
 
 
+    void on_returnExitButton_clicked();
+
 signals:
     void appointmentsManager_Nurse_search(const QString&patientName);
 
+    void exitButtonClicked();
 private:
     Ui::AppointmentsManager_Nurse *ui;
 };

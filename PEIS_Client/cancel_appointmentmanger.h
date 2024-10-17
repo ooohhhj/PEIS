@@ -32,8 +32,13 @@ private slots:
 
     void on_refreshButton_clicked();
 
+    void on_returnBtn_clicked();
+
+
 signals:
-     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int&flag);
+
+     void exitButtonClicked();
 private:
     Ui::Cancel_AppointmentManger *ui;
     QString m_patientName;

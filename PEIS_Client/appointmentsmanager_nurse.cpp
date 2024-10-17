@@ -42,3 +42,9 @@ void AppointmentsManager_Nurse::on_searchButton_clicked()
 }
 
 
+
+void AppointmentsManager_Nurse::on_returnExitButton_clicked()
+{
+    emit exitButtonClicked();
+}
+
