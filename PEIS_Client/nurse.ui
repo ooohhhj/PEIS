@@ -206,7 +206,7 @@ border: none;</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QPushButton" name="scheduleCheckupButton">
+            <widget class="QPushButton" name="patientInfoButton">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -235,7 +235,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/scheduleCheckup.png</normaloff>:/scheduleCheckup.png</iconset>
+               <normaloff>:/patientInfo.png</normaloff>:/patientInfo.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -246,7 +246,7 @@ border: none;</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="healthCheckRecordButton">
+            <widget class="QPushButton" name="appointmentButton">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -275,7 +275,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/healthCheckRecord.png</normaloff>:/healthCheckRecord.png</iconset>
+               <normaloff>:/healthCheckRecord-doctor.png</normaloff>:/healthCheckRecord-doctor.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -315,7 +315,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/checkupReport.png</normaloff>:/checkupReport.png</iconset>
+               <normaloff>:/checkupReport-doctor.png</normaloff>:/checkupReport-doctor.png</iconset>
              </property>
              <property name="iconSize">
               <size>

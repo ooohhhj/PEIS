@@ -44,6 +44,8 @@ private slots:
 
     void on_electronicmedicalrecordButton_clicked();
 
+    void on_patienInfoButton_clicked();
+
 private:
     Ui::StaffMainWindow *ui;
     QString m_username;

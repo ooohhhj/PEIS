@@ -8,14 +8,17 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
     ui->setupUi(this);
     ui->usernameLabel->setText(m_username);
 
-
     patientinfo =std::make_unique<PatientInformation>(this);
     inputmedicaexaminationdata =std::make_unique<InputMedicaExaminationData>(this);
     healthexaminationreport =std::make_unique<HealthExaminationReport>(this);
+    appointmentsmanager_nurse =std::make_unique<AppointmentsManager_Nurse>(this);
+    cancel_appointmentmanger = std::make_unique<Cancel_AppointmentManger>(this);
 
     ui->stackedWidget->addWidget(patientinfo.get());
     ui->stackedWidget->addWidget(inputmedicaexaminationdata.get());
     ui->stackedWidget->addWidget(healthexaminationreport.get());
+    ui->stackedWidget->addWidget(appointmentsmanager_nurse.get());
+    ui->stackedWidget->addWidget(cancel_appointmentmanger.get());
 
     setDefaultWidget();
 
@@ -23,12 +26,16 @@ Nurse::Nurse(QWidget *parent, const QString &username) :
 
     connect(patientinfo.get(),&PatientInformation::onLookCheckUpReportClicked,this,&Nurse::onLookCheckUpReportClicked);
 
+    connect(appointmentsmanager_nurse.get(),&AppointmentsManager_Nurse::appointmentsManager_Nurse_search,this,&Nurse::appointmentsManager_Nurse_search);
+
     connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&Nurse::exitButtonClicked);
 
     connect(inputmedicaexaminationdata.get(),&InputMedicaExaminationData::exitButtonClicked,this,&Nurse::InputMedicaExaminationData_exitButtonClicked);
 
     connect(patientinfo.get(),&PatientInformation::exitButtonClicked,this,&Nurse::setDefaultWidget);
-
+    connect(patientinfo.get(),&PatientInformation::exitButtonClicked,this, [this]() {
+        buttonStyleSheet(ui->patientInfoButton);
+    });
 
     //   设置只允许最大化，不允许最小化
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |Qt::WindowCloseButtonHint);
@@ -42,10 +49,23 @@ Nurse::~Nurse()
     delete ui;
 }
 
-void Nurse::on_scheduleCheckupButton_clicked()
+void Nurse::buttonStyleSheet(QPushButton *button)
 {
-    //显示界面
-    ui->stackedWidget->setCurrentWidget(patientinfo.get());
+    QString buttonStyleSheet =
+            "QPushButton {"
+            "    background-color: transparent;"
+            "    border: 2px solid black;"
+            "    border-radius: 15px;"
+            "    padding: 10px;"
+            "}"
+            "QPushButton:hover {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}"
+            "QPushButton:pressed {"
+            "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+            "}";
+
+    button->setStyleSheet(buttonStyleSheet);
 }
 
 void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus)
@@ -106,7 +126,7 @@ void Nurse::setDefaultWidget()
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
 
     QLabel *imageLabel = new QLabel(this);
-    QPixmap image(":/pexels-algrey-Nurse .jpg");
+    QPixmap image(":/pexels-ron-lach-Nurse.jpg");
 
     if (!image.isNull()) {
         imageLabel->setPixmap(image);
@@ -128,4 +148,61 @@ void Nurse::setDefaultWidget()
     ui->stackedWidget->repaint();
 
 }
+
+
+void Nurse::on_patientInfoButton_clicked()
+{
+    //显示界面
+    ui->stackedWidget->setCurrentWidget(patientinfo.get());
+
+    ui->patientInfoButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->patientInfoButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->patientInfoButton->setChecked(true);
+}
+
+
+void Nurse::on_appointmentButton_clicked()
+{
+    //显示界面
+    ui->stackedWidget->setCurrentWidget(appointmentsmanager_nurse.get());
+
+    ui->appointmentButton->setStyleSheet(
+                "QPushButton {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
+                "    border: 1px solid #8f8f91;"
+                "    border-radius: 5px;"
+                "    padding: 5px;"
+                "}"
+                "QPushButton:pressed, QPushButton:checked {"
+                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
+                "}"
+                );
+
+    // 确保按钮可切换
+    ui->appointmentButton->setCheckable(true);
+
+    // 设置按钮为选中状态
+    ui->appointmentButton->setChecked(true);
+}
+
+void Nurse::appointmentsManager_Nurse_search()
+{
+    //显示界面
+    ui->stackedWidget->setCurrentWidget(cancel_appointmentmanger.get());
+}
+
 

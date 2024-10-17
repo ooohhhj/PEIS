@@ -62,6 +62,8 @@ signals:
 
     void OnPatientInfoResponce(const QJsonArray& patientInfoArray);
 
+     void OnPatientInfoResponce_Manager(const QJsonArray& patientInfoArray);
+
     void OnHealthCheckupItemResponce(const QJsonArray & packageItems);
 
     void OnRecordHealthCheckupResponce(const QJsonArray & checkUpDate);

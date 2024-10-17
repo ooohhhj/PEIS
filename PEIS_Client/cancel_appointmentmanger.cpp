@@ -1,44 +1,115 @@
-#include "patientinformation.h"
-#include "ui_patientinformation.h"
+#include "cancel_appointmentmanger.h"
+#include "ui_cancel_appointmentmanger.h"
 
-PatientInformation::PatientInformation(QWidget *parent) :
+Cancel_AppointmentManger::Cancel_AppointmentManger(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::PatientInformation)
+    ui(new Ui::Cancel_AppointmentManger)
 {
     ui->setupUi(this);
 
-    connect(ClientSocket::instance(),&ClientSocket::OnPatientInfoResponce,this,&PatientInformation::OnPatientInfo);
-
+    connect(ClientSocket::instance(),&ClientSocket::OnPatientInfoResponce_Manager,this,&Cancel_AppointmentManger::showAppointment);
 }
 
-PatientInformation::~PatientInformation()
+Cancel_AppointmentManger::~Cancel_AppointmentManger()
 {
     delete ui;
 }
 
-void PatientInformation::on_searchButton_clicked()
+void Cancel_AppointmentManger::onViewReportClicked(const QModelIndex &index)
 {
-    //获取输入框
-    QString patientName = ui->patientNameLineEdit->text();
-
-    if(patientName.isEmpty())
-    {
-        ClientSocket::instance()->showMessageBox(":/warning.png","患者信息","输入信息为空");
-        return ;
+    if (!index.isValid()) {
+        return;  // 如果索引无效，则返回
     }
+    QString patientName = index.sibling(index.row(), 0).data().toString();
+    QString patientGender = index.sibling(index.row(), 1).data().toString();
+    QString patientPhone =index.sibling(index.row(), 2).data().toString();
+    QString patientBirthDate = index.sibling(index.row(), 3).data().toString();
+    QString healthPackage = index.sibling(index.row(), 4).data().toString();
+    QString appointmentDate = index.sibling(index.row(), 5).data().toString();
+    QString appointmentStatus = index.sibling(index.row(), 6).data().toString();
 
-    QJsonObject obj ;
-    obj["patientName"] =patientName;
 
-    Packet packet = Protocol::createPacket(PatientInfoRequest,obj);
+    if (appointmentStatus == "已预约") {
+        AppointmentManager(patientName,healthPackage,appointmentDate,appointmentStatus);
 
-    QByteArray array =Protocol::serializePacket(packet);
+    } else if (appointmentStatus == "已完成")
+    {
+        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate);
+    }
+}
 
+void Cancel_AppointmentManger::AppointmentManager(const QString &patientName, const QString &healthPackage,const QString &appointmentDate, const QString &appointmentStatus)
+{
+    // 创建对话框
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle("预约信息");
+    dialog->setWindowFlags(dialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);  // 移除帮助按钮
+
+    // 设置对话框的大小
+    dialog->setFixedSize(500, 400);
+
+    // 设置对话框图标
+    QIcon dialogIcon(":/appointment.png");  // 替换为你的图标路径
+    dialog->setWindowIcon(dialogIcon);
+
+    // 创建控件
+    QLabel *nameLabel = new QLabel("姓名: " + patientName, dialog);
+    QLabel *packageLabel = new QLabel("套餐: " + healthPackage, dialog);
+    QLabel *dateLabel = new QLabel("预约时间: " + appointmentDate, dialog);
+    QLabel *statusLabel = new QLabel("预约状态: " + appointmentStatus, dialog);
+
+    QPushButton *cancelButton = new QPushButton("取消", dialog);
+
+    QString labelStyle = "background-color: transparent; border: none; font-size: 12pt;";  // 增加字体大小
+
+    nameLabel->setStyleSheet(labelStyle);
+    packageLabel->setStyleSheet(labelStyle);
+    dateLabel->setStyleSheet(labelStyle);
+    statusLabel->setStyleSheet(labelStyle);
+
+    cancelButton->setStyleSheet("font-size: 12pt;");
+
+
+    // 设置布局
+    QVBoxLayout *layout = new QVBoxLayout(dialog);
+    layout->addWidget(nameLabel);
+    layout->addWidget(packageLabel);
+    layout->addWidget(dateLabel);
+    layout->addWidget(statusLabel);
+    layout->addWidget(cancelButton);
+
+    dialog->setLayout(layout);
+
+    // 连接信号与槽
+    connect(cancelButton, &QPushButton::clicked, this,[this, dialog,patientName, healthPackage, appointmentDate]() {
+        dialog->close();
+        OncancelAppointmentButton(patientName, healthPackage, appointmentDate);
+
+    });
+    // 以模态方式显示对话框
+    dialog->exec();
+
+    // 释放对话框内存
+    delete dialog;
+}
+
+void Cancel_AppointmentManger::OncancelAppointmentButton(const QString &username, const QString &packageName, const QString &appointmentDate)
+{
+    qDebug()<<"取消按钮被点击";
+
+    QJsonObject obj;
+    obj["username"] =username;
+    obj["packageName"]=packageName;
+    obj["appointmentDate"] =appointmentDate;
+
+    Packet packet =Protocol::createPacket(CancelAppointmentRequest,obj);
+
+    QByteArray array  = Protocol::serializePacket(packet);
 
     ClientSocket::instance()->senData(array);
 }
 
-void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
+void Cancel_AppointmentManger::showAppointment(const QJsonArray &patientInfoArray)
 {
     // 清空当前模型
     QStandardItemModel *model = new QStandardItemModel(this);
@@ -89,7 +160,7 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
 
         QPushButton *button = new QPushButton();
         if (status == "已预约" ) {
-            button->setText("编辑报告");
+            button->setText("取消预约");
         } else if (status == "已体检" ||status == "已完成") {
             button->setText("查看报告");
         } else {
@@ -128,35 +199,6 @@ void PatientInformation::OnPatientInfo(const QJsonArray &patientInfoArray)
     }
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-}
 
-void PatientInformation::onViewReportClicked(const QModelIndex &index)
-{
-
-    if (!index.isValid()) {
-        return;  // 如果索引无效，则返回
-    }
-    QString patientName = index.sibling(index.row(), 0).data().toString();
-    QString patientGender = index.sibling(index.row(), 1).data().toString();
-    QString patientPhone =index.sibling(index.row(), 2).data().toString();
-    QString patientBirthDate = index.sibling(index.row(), 3).data().toString();
-    QString healthPackage = index.sibling(index.row(), 4).data().toString();
-    QString appointmentDate = index.sibling(index.row(), 5).data().toString();
-    QString appointmentStatus = index.sibling(index.row(), 6).data().toString();
-
-    if (appointmentStatus == "已预约") {
-        emit onEditReportButtonClicked(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
-
-    } else if (appointmentStatus == "已完成")
-    {
-        emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate);
-    }
-
-}
-
-
-void PatientInformation::on_returnExitButton_clicked()
-{
-    emit exitButtonClicked();
 }
 

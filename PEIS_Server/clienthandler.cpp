@@ -84,7 +84,7 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         return handleAppointmentInformationRequest(message);
         break;
     case PatientInfoRequest:
-        return handlePatientInfoRequest(message);
+        return handlePatientInfoRequest(message,PatientInfoResponce);
         break;
     case HealthCheckupItemRequest:
         return handleHealthCheckupItemRequest(message);
@@ -121,6 +121,9 @@ QByteArray ClientHandler::processRequest(Packet &packet)
         break;
     case ElectronicMedicalRecordRequest:
         return handleElectronicMedicalRecordRequest(message);
+        break;
+    case PatientInfoRequest_Nurse:
+        return handlePatientInfoRequest(message,PatientInfoResponce_Nurse);
         break;
     default:
         QString message =StatusMessage::InternalServerError;
@@ -732,7 +735,7 @@ QByteArray ClientHandler::handleAppointmentInformationRequest(const QJsonObject 
 
 }
 
-QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienNameDate)
+QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienNameDate,const int &responceType)
 {
     QString patientName = patienNameDate["patientName"].toString();
 
@@ -767,7 +770,7 @@ QByteArray ClientHandler::handlePatientInfoRequest(const QJsonObject &patienName
     QJsonObject patientInfo;;
     patientInfo["patientInfo"] =patientInfoArray;
 
-    Packet packet =Protocol::createPacket(PatientInfoResponce,patientInfo);
+    Packet packet =Protocol::createPacket(responceType,patientInfo);
 
     QByteArray array =Protocol::serializePacket(packet);
 

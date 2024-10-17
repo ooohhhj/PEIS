@@ -11,6 +11,8 @@ CONFIG += c++11 c++14
 SOURCES += \
     adminmainwindow.cpp \
     appointmentmanagement.cpp \
+    appointmentsmanager_nurse.cpp \
+    cancel_appointmentmanger.cpp \
     captchagenerator.cpp \
     checkuprecord.cpp \
     checkupreport.cpp \
@@ -35,6 +37,8 @@ SOURCES += \
 HEADERS += \
     adminmainwindow.h \
     appointmentmanagement.h \
+    appointmentsmanager_nurse.h \
+    cancel_appointmentmanger.h \
     captchagenerator.h \
     checkuprecord.h \
     checkupreport.h \
@@ -58,6 +62,8 @@ HEADERS += \
 FORMS += \
     adminmainwindow.ui \
     appointmentmanagement.ui \
+    appointmentsmanager_nurse.ui \
+    cancel_appointmentmanger.ui \
     checkuprecord.ui \
     checkupreport.ui \
     editmedicalexaminationreport.ui \

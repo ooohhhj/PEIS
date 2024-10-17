@@ -360,6 +360,13 @@ void ClientSocket::processResponse(Packet &packet)
         }
         break;
     }
+    case PatientInfoResponce_Nurse:
+    {
+        qDebug()<<"nn";
+        QJsonArray patientInfo =MessageObject["patientInfo"].toArray();
+        emit OnPatientInfoResponce_Manager(patientInfo);
+        break;
+    }
     default:
         showMessageBox(":/warning.png","警告","未知的请求类型");
         break;

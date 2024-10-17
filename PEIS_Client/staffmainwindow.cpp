@@ -257,3 +257,9 @@ void StaffMainWindow::on_electronicmedicalrecordButton_clicked()
     ClientSocket::instance()->senData(sendArray);
 }
 
+
+void StaffMainWindow::on_patienInfoButton_clicked()
+{
+
+}
+

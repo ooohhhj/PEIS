@@ -1168,7 +1168,6 @@ QString DatabaseManager::getStartDateByusername(const QString &username)
         qDebug() << "Query execution failed:" << query.lastError();
         return QString();
     }
-
 }
 
 QSqlQuery DatabaseManager::getUserInfoByUsername(const QString &username)

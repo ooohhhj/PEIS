@@ -215,7 +215,7 @@ border: none;</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QPushButton" name="scheduleCheckupButton">
+            <widget class="QPushButton" name="patienInfoButton">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -244,7 +244,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/scheduleCheckup.png</normaloff>:/scheduleCheckup.png</iconset>
+               <normaloff>:/patientInfo.png</normaloff>:/patientInfo.png</iconset>
              </property>
              <property name="iconSize">
               <size>

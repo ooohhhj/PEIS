@@ -75,6 +75,8 @@ enum RequestType
 
     ElectronicMedicalRecordRequest,               //电子病历请求
 
+     PatientInfoRequest_Nurse,                    //护士请求患者信息
+
 };
 
 enum ResponseType
@@ -144,6 +146,8 @@ enum ResponseType
     ElectronicMedicalRecordResponce,               //电子病历回复
 
     GetHealthExaminationRePortResponce_doctor,     //医生获取用户体检报告回复
+
+    PatientInfoResponce_Nurse,                         //患者信息回复
 
 
     InternalServerError,                        //未知请求

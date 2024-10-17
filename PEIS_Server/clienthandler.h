@@ -69,7 +69,7 @@ private:
 
     QByteArray handleAppointmentInformationRequest(const QJsonObject & usernameDate);
 
-    QByteArray handlePatientInfoRequest(const QJsonObject & patienNameDate);
+    QByteArray handlePatientInfoRequest(const QJsonObject & patienNameDate,const int& responceType);
 
     QByteArray handleHealthCheckupItemRequest(const QJsonObject & packageName);
 
