@@ -17,6 +17,7 @@ HealthExaminationReport::~HealthExaminationReport()
 
 void HealthExaminationReport::displayPdf(const QString &fileName)
 {
+
     // 创建新的 QScrollArea
     QScrollArea *scrollArea = new QScrollArea(ui->widget);
     scrollArea->setWidgetResizable(true); // 设置为可调整大小

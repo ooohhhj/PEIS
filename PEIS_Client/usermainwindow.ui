@@ -72,7 +72,7 @@ padding: 10px;</string>
                 <enum>Qt::AutoText</enum>
                </property>
                <property name="pixmap">
-                <pixmap>:/defaultAvatar.png</pixmap>
+                <pixmap resource="../Resource/icom.qrc">:/defaultAvatar.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -227,7 +227,7 @@ border: none;</string>
               <string>预约体检</string>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="../Resource/icom.qrc">
                <normaloff>:/scheduleCheckup.png</normaloff>:/scheduleCheckup.png</iconset>
              </property>
              <property name="iconSize">
@@ -277,7 +277,7 @@ border: none;</string>
               <string>体检记录</string>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="../Resource/icom.qrc">
                <normaloff>:/healthCheckRecord.png</normaloff>:/healthCheckRecord.png</iconset>
              </property>
              <property name="iconSize">
@@ -325,7 +325,7 @@ border: none;</string>
               <string>体检报告</string>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="../Resource/icom.qrc">
                <normaloff>:/checkupReport.png</normaloff>:/checkupReport.png</iconset>
              </property>
              <property name="iconSize">
@@ -362,7 +362,7 @@ border: none;</string>
               <string>个人资料</string>
              </property>
              <property name="icon">
-              <iconset>
+              <iconset resource="../Resource/icom.qrc">
                <normaloff>:/personalInfo.png</normaloff>:/personalInfo.png</iconset>
              </property>
              <property name="iconSize">
@@ -428,7 +428,7 @@ border: none;</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="../Resource/icom.qrc">
                 <normaloff>:/notice-No.png</normaloff>:/notice-No.png</iconset>
               </property>
               <property name="iconSize">
@@ -457,7 +457,7 @@ border: none;</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="../Resource/icom.qrc">
                 <normaloff>:/exit.png</normaloff>:/exit.png</iconset>
               </property>
               <property name="iconSize">
@@ -507,6 +507,8 @@ border: none;</string>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resource/icom.qrc"/>
+ </resources>
  <connections/>
 </ui>

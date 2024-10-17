@@ -24,5 +24,9 @@
         <file>pexels-gustavo-fring.jpg</file>
         <file>appointment.png</file>
         <file>healthCheckRecord-doctor.png</file>
+        <file>doctor.png</file>
+        <file>patientInfo.png</file>
+        <file>checkupReport-doctor.png</file>
+        <file>pexels-zeoxs-.jpg</file>
     </qresource>
 </RCC>

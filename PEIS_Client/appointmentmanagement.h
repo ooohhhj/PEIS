@@ -5,6 +5,7 @@
 #include <QDate>
 #include <QStandardItemModel>
 #include <QPushButton>
+#include <QScrollArea>
 
 #include "protocol.h"
 #include "clientsocket.h"

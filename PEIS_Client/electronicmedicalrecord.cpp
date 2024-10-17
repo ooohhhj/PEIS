@@ -22,6 +22,7 @@ void ElectronicMedicalRecord::setUsername(const QString &username)
 
 void ElectronicMedicalRecord::OnAppointmentsDate(const QJsonArray &appointments)
 {
+     ui->tableView->show();
     // 清空当前模型
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setHorizontalHeaderLabels({"患者姓名", "联系方式","套餐名称","预约日期",  "预约状态","操作"});

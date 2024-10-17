@@ -11,11 +11,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-
-    //    StaffMainWindow staffWindow;
-    //    staffWindow.show();
-    //    return a.exec();
-
     LoginDialog loginDialog;
 
     if(loginDialog.exec() == QDialog::Accepted)
@@ -40,8 +35,6 @@ int main(int argc, char *argv[])
             break;
         case 3:
         {
-
-            qDebug() << "User role: 3";
             UserMainWindow *userWindow = new UserMainWindow(nullptr,username);
             userWindow->show();
             break;
@@ -57,7 +50,6 @@ int main(int argc, char *argv[])
             return 0;
             break;
         }
-
 
         return a.exec();
     }

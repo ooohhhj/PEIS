@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>746</width>
-    <height>441</height>
+    <width>623</width>
+    <height>453</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -97,7 +97,7 @@
         <widget class="QComboBox" name="startDateCBox">
          <property name="minimumSize">
           <size>
-           <width>300</width>
+           <width>200</width>
            <height>80</height>
           </size>
          </property>
@@ -147,7 +147,7 @@ border: none;</string>
         <widget class="QComboBox" name="endDateCBox">
          <property name="minimumSize">
           <size>
-           <width>300</width>
+           <width>200</width>
            <height>80</height>
           </size>
          </property>

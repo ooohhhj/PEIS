@@ -43,7 +43,9 @@ void AppointmentManagement::setDateQComBOx(const QString &startDate)
 }
 
 void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
-{
+{    
+    ui->tableView->show();
+
     // 清空当前模型
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setHorizontalHeaderLabels({"患者姓名", "联系方式","套餐名称","预约日期",  "预约状态","操作"});
@@ -117,6 +119,12 @@ void AppointmentManagement::OnAppointmentsDate(const QJsonArray &appointments)
 
         // 将按钮设置到表格中
         ui->tableView->setIndexWidget(model->index(row, 5), button);  // 使用 setIndexWidget 设置按钮到 "操作" 列
+
+        ui->widget->setStyleSheet("background-color: transparent;"
+                                  " border: none;");
+
+        ui->tableView->setStyleSheet("background-color: #F5FFFA; "
+                                     "border: 2px solid #A2D8D0;");
 
         // 连接按钮点击信号到槽函数
         connect(button, &QPushButton::clicked, this, [this,model, row]() {

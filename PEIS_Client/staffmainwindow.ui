@@ -6,21 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>941</width>
-    <height>689</height>
+    <width>922</width>
+    <height>681</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../Resource/icom.qrc">
+    <normaloff>:/doctor.png</normaloff>:/doctor.png</iconset>
+  </property>
   <property name="styleSheet">
-   <string notr="true">background-color: #F5FFFA; /* Mint Cream */
-border: 2px solid #A2D8D0; /* Lighter Sea Green */
-</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">background-color: #F5FFFA;
+border: 2px solid #A2D8D0;
+border-radius: 13px;
+</string>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -30,7 +35,8 @@ border: 2px solid #A2D8D0; /* Lighter Sea Green */
         <property name="styleSheet">
          <string notr="true">border: 2px solid qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,stop: 0 #696969, stop: 1 #000000);
 border-radius: 15px;
-padding: 10px;</string>
+padding: 10px;
+</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
@@ -249,7 +255,7 @@ border: none;</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="healthCheckRecordButton">
+            <widget class="QPushButton" name="AppointmentManagerButton">
              <property name="minimumSize">
               <size>
                <width>300</width>
@@ -278,7 +284,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/healthCheckRecord.png</normaloff>:/healthCheckRecord.png</iconset>
+               <normaloff>:/healthCheckRecord-doctor.png</normaloff>:/healthCheckRecord-doctor.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -318,7 +324,7 @@ border: none;</string>
              </property>
              <property name="icon">
               <iconset resource="../Resource/icom.qrc">
-               <normaloff>:/checkupReport.png</normaloff>:/checkupReport.png</iconset>
+               <normaloff>:/checkupReport-doctor.png</normaloff>:/checkupReport-doctor.png</iconset>
              </property>
              <property name="iconSize">
               <size>
@@ -511,8 +517,8 @@ border: none;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>941</width>
-     <height>25</height>
+     <width>922</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

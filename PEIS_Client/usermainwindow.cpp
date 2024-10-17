@@ -31,7 +31,6 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     ui->stackedWidget->addWidget(healthexaminationreport.get());
 
 
-
     //   设置只允许最大化，不允许最小化
     this->setWindowFlags(Qt::Window | Qt::WindowCloseButtonHint |Qt::WindowCloseButtonHint);
 
@@ -59,7 +58,6 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
     connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
 
     connect(checkupreport.get(),&CheckupReport::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
-
     connect(checkupRecord.get(),&CheckupRecord::LookCheckupreport,this,&UserMainWindow::LookCheckupreport);
 
 
