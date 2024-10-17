@@ -22,15 +22,17 @@ public:
     ~HealthExaminationReport();
 
     void displayPdf(const QString &fileName);
+    void setSignalFlag(const int&flag);
 
 private slots:
     void on_returnBtn_clicked();
     void OnGetHealthExaminationRePortResponce(const QJsonObject& reprotPdfDate);
 
 signals:
-    void exitButtonClicked();
+    void exitButtonClicked(const int& flag);
 private:
     Ui::HealthExaminationReport *ui;
+    int m_flag;
 };
 
 #endif // HEALTHEXAMINATIONREPORT_H

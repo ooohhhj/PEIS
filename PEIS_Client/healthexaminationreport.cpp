@@ -75,12 +75,17 @@ void HealthExaminationReport::displayPdf(const QString &fileName)
 
     container->setLayout(layout);
     scrollArea->setWidget(container);
-    scrollArea->setMinimumSize(800, 500); // 设置最小大小
+//    scrollArea->setMinimumSize(800, 500); // 设置最小大小
+}
+
+void HealthExaminationReport::setSignalFlag(const int &flag)
+{
+    this->m_flag = flag;
 }
 
 void HealthExaminationReport::on_returnBtn_clicked()
 {
-    emit exitButtonClicked();
+    emit exitButtonClicked(m_flag);
 }
 
 void HealthExaminationReport::OnGetHealthExaminationRePortResponce(const QJsonObject &reprotPdfDate)

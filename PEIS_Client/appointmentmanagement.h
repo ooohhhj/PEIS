@@ -36,7 +36,7 @@ private slots:
 signals:
     void EditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
     void exitButtonClicked();
-    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int&flag);
 
 private:
     Ui::AppointmentManagement *ui;

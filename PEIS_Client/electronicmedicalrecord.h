@@ -28,7 +28,7 @@ private slots:
     void on_returnExitButton_clicked();
 
 signals:
-     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int& flag);
 
 private:
     Ui::ElectronicMedicalRecord *ui;

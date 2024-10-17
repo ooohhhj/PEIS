@@ -25,6 +25,7 @@ public:
 
 
 
+
 private slots:
     void on_healthCheckRecordButton_clicked();
 
@@ -36,17 +37,18 @@ private slots:
 
     void OnEditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
 
-    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate);
+    void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int&flag);
 
     void setDefaultWidget();
 
-    void healthexaminationreport_exitButtonClicked();
+    void healthexaminationreport_exitButtonClicked(const int&flag);
 
     void editmedicalexaminationreport_exitButtonClicked();
 
 private:
     Ui::StaffMainWindow *ui;
     QString m_username;
+    int m_flag;
     std::unique_ptr<AppointmentManagement> appointmentmanagement;
     std::unique_ptr<EditMedicalExaminationReport> editmedicalexaminationreport;
     std::unique_ptr<ElectronicMedicalRecord> electronicmedicalrecord;

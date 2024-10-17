@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
+    <width>849</width>
     <height>421</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1,0">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -110,7 +110,7 @@
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Maximum</enum>
+        <enum>QSizePolicy::Fixed</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>

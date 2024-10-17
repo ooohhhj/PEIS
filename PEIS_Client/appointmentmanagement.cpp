@@ -151,7 +151,7 @@ void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
     } else if (appointmentStatus == "已完成")
     {
         qDebug()<<"已完成发送";
-        emit onLookCheckUpReportClicked(patientName,packageName,appointmentDate);
+        emit onLookCheckUpReportClicked(patientName,packageName,appointmentDate,1);
     }
 
 }
@@ -161,7 +161,6 @@ void AppointmentManagement::setUsername(const QString &username)
 {
     this->m_username = username;
 }
-
 
 void AppointmentManagement::on_returnExitButton_clicked()
 {

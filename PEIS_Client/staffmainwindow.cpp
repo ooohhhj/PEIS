@@ -113,10 +113,10 @@ void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QSt
     ClientSocket::instance()->senData(sendArray);
 }
 
-void StaffMainWindow::onLookCheckUpReportClicked(const QString &patientName, const QString &healthPackage, const QString &appointmentDate)
+void StaffMainWindow::onLookCheckUpReportClicked(const QString &patientName, const QString &healthPackage, const QString &appointmentDate, const int &flag)
 {
     ui->stackedWidget->setCurrentWidget(healthexaminationreport.get());
-
+    healthexaminationreport.get()->setSignalFlag(flag);
     //发送记录申请
     QJsonObject Info;
 
@@ -166,9 +166,16 @@ void StaffMainWindow::setDefaultWidget()
     ui->stackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-void StaffMainWindow::healthexaminationreport_exitButtonClicked()
+void StaffMainWindow::healthexaminationreport_exitButtonClicked(const int &flag)
 {
-    ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
+    if(flag==1)
+    {
+        ui->stackedWidget->setCurrentWidget(appointmentmanagement.get());
+    }
+    else if(flag ==2)
+    {
+        ui->stackedWidget->setCurrentWidget(electronicmedicalrecord.get());
+    }
 }
 
 void StaffMainWindow::editmedicalexaminationreport_exitButtonClicked()
