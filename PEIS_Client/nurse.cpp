@@ -199,10 +199,12 @@ void Nurse::on_appointmentButton_clicked()
     ui->appointmentButton->setChecked(true);
 }
 
-void Nurse::appointmentsManager_Nurse_search()
+void Nurse::appointmentsManager_Nurse_search(const QString&patientName)
 {
     //显示界面
     ui->stackedWidget->setCurrentWidget(cancel_appointmentmanger.get());
+
+    cancel_appointmentmanger.get()->setPatientName(patientName);
 }
 
 

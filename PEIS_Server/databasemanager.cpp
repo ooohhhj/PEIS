@@ -1265,7 +1265,7 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
     query.prepare("SELECT hp.package_name, a.appointment_date, a.status "
                   "FROM appointments a "
                   "JOIN healthpackages hp ON a.package_id = hp.id "
-                  "WHERE a.user_id = :userId");
+                  "WHERE a.user_id = :userId AND a.status = '已预约'");
     query.bindValue(":userId", userId);
 
     if (!query.exec()) {

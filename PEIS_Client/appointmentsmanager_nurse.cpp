@@ -38,7 +38,7 @@ void AppointmentsManager_Nurse::on_searchButton_clicked()
 
     ClientSocket::instance()->senData(array);
 
-    emit appointmentsManager_Nurse_search();
+    emit appointmentsManager_Nurse_search(patientName);
 }
 
 

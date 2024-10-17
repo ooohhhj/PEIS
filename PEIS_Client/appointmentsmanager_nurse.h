@@ -23,7 +23,7 @@ private slots:
 
 
 signals:
-    void appointmentsManager_Nurse_search();
+    void appointmentsManager_Nurse_search(const QString&patientName);
 
 private:
     Ui::AppointmentsManager_Nurse *ui;

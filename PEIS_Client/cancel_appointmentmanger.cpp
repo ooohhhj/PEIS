@@ -109,6 +109,11 @@ void Cancel_AppointmentManger::OncancelAppointmentButton(const QString &username
     ClientSocket::instance()->senData(array);
 }
 
+void Cancel_AppointmentManger::setPatientName(const QString &patientName)
+{
+    this->m_patientName = patientName;
+}
+
 void Cancel_AppointmentManger::showAppointment(const QJsonArray &patientInfoArray)
 {
     // 清空当前模型
@@ -199,6 +204,20 @@ void Cancel_AppointmentManger::showAppointment(const QJsonArray &patientInfoArra
     }
 
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+}
 
+
+void Cancel_AppointmentManger::on_refreshButton_clicked()
+{
+    QJsonObject obj ;
+    obj["patientName"] =m_patientName;
+
+    qDebug()<<"patientName="<<m_patientName;
+
+    Packet packet = Protocol::createPacket(PatientInfoRequest_Nurse,obj);
+
+    QByteArray array =Protocol::serializePacket(packet);
+
+    ClientSocket::instance()->senData(array);
 }
 
