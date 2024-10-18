@@ -100,7 +100,11 @@ public:
 
     QSqlQuery getRecordHealthCheckupDate(const QString & patientName);
 
-    QSqlQuery getAppointmentInfoByusername(const QString & username);
+    QSqlQuery getAppointmentInfoByusername(const QString & username);//查询已预约
+
+    QSqlQuery getAllAppointmentInfoByusername(const QString & username);//查询所有预约信息
+
+    QSqlQuery getAppointmentFinshInfoByusername(const QString & username);
 
     QSqlQuery getPatientCheckupDate(const QString& patientName,const QString &packageName,const QString & appointmentDate);
 

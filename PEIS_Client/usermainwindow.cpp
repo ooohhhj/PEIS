@@ -59,7 +59,7 @@ UserMainWindow::UserMainWindow(QWidget *parent,const QString &username) :
         buttonStyleSheet(ui->checkupReportButton);
     });
 
-    connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&UserMainWindow::on_healthCheckRecordButton_clicked);
+    connect(healthexaminationreport.get(),&HealthExaminationReport::exitButtonClicked,this,&UserMainWindow::on_healthCheckRecordExitButtonClickedButton_clicked);
 
     connect(ClientSocket::instance(),&ClientSocket::OnUserCheckupGenerateNotice,this,&UserMainWindow::updatenoticeButton);
 
@@ -198,42 +198,16 @@ void UserMainWindow::buttonStyleSheet(QPushButton *button)
     button->setStyleSheet(buttonStyleSheet);
 }
 
-void UserMainWindow::on_healthCheckRecordButton_clicked()
+void UserMainWindow::on_healthCheckRecordExitButtonClickedButton_clicked(const int &flag)
 {
-
-    ui->stackedWidget->setCurrentWidget(checkupRecord.get());
-
-    ui->healthCheckRecordButton->setStyleSheet(
-                "QPushButton {"
-                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
-                "    border: 1px solid #8f8f91;"
-                "    border-radius: 5px;"
-                "    padding: 5px;"
-                "}"
-                "QPushButton:pressed, QPushButton:checked {"
-                "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #88B0C1, stop: 1 #90C0C6);"
-                "}"
-                );
-
-    // 确保按钮可切换
-    ui->healthCheckRecordButton->setCheckable(true);
-
-    // 设置按钮为选中状态
-    ui->healthCheckRecordButton->setChecked(true);
-
-
-    //发送记录申请
-    QJsonObject Info;
-
-    Info["username"] =m_username;
-    //封包
-    Packet reserveCheckupPacket =Protocol::createPacket(QueryHealthExaminationRecordsRequest,Info);
-
-    //序列化
-    QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
-
-    ClientSocket::instance()->senData(dataToSend);
-
+    if(flag==2)
+    {
+        ui->stackedWidget->setCurrentWidget(checkupRecord.get());
+    }
+    else if(flag ==3)
+    {
+        ui->stackedWidget->setCurrentWidget(checkupreport.get());
+    }
 }
 
 void UserMainWindow::on_checkupReportButton_clicked()
@@ -284,11 +258,19 @@ void UserMainWindow::updatenoticeButton()
     qDebug()<<"来提醒";
 }
 
-void UserMainWindow::LookCheckupreport()
+void UserMainWindow::LookCheckupreport(const int &flag)
 {
     ui->stackedWidget->setCurrentWidget(healthexaminationreport.get());
 
-    ui->checkupReportButton->setStyleSheet(
+    healthexaminationreport.get()->setSignalFlag(flag);
+}
+
+
+void UserMainWindow::on_healthCheckRecordButton_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(checkupRecord.get());
+
+    ui->healthCheckRecordButton->setStyleSheet(
                 "QPushButton {"
                 "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
                 "    border: 1px solid #8f8f91;"
@@ -301,13 +283,22 @@ void UserMainWindow::LookCheckupreport()
                 );
 
     // 确保按钮可切换
-    ui->checkupReportButton->setCheckable(true);
+    ui->healthCheckRecordButton->setCheckable(true);
 
     // 设置按钮为选中状态
-    ui->checkupReportButton->setChecked(true);
+    ui->healthCheckRecordButton->setChecked(true);
 
+
+    //发送记录申请
+    QJsonObject Info;
+
+    Info["username"] =m_username;
+    //封包
+    Packet reserveCheckupPacket =Protocol::createPacket(QueryHealthExaminationRecordsRequest,Info);
+
+    //序列化
+    QByteArray dataToSend = Protocol::serializePacket(reserveCheckupPacket);
+
+    ClientSocket::instance()->senData(dataToSend);
 }
-
-
-
 

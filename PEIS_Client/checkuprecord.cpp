@@ -45,7 +45,7 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
         qDebug()<<"status="<<status;
 
         // 仅在状态为 "已完成" 时添加到模型
-        if (status == "已完成") {
+        if (status != "已取消") {
             QList<QStandardItem *> rowItems;
             rowItems << new QStandardItem(packageName)
                      << new QStandardItem(appointmentDate)
@@ -74,7 +74,7 @@ void CheckupRecord::OnHealthExaminationRecordsResponce(const QJsonArray &records
                     onViewReportClicked(index);
                 });
             } else {
-                button->setText("未知操作");
+                button->setText(status);
             }
 
             // 设置按钮样式
@@ -155,7 +155,7 @@ void CheckupRecord::onViewReportClicked(const QModelIndex &index)
     obj["packageName"]=packageName;
     obj["appointmentDate"]=appointmentDate;
 
-    emit LookCheckupreport();
+    emit LookCheckupreport(2);
 
     Packet packet =Protocol::createPacket(GetHealthExaminationRePortRequest,obj);
 

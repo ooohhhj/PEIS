@@ -1186,7 +1186,7 @@ QByteArray ClientHandler::handleQueryHealthExaminationRecordsRequest(const QJson
 {
     QString username = userNameDate["username"].toString();
 
-    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoByusername(username);
+    QSqlQuery query =DatabaseManager::instance().getAllAppointmentInfoByusername(username);
 
     // 如果查询失败，返回错误信息
     if (!query.isActive() || !query.isSelect()) {
@@ -1233,7 +1233,7 @@ QByteArray ClientHandler::handleGetHealthExaminationRePortListRequest(const QJso
 {
     QString username = userNameDate["username"].toString();
 
-    QSqlQuery query =DatabaseManager::instance().getAppointmentInfoByusername(username);
+    QSqlQuery query =DatabaseManager::instance().getAppointmentFinshInfoByusername(username);
 
     // 如果查询失败，返回错误信息
     if (!query.isActive() || !query.isSelect()) {

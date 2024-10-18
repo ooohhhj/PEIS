@@ -1276,6 +1276,57 @@ QSqlQuery DatabaseManager::getAppointmentInfoByusername(const QString &username)
     return query;  // 返回查询结果
 }
 
+QSqlQuery DatabaseManager::getAllAppointmentInfoByusername(const QString &username)
+{
+    int userId = getUserIdByUsername(username);
+
+    qDebug() << "userId=" << userId;
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();  // 返回空查询
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT hp.package_name, a.appointment_date, a.status "
+                  "FROM appointments a "
+                  "JOIN healthpackages hp ON a.package_id = hp.id "
+                  "WHERE a.user_id = :userId ");
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+
+    return query;  // 返回查询结果
+}
+
+
+QSqlQuery DatabaseManager::getAppointmentFinshInfoByusername(const QString &username)
+{
+    int userId = getUserIdByUsername(username);
+
+    qDebug() << "userId=" << userId;
+    if (!isConnected()) {
+        qDebug() << "Failed to connect to database:" << db.lastError().text();
+        return QSqlQuery();  // 返回空查询
+    }
+
+    QSqlQuery query(db);
+    query.prepare("SELECT hp.package_name, a.appointment_date, a.status "
+                  "FROM appointments a "
+                  "JOIN healthpackages hp ON a.package_id = hp.id "
+                  "WHERE a.user_id = :userId AND a.status = '已完成'");
+    query.bindValue(":userId", userId);
+
+    if (!query.exec()) {
+        qDebug() << "Failed to retrieve appointment data:" << query.lastError().text();
+        return QSqlQuery();  // 查询执行失败，返回空查询
+    }
+
+    return query;  // 返回查询结果
+}
+
 QSqlQuery DatabaseManager::getPatientCheckupDate(const QString &patientName, const QString &packageName, const QString &appointmentDate)
 {
     if (!isConnected()) {

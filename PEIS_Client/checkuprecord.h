@@ -28,7 +28,7 @@ private slots:
 
 signals:
     void exitButtonClicked();
-    void LookCheckupreport();
+    void LookCheckupreport(const int&flag);
 private:
     Ui::CheckupRecord *ui;
     QString m_username;

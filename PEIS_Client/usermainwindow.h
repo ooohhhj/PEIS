@@ -35,7 +35,7 @@ private slots:
     void buttonStyleSheet(QPushButton *button);
 
 
-    void on_healthCheckRecordButton_clicked();
+    void on_healthCheckRecordExitButtonClickedButton_clicked(const int & flag);
 
     void on_checkupReportButton_clicked();
 
@@ -43,10 +43,12 @@ private slots:
 
     void updatenoticeButton();
 
-    void LookCheckupreport();
+    void LookCheckupreport(const int&flag);
 
 
 
+
+    void on_healthCheckRecordButton_clicked();
 
 private:
     Ui::UserMainWindow *ui;

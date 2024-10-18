@@ -153,7 +153,7 @@ void CheckupReport::onViewReportClicked(const QModelIndex &index)
     obj["packageName"]=packageName;
     obj["appointmentDate"]=appointmentDate;
 
-    emit LookCheckupreport();
+    emit LookCheckupreport(3);
 
     Packet packet =Protocol::createPacket(GetHealthExaminationRePortRequest,obj);
 
