@@ -145,13 +145,12 @@ void PatientInformation::onViewReportClicked(const QModelIndex &index)
     QString appointmentStatus = index.sibling(index.row(), 6).data().toString();
 
     if (appointmentStatus == "已预约") {
-        emit onEditReportButtonClicked(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
+        emit onEditReportButtonClicked(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus,1);
 
     } else if (appointmentStatus == "已完成")
     {
         emit onLookCheckUpReportClicked(patientName,healthPackage,appointmentDate,1);
     }
-
 }
 
 

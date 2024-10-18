@@ -73,9 +73,8 @@ void Nurse::buttonStyleSheet(QPushButton *button)
     button->setStyleSheet(buttonStyleSheet);
 }
 
-void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus)
+void Nurse::on_EditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus, const int &flag)
 {
-
     ui->stackedWidget->setCurrentWidget(inputmedicaexaminationdata.get());
 
     inputmedicaexaminationdata.get()->setPatientInfo(patientName,patientGender,patientPhone,patientBirthDate,healthPackage,appointmentDate,appointmentStatus);
@@ -134,6 +133,7 @@ void Nurse::InputMedicaExaminationData_exitButtonClicked()
 
 void Nurse::setDefaultWidget()
 {
+
     QWidget *centralWidget = new QWidget(this);
 
     QVBoxLayout *layout = new QVBoxLayout(centralWidget);
@@ -168,6 +168,19 @@ void Nurse::on_patientInfoButton_clicked()
     //显示界面
     ui->stackedWidget->setCurrentWidget(patientinfo.get());
 
+    for (QLineEdit* lineEdit : patientinfo->findChildren<QLineEdit*>()) {
+        lineEdit->clear();
+    }
+
+    QTableView* tableView = patientinfo->findChild<QTableView*>();
+    if (tableView) {
+        // 创建一个新的空模型
+        QStandardItemModel* emptyModel = new QStandardItemModel();
+
+        // 设置新的模型，替换旧的模型
+        tableView->setModel(emptyModel);
+    }
+
     ui->patientInfoButton->setStyleSheet(
                 "QPushButton {"
                 "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
@@ -192,6 +205,19 @@ void Nurse::on_appointmentButton_clicked()
 {
     //显示界面
     ui->stackedWidget->setCurrentWidget(appointmentsmanager_nurse.get());
+
+    for (QLineEdit* lineEdit : patientinfo->findChildren<QLineEdit*>()) {
+        lineEdit->clear();
+    }
+
+    QTableView* tableView = appointmentsmanager_nurse->findChild<QTableView*>();
+    if (tableView) {
+        // 创建一个新的空模型
+        QStandardItemModel* emptyModel = new QStandardItemModel();
+
+        // 设置新的模型，替换旧的模型
+        tableView->setModel(emptyModel);
+    }
 
     ui->appointmentButton->setStyleSheet(
                 "QPushButton {"

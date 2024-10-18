@@ -120,9 +120,11 @@ void StaffMainWindow::updatenoticeButton()
 }
 
 
-void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QString &packageName, const QString &appointmentDate)
+void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QString &packageName, const QString &appointmentDate, const int &flag)
 {
     ui->stackedWidget->setCurrentWidget(editmedicalexaminationreport.get());
+
+    editmedicalexaminationreport.get()->setFlag(flag);
 
     QJsonObject Obj;
     Obj["patientName"]=patientName;
@@ -130,6 +132,11 @@ void StaffMainWindow::OnEditCheckuppreport(const QString &patientName, const QSt
 
     // 将获取的日期格式化为 YYYY-MM-DD
     Obj["appointmentDate"] = QDate::fromString(appointmentDate, "yyyy-M-d").toString("yyyy-MM-dd");
+
+    qDebug()<<"patientName="<<patientName;
+    qDebug()<<"packageName="<<packageName;
+    qDebug()<<"appointmentDate="<<appointmentDate;
+
     Packet packet =Protocol::createPacket(EditCheckupReportRequest,Obj);
 
     QByteArray sendArray =Protocol::serializePacket(packet);
@@ -202,11 +209,17 @@ void StaffMainWindow::healthexaminationreport_exitButtonClicked(const int &flag)
     }
 }
 
-void StaffMainWindow::editmedicalexaminationreport_exitButtonClicked()
+void StaffMainWindow::editmedicalexaminationreport_exitButtonClicked(const int &flag)
 {
-    ui->stackedWidget->setCurrentWidget(editmedicalexaminationreport.get());
+    if(flag == 1)
+    {
+        ui->stackedWidget->setCurrentWidget(patientInfo.get());
+    }
+    else if(flag ==2)
+    {
+        ui->stackedWidget->setCurrentWidget(appointmentmanagement.get());
+    }
 }
-
 
 void StaffMainWindow::on_AppointmentManagerButton_clicked()
 {
@@ -279,6 +292,18 @@ void StaffMainWindow::on_patienInfoButton_clicked()
     //显示界面
     ui->stackedWidget->setCurrentWidget(patientInfo.get());
 
+    for (QLineEdit* lineEdit : patientInfo->findChildren<QLineEdit*>()) {
+        lineEdit->clear();
+    }
+
+    QTableView* tableView = patientInfo->findChild<QTableView*>();
+    if (tableView) {
+        // 创建一个新的空模型
+        QStandardItemModel* emptyModel = new QStandardItemModel();
+
+        // 设置新的模型，替换旧的模型
+        tableView->setModel(emptyModel);
+    }
     ui->patienInfoButton->setStyleSheet(
                 "QPushButton {"
                 "    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #A4D0E1, stop: 1 #B0E0E6);"
@@ -298,8 +323,7 @@ void StaffMainWindow::on_patienInfoButton_clicked()
     ui->patienInfoButton->setChecked(true);
 }
 
-void StaffMainWindow::onEditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus)
+void StaffMainWindow::onEditReportButtonClicked(const QString &patientName, const QString &patientGender, const QString &patientPhone, const QString &patientBirthDate, const QString &healthPackage, const QString &appointmentDate, const QString &appointmentStatus,const int&flag)
 {
-    OnEditCheckuppreport(patientName,healthPackage,appointmentDate);
+    OnEditCheckuppreport(patientName,healthPackage,appointmentDate,flag);
 }
-

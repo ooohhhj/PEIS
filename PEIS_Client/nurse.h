@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <memory>
+#include<QTableView>
 
 #include "appointmentmanagement.h"
 #include "patientinformation.h"
@@ -24,11 +25,11 @@ public:
     explicit Nurse(QWidget *parent = nullptr,const QString &username="");
     ~Nurse();
 
-     void buttonStyleSheet(QPushButton *button);
+    void buttonStyleSheet(QPushButton *button);
 private slots:
     void on_EditReportButtonClicked(const QString&patientName,const QString &patientGender,const QString &patientPhone,
                                     const QString&patientBirthDate,const QString&healthPackage,const QString&appointmentDate,
-                                    const QString&appointmentStatus);
+                                    const QString&appointmentStatus,const int & flag);
 
     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int& flag);
 

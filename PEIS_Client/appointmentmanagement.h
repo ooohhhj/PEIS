@@ -35,7 +35,7 @@ private slots:
     void on_returnExitButton_clicked();
 
 signals:
-    void EditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate);
+    void EditCheckuppreport(const QString & patientName,const QString&packageName,const QString & appointmentDate,const int&flag);
     void exitButtonClicked();
     void onLookCheckUpReportClicked(const QString & patientName,const QString&healthPackage,const QString&appointmentDate,const int&flag);
 

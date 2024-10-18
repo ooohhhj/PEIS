@@ -991,6 +991,10 @@ QByteArray ClientHandler::handleEditCheckupReportRequest(const QJsonObject &pati
     QString packageName =patientObj["packageName"].toString();
     QString appointmentDate =patientObj["appointmentDate"].toString();
 
+    qDebug()<<"patientName="<<patientName;
+    qDebug()<<"packageName="<<packageName;
+    qDebug()<<"appointmentDate="<<appointmentDate;
+
     //查询是否有这个记录
     QSqlQuery query = DatabaseManager::instance().getPatientCheckupDate(patientName,packageName,appointmentDate);
 

@@ -154,7 +154,7 @@ void AppointmentManagement::onViewReportClicked(const QModelIndex &index)
     {
         qDebug() << "编辑报告按钮被点击，患者姓名：" << patientName;
 
-        emit EditCheckuppreport(patientName,packageName,appointmentDate);
+        emit EditCheckuppreport(patientName,packageName,appointmentDate,2);
 
     } else if (appointmentStatus == "已完成")
     {

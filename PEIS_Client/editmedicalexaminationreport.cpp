@@ -102,6 +102,11 @@ void EditMedicalExaminationReport::setCheckupDate(const QJsonArray &checkupDate)
     ui->packageItemsWidget->setLayout(mainLayout);
 }
 
+void EditMedicalExaminationReport::setFlag(const int &flag)
+{
+    this->m_flag =flag;
+}
+
 void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const QJsonObject &patientDateArray)
 {
     QString patientName = patientDateArray["patientName"].toString();
@@ -126,10 +131,7 @@ void EditMedicalExaminationReport::OnPatientHealthExaminationDateResponce(const 
     ui->report_generateTime->setText(report_generated);
     ui->status->setText(report_status);
 
-
     setCheckupDate(checkupDate);
-
-
 }
 
 void EditMedicalExaminationReport::on_submitButton_clicked()
@@ -152,10 +154,6 @@ void EditMedicalExaminationReport::on_submitButton_clicked()
     QString packageName =ui->packageName->text();
     QString packageDate =ui->packageDate->text();
 
-    qDebug()<<"patientName="<<patientName;
-    qDebug()<<"packageName="<<packageName;
-    qDebug()<<"packageDate="<<packageDate;
-
     QJsonObject obj;
 
     obj["patientName"]=patientName;
@@ -175,6 +173,6 @@ void EditMedicalExaminationReport::on_submitButton_clicked()
 
 void EditMedicalExaminationReport::on_returnExitButton_clicked()
 {
-     emit exitButtonClicked();
+     emit exitButtonClicked(m_flag);
 }
 

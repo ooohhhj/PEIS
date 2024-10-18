@@ -20,17 +20,22 @@ public:
 
     void setCheckupDate(const QJsonArray &checkupDate);
 
+     void setFlag(const int & flag);
+
 private slots:
     void OnPatientHealthExaminationDateResponce(const QJsonObject& patientDateArray);
     void on_submitButton_clicked();
 
     void on_returnExitButton_clicked();
 
+
+
 signals:
-    void exitButtonClicked();
+    void exitButtonClicked(const int&flag);
 
 private:
     Ui::EditMedicalExaminationReport *ui;
+    int m_flag;
 };
 
 #endif // EDITMEDICALEXAMINATIONREPORT_H
